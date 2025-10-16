@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -132,6 +133,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+# Яндекс.Карты API ключ
+# Получите свой API ключ на https://developer.tech.yandex.ru/
+YANDEX_MAPS_API_KEY = os.getenv('YANDEX_MAPS_API_KEY', '')
 
 # ЗАГЛУШКА: LDAP Authentication
 # Раскомментируйте и настройте при подключении к LDAP серверу

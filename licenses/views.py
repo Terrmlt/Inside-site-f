@@ -12,7 +12,10 @@ def map_view(request):
     """
     Главная страница с интерактивной картой
     """
-    return render(request, 'licenses/map.html')
+    from django.conf import settings
+    return render(request, 'licenses/map.html', {
+        'yandex_maps_api_key': settings.YANDEX_MAPS_API_KEY
+    })
 
 
 def licenses_json(request):
