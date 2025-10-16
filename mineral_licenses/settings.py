@@ -134,6 +134,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
+# CSRF settings for Replit
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.replit.dev',
+    'https://*.repl.co',
+]
+
 # Яндекс.Карты API ключ
 # Получите свой API ключ на https://developer.tech.yandex.ru/
 YANDEX_MAPS_API_KEY = os.getenv('YANDEX_MAPS_API_KEY', '')
