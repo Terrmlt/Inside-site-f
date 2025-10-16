@@ -5,27 +5,30 @@
 {% block extra_css %}
 <style>
     body {
-        overflow: hidden;
+        overflow-y: auto;
     }
     .main-container {
         display: flex;
-        height: calc(100vh - 56px);
+        flex-direction: column;
+        min-height: calc(100vh - 56px);
+    }
+    .content-area {
+        flex: 1;
+        padding: 20px;
+        background-color: #f8f9fa;
     }
     .map-container {
-        width: 40%;
-        height: 100%;
-        border-right: 2px solid #dee2e6;
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     #map {
         width: 100%;
         height: 100%;
-    }
-    .sidebar {
-        width: 60%;
-        height: 100%;
-        overflow-y: auto;
-        padding: 20px;
-        background-color: #f8f9fa;
     }
     .filters-section {
         background: white;
@@ -76,13 +79,8 @@
 
 {% block content %}
 <div class="main-container">
-    <!-- Карта слева (40%) -->
-    <div class="map-container">
-        <div id="map"></div>
-    </div>
-    
-    <!-- Боковая панель справа (60%) -->
-    <div class="sidebar">
+    <!-- Основная область контента -->
+    <div class="content-area">
         <!-- Фильтры -->
         <div class="filters-section">
             <h5 class="mb-3">🔍 Фильтры лицензий</h5>
@@ -145,6 +143,11 @@
                 <!-- Здесь будут карточки лицензий -->
             </div>
         </div>
+    </div>
+    
+    <!-- Карта внизу в аккуратном окошке -->
+    <div class="map-container">
+        <div id="map"></div>
     </div>
 </div>
 
