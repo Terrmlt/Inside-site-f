@@ -1,0 +1,12 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.map_view, name='map'),
+    path('api/licenses/', views.licenses_json, name='licenses_json'),
+    path('api/licenses/<int:license_id>/', views.license_detail, name='license_detail'),
+    path('api/licenses/<int:license_id>/upload/', views.upload_document, name='upload_document'),
+    path('api/documents/<int:document_id>/download/', views.download_document, name='download_document'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+]

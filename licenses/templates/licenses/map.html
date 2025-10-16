@@ -1,0 +1,239 @@
+{% extends 'licenses/base.html' %}
+
+{% block title %}Интерактивная карта лицензий{% endblock %}
+
+{% block extra_css %}
+<style>
+    #map {
+        width: 100%;
+        height: calc(100vh - 56px);
+    }
+    .license-info {
+        padding: 10px;
+        max-width: 300px;
+    }
+    .license-info h6 {
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    .license-info p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="map"></div>
+
+<!-- Модальное окно для детальной информации о лицензии -->
+<div class="modal fade" id="licenseModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Информация о лицензии</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Здесь будет отображаться детальная информация -->
+            </div>
+            <div class="modal-footer">
+                {% if user.is_authenticated %}
+                <button type="button" class="btn btn-primary" onclick="showUploadForm()">Загрузить документ</button>
+                {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://api-maps.yandex.ru/2.1/?apikey=&lang=ru_RU" type="text/javascript"></script>
+<script>
+let currentLicenseId = null;
+let myMap;
+
+ymaps.ready(init);
+
+function init() {
+    myMap = new ymaps.Map("map", {
+        center: [55.76, 37.64],
+        zoom: 5,
+        controls: ['zoomControl', 'searchControl', 'typeSelector', 'fullscreenControl']
+    });
+
+    loadLicenses();
+}
+
+function loadLicenses() {
+    fetch('/api/licenses/')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(license => {
+                const placemark = new ymaps.Placemark(
+                    [license.latitude, license.longitude],
+                    {
+                        balloonContentHeader: `<strong>${license.license_number}</strong>`,
+                        balloonContentBody: `
+                            <div class="license-info">
+                                <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                                <p><strong>Регион:</strong> ${license.region}</p>
+                                <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                                <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                                <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
+                                    Подробнее
+                                </button>
+                            </div>
+                        `,
+                        hintContent: license.license_number
+                    },
+                    {
+                        preset: getPresetByStatus(license.status)
+                    }
+                );
+                myMap.geoObjects.add(placemark);
+            });
+        })
+        .catch(error => console.error('Ошибка загрузки лицензий:', error));
+}
+
+function getStatusText(status) {
+    const statuses = {
+        'active': 'Действующая',
+        'expired': 'Истекла',
+        'suspended': 'Приостановлена',
+        'terminated': 'Прекращена'
+    };
+    return statuses[status] || status;
+}
+
+function getPresetByStatus(status) {
+    const presets = {
+        'active': 'islands#greenDotIcon',
+        'expired': 'islands#grayDotIcon',
+        'suspended': 'islands#yellowDotIcon',
+        'terminated': 'islands#redDotIcon'
+    };
+    return presets[status] || 'islands#blueDotIcon';
+}
+
+function showLicenseDetails(licenseId) {
+    currentLicenseId = licenseId;
+    fetch(`/api/licenses/${licenseId}/`)
+        .then(response => response.json())
+        .then(license => {
+            document.getElementById('modalTitle').innerHTML = `Лицензия ${license.license_number}`;
+            
+            let documentsHtml = '';
+            if (license.documents && license.documents.length > 0) {
+                documentsHtml = '<h6 class="mt-3">Документы:</h6><ul class="list-group">';
+                license.documents.forEach(doc => {
+                    documentsHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${doc.title}
+                            <a href="/api/documents/${doc.id}/download/" class="btn btn-sm btn-outline-primary">
+                                Скачать
+                            </a>
+                        </li>
+                    `;
+                });
+                documentsHtml += '</ul>';
+            } else {
+                documentsHtml = '<p class="text-muted mt-3">Нет прикрепленных документов</p>';
+            }
+            
+            document.getElementById('modalBody').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Номер лицензии:</strong> ${license.license_number}</p>
+                        <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                        <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                        <p><strong>Регион:</strong> ${license.region}</p>
+                        <p><strong>Участок недр:</strong> ${license.area || 'Не указан'}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Дата выдачи:</strong> ${license.issue_date}</p>
+                        <p><strong>Дата окончания:</strong> ${license.expiry_date || 'Не указана'}</p>
+                        <p><strong>Полезное ископаемое:</strong> ${license.mineral_type || 'Не указано'}</p>
+                        <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                        <p><strong>Координаты:</strong> ${license.latitude}, ${license.longitude}</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <p><strong>Описание:</strong></p>
+                        <p>${license.description || 'Нет описания'}</p>
+                    </div>
+                </div>
+                ${documentsHtml}
+            `;
+            
+            const modal = new bootstrap.Modal(document.getElementById('licenseModal'));
+            modal.show();
+        })
+        .catch(error => console.error('Ошибка загрузки деталей лицензии:', error));
+}
+
+function showUploadForm() {
+    if (!currentLicenseId) {
+        alert('Лицензия не выбрана');
+        return;
+    }
+    
+    const title = prompt('Введите название документа:');
+    if (!title) return;
+    
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.png';
+    
+    fileInput.onchange = () => {
+        if (fileInput.files.length === 0) return;
+        
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('title', title);
+        formData.append('file_type', 'other');
+        
+        fetch(`/api/licenses/${currentLicenseId}/upload/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Документ успешно загружен');
+                showLicenseDetails(currentLicenseId);
+            } else {
+                alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки документа:', error);
+            alert('Ошибка загрузки документа');
+        });
+    };
+    
+    fileInput.click();
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
