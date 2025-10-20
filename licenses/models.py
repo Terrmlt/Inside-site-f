@@ -36,6 +36,7 @@ class License(models.Model):
         verbose_name="Статус"
     )
     
+    
     description = models.TextField(verbose_name="Описание", blank=True)
     
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания записи")
@@ -48,6 +49,19 @@ class License(models.Model):
     
     def __str__(self):
         return f"{self.license_number} - {self.owner}"
+
+    def update_status_if_expired(self):
+        """
+        Проверяет и обновляет статус лицензии, если срок действия истек
+        """
+        from datetime import date
+        
+        if self.expiry_date and self.expiry_date < date.today():
+            if self.status == 'active':
+                self.status = 'expired'
+                self.save(update_fields=['status'])
+        
+        return self.status
 
 
 class Document(models.Model):

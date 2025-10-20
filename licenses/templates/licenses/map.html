@@ -166,6 +166,7 @@
                 <!-- Здесь будет отображаться детальная информация -->
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-info" onclick="showOnMap()">📍 Показать на карте</button>
                 {% if user.is_authenticated %}
                 <button type="button" class="btn btn-primary" onclick="showUploadForm()">Загрузить документ</button>
                 {% endif %}
@@ -364,11 +365,14 @@ function getPresetByStatus(status) {
     return presets[status] || 'islands#blueDotIcon';
 }
 
+let currentLicense = null;
+
 function showLicenseDetails(licenseId) {
     currentLicenseId = licenseId;
     fetch(`/api/licenses/${licenseId}/`)
         .then(response => response.json())
         .then(license => {
+            currentLicense = license;
             document.getElementById('modalTitle').innerHTML = `Лицензия ${license.license_number}`;
             
             let documentsHtml = '';
@@ -469,6 +473,40 @@ function showUploadForm() {
     };
     
     fileInput.click();
+}
+
+function showOnMap() {
+    if (!currentLicense) {
+        alert('Лицензия не загружена');
+        return;
+    }
+    
+    // Закрываем модальное окно
+    const modal = bootstrap.Modal.getInstance(document.getElementById('licenseModal'));
+    modal.hide();
+    
+    // Прокручиваем к карте
+    document.querySelector('.map-container').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+    });
+    
+    // Центрируем карту на точном местоположении лицензии с увеличенным зумом
+    setTimeout(() => {
+        myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 15, {
+            checkZoomRange: true,
+            duration: 500
+        });
+        
+        // Находим соответствующий маркер по ID лицензии и открываем его балун
+        setTimeout(() => {
+            const placemarkIndex = filteredLicenses.findIndex(license => license.id === currentLicense.id);
+            
+            if (placemarkIndex !== -1 && placemarks[placemarkIndex]) {
+                placemarks[placemarkIndex].balloon.open();
+            }
+        }, 600);
+    }, 300);
 }
 
 function getCookie(name) {

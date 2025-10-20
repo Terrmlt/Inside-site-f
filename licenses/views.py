@@ -26,6 +26,9 @@ def licenses_json(request):
     data = []
     
     for license in licenses:
+        # Проверяем и обновляем статус, если срок истек
+        license.update_status_if_expired()
+
         data.append({
             'id': license.id,
             'license_number': license.license_number,
@@ -50,6 +53,8 @@ def license_detail(request, license_id):
     Получение детальной информации о лицензии
     """
     license = get_object_or_404(License, id=license_id)
+    # Проверяем и обновляем статус, если срок истек
+    license.update_status_if_expired()
     documents = license.documents.all()
     
     data = {
