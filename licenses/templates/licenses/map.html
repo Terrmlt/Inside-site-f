@@ -11,6 +11,9 @@
         display: flex;
         flex-direction: column;
         min-height: calc(100vh - 56px);
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
     }
     .content-area {
         flex: 1;
@@ -424,18 +427,22 @@ function showUploadForm() {
         return;
     }
     
-    const title = prompt('Введите название документа:');
-    if (!title) return;
-    
     const fileInput = document.createElement('input');
+
     fileInput.type = 'file';
     fileInput.accept = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.png';
     
     fileInput.onchange = () => {
         if (fileInput.files.length === 0) return;
         
+        const selectedFile = fileInput.files[0];
+        const defaultTitle = selectedFile.name;
+        
+        const title = prompt('Название документа:', defaultTitle);
+        if (!title) return;
+        
         const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
+        formData.append('file', selectedFile);
         formData.append('title', title);
         formData.append('file_type', 'other');
         

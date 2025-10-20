@@ -29,10 +29,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # CSRF settings for Replit
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.replit.dev',
-    'https://*.repl.co',
-]
+#CSRF_TRUSTED_ORIGINS = [
+#    'https://*.replit.dev',
+#    'https://*.repl.co',
+#]
 
 
 # Application definition
@@ -141,10 +141,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF settings for Replit
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.replit.dev',
-    'https://*.repl.co',
-]
+#CSRF_TRUSTED_ORIGINS = [
+#    'https://*.replit.dev',
+#    'https://*.repl.co',
+#]
 
 # Яндекс.Карты API ключ
 # Получите свой API ключ на https://developer.tech.yandex.ru/

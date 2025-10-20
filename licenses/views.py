@@ -117,11 +117,26 @@ def download_document(request, document_id):
     """
     Скачивание документа
     """
+    import mimetypes
+    import os
+    from urllib.parse import quote
+
     document = get_object_or_404(Document, id=document_id)
     
     if document.file:
-        response = FileResponse(document.file.open('rb'))
-        response['Content-Disposition'] = f'attachment; filename="{document.title}"'
+        # Получаем оригинальное имя файла
+        filename = os.path.basename(document.file.name)
+        
+        # Определяем MIME-тип по расширению файла
+        content_type, _ = mimetypes.guess_type(document.file.name)
+        if not content_type:
+            content_type = 'application/octet-stream'
+        
+        response = FileResponse(document.file.open('rb'), content_type=content_type)
+        # Кодируем имя файла для поддержки кириллицы и спецсимволов
+        encoded_filename = quote(filename)
+        response['Content-Disposition'] = f'attachment; filename="{filename}"; filename*=UTF-8\'\'{encoded_filename}'
+        
         return response
     
     return HttpResponse('Файл не найден', status=404)
