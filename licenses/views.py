@@ -133,14 +133,19 @@ def download_document(request, document_id):
         filename = os.path.basename(document.file.name)
         
         # Определяем MIME-тип по расширению файла
-        content_type, _ = mimetypes.guess_type(document.file.name)
+        content_type, _ = mimetypes.guess_type(filename)  
         if not content_type:
             content_type = 'application/octet-stream'
         
-        response = FileResponse(document.file.open('rb'), content_type=content_type)
-        # Кодируем имя файла для поддержки кириллицы и спецсимволов
-        encoded_filename = quote(filename)
-        response['Content-Disposition'] = f'attachment; filename="{filename}"; filename*=UTF-8\'\'{encoded_filename}'
+        # Открываем файл в бинарном режиме
+        file = document.file.open('rb')
+        
+        response = FileResponse(file, content_type=content_type)
+        
+        # Правильное формирование Content-Disposition для поддержки кириллицы
+        # Используем только один вариант (filename* для Unicode)
+        encoded_filename = quote(filename.encode('utf-8'))
+        response['Content-Disposition'] = f"attachment; filename*=UTF-8''{encoded_filename}"
         
         return response
     
