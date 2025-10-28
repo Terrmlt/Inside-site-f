@@ -11,8 +11,11 @@ class License(models.Model):
     owner = models.CharField(max_length=300, verbose_name="Недропользователь")
     
     # Геолокация для отображения на карте
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, verbose_name="Широта")
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, verbose_name="Долгота")
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, verbose_name="Широта", null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, verbose_name="Долгота", null=True, blank=True)
+    
+    # Полигон (контур лицензии) в формате GeoJSON
+    polygon_data = models.JSONField(verbose_name="Данные полигона (GeoJSON)", null=True, blank=True)
     
     # Информация о территории
     region = models.CharField(max_length=200, verbose_name="Регион")
