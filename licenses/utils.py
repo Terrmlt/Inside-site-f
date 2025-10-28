@@ -127,8 +127,16 @@ class GeoJSONImporter:
                     # Вид пользования - только двухбуквенный код
                     result['license_type'] = license_type_code
                     
-                    # Название участка - в поле area_name
-                    result['area_name'] = remainder if remainder else ''
+                    # Название участка - очищаем от организаций и лишних данных
+                    area_name = remainder if remainder else ''
+                    # Убираем упоминания организаций (ООО, АО и т.д.)
+                    area_name = re.sub(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+[«"]?[^|»"]+[»"]?', '', area_name, flags=re.IGNORECASE)
+                    # Убираем площадь, если она попала
+                    area_name = re.sub(r'Площадь:?\s*[\d,]+\s*кв\.км', '', area_name, flags=re.IGNORECASE)
+                    # Убираем лишние пробелы и символы
+                    area_name = area_name.strip(' |,-')
+                    
+                    result['area_name'] = area_name
                 else:
                     result['license_type'] = remainder
                     result['area_name'] = remainder
