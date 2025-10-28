@@ -89,15 +89,14 @@ WSGI_APPLICATION = 'mineral_licenses.wsgi.application'
 #     }
 # }
 
+import dj_database_url
+
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'django',      # Имя базы данных
-       'USER': 'django_admin',           # Пользователь PostgreSQL
-       'PASSWORD': 'POlk123456789',       # Пароль пользователя
-       'HOST': 'localhost',               # Хост (или IP-адрес)
-       'PORT': '5433',                    # Порт PostgreSQL (по умолчанию 5432)
-   }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
