@@ -124,13 +124,11 @@ class GeoJSONImporter:
                 if len(license_parts) >= 3:
                     license_type_code = license_parts[-1]  # БЭ, БП, БР и т.д.
                     
-                    # Тип - это вид лицензии плюс название участка
-                    if remainder:
-                        result['license_type'] = f"{license_type_code} - {remainder}"
-                        result['area_name'] = remainder
-                    else:
-                        result['license_type'] = license_type_code
-                        result['area_name'] = ''
+                    # Вид пользования - только двухбуквенный код
+                    result['license_type'] = license_type_code
+                    
+                    # Название участка - в поле area_name
+                    result['area_name'] = remainder if remainder else ''
                 else:
                     result['license_type'] = remainder
                     result['area_name'] = remainder
