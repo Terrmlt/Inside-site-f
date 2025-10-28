@@ -147,13 +147,29 @@ class GeoJSONImporter:
             if area_match:
                 result['area_size'] = area_match.group(1)
         
-        # Владелец
-        if len(parts) > 2:
-            result['owner'] = parts[2].strip()
-        elif len(parts) > 1 and 'Площадь' not in parts[1]:
-            result['owner'] = parts[1].strip()
-        else:
-            result['owner'] = 'Не указан'
+        # Владелец - ищем организацию во всех частях описания
+        owner_found = False
+        for part in parts:
+            # Ищем организации: ООО, АО, ПАО, ЗАО, ИП и т.д.
+            owner_match = re.search(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+[«"]?([^|»"]+)[»"]?', part, re.IGNORECASE)
+            if owner_match:
+                # Извлекаем полное название организации
+                org_type = owner_match.group(1)
+                org_name = owner_match.group(2).strip()
+                # Удаляем лишние символы в конце
+                org_name = re.sub(r'\s*(Площадь|кв\.км).*$', '', org_name, flags=re.IGNORECASE).strip()
+                result['owner'] = f'{org_type} {org_name}'
+                owner_found = True
+                break
+        
+        if not owner_found:
+            # Если не нашли по паттерну, пробуем взять из второй или третьей части
+            if len(parts) > 2:
+                result['owner'] = parts[2].strip()
+            elif len(parts) > 1 and 'Площадь' not in parts[1]:
+                result['owner'] = parts[1].strip()
+            else:
+                result['owner'] = 'Не указан'
         
         return result
     
