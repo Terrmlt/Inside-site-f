@@ -112,19 +112,34 @@ class GeoJSONImporter:
         if len(parts) > 0:
             first_part = parts[0]
             
-            # Извлекаем номер лицензии
-            license_match = re.search(r'([А-ЯЁ]{3}\s+\d{5,6})', first_part)
+            # Извлекаем номер лицензии с видом (например, "МАГ 12345 БЭ")
+            license_match = re.search(r'([А-ЯЁ]{3}\s+\d{5,6}\s+[А-ЯЁ]{2})', first_part)
             if license_match:
                 result['license_number'] = license_match.group(1)
                 
                 remainder = first_part[license_match.end():].strip()
                 
-                # Тип обычно идёт сразу после номера
-                type_match = re.match(r'(БЭ|БП|БР|ГРР)\s+(.*)', remainder)
-                if type_match:
-                    result['license_type'] = f"{type_match.group(1)} - {type_match.group(2)}"
-                    result['area_name'] = type_match.group(2)
+                # Извлекаем вид лицензии из номера
+                license_parts = result['license_number'].split()
+                if len(license_parts) >= 3:
+                    license_type_code = license_parts[-1]  # БЭ, БП, БР и т.д.
+                    
+                    # Тип - это вид лицензии плюс название участка
+                    if remainder:
+                        result['license_type'] = f"{license_type_code} - {remainder}"
+                        result['area_name'] = remainder
+                    else:
+                        result['license_type'] = license_type_code
+                        result['area_name'] = ''
                 else:
+                    result['license_type'] = remainder
+                    result['area_name'] = remainder
+            else:
+                # Если не нашли с видом, пробуем без вида (старый формат)
+                license_match = re.search(r'([А-ЯЁ]{3}\s+\d{5,6})', first_part)
+                if license_match:
+                    result['license_number'] = license_match.group(1)
+                    remainder = first_part[license_match.end():].strip()
                     result['license_type'] = remainder
                     result['area_name'] = remainder
         
