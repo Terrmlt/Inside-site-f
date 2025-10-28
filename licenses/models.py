@@ -51,7 +51,16 @@ class License(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.license_number} - {self.owner}"
+        # Извлекаем вид лицензии (последние 2 символа после пробела)
+        license_type_code = ""
+        parts = self.license_number.strip().split()
+        if len(parts) >= 3:
+            license_type_code = parts[-1]  # Последняя часть (например, "БЭ", "БП", "БР")
+        
+        if license_type_code:
+            return f"{self.license_number} ({license_type_code}) - {self.owner}"
+        else:
+            return f"{self.license_number} - {self.owner}"
 
     def update_status_if_expired(self):
         """
