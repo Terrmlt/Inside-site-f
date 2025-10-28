@@ -181,3 +181,59 @@ def logout_view(request):
     """
     logout(request)
     return redirect('login')
+
+
+@login_required
+def upload_geojson(request):
+    """
+    Страница для загрузки GeoJSON файлов (только для персонала)
+    """
+    if not request.user.is_staff:
+        return HttpResponse('Доступ запрещён. Только для администраторов.', status=403)
+    if request.method == 'POST':
+        if 'geojson_file' not in request.FILES:
+            return render(request, 'licenses/upload_geojson.html', {
+                'error': 'Пожалуйста, выберите GeoJSON файл для загрузки'
+            })
+        
+        geojson_file = request.FILES['geojson_file']
+        
+        # Проверяем расширение файла
+        if not geojson_file.name.endswith('.geojson') and not geojson_file.name.endswith('.json'):
+            return render(request, 'licenses/upload_geojson.html', {
+                'error': 'Неверный формат файла. Поддерживаются только .geojson и .json файлы'
+            })
+        
+        try:
+            # Читаем содержимое файла
+            file_content = geojson_file.read().decode('utf-8')
+            
+            # Импортируем данные
+            from .utils import GeoJSONImporter
+            importer = GeoJSONImporter()
+            result = importer.import_from_file(file_content)
+            
+            # Формируем сообщение об успехе
+            success_message = f"""
+                Импорт завершён успешно!
+                Создано новых лицензий: {result['imported']}
+                Обновлено существующих: {result['updated']}
+                Пропущено: {result['skipped']}
+                Всего обработано: {result['total']}
+            """
+            
+            return render(request, 'licenses/upload_geojson.html', {
+                'success': success_message,
+                'result': result
+            })
+        
+        except json.JSONDecodeError:
+            return render(request, 'licenses/upload_geojson.html', {
+                'error': 'Ошибка: файл не является корректным JSON'
+            })
+        except Exception as e:
+            return render(request, 'licenses/upload_geojson.html', {
+                'error': f'Ошибка при обработке файла: {str(e)}'
+            })
+    
+    return render(request, 'licenses/upload_geojson.html')

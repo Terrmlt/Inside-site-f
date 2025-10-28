@@ -7,6 +7,7 @@ urlpatterns = [
     path('api/licenses/<int:license_id>/', views.license_detail, name='license_detail'),
     path('api/licenses/<int:license_id>/upload/', views.upload_document, name='upload_document'),
     path('api/documents/<int:document_id>/download/', views.download_document, name='download_document'),
+    path('upload-geojson/', views.upload_geojson, name='upload_geojson'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 ]

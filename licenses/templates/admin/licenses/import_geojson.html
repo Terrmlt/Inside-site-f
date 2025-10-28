@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div id="content-main">
+    <div class="module">
+        <h1>Импорт GeoJSON карт</h1>
+        
+        <div class="help">
+            <p>Используйте эту форму для массовой загрузки лицензий из GeoJSON файлов.</p>
+            <ul>
+                <li>Файл должен быть в формате GeoJSON (.geojson или .json)</li>
+                <li>Каждый полигон должен содержать информацию о лицензии в поле properties</li>
+                <li>Если лицензия с таким номером уже существует, данные будут обновлены</li>
+                <li>Все полигоны автоматически добавятся на единую карту</li>
+            </ul>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data" class="aligned">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <div>
+                    <label for="id_geojson_file" class="required">GeoJSON файл:</label>
+                    <input type="file" name="geojson_file" id="id_geojson_file" accept=".geojson,.json" required>
+                    <p class="help">Выберите GeoJSON файл для импорта</p>
+                </div>
+            </div>
+            
+            <div class="submit-row">
+                <input type="submit" value="Импортировать" class="default">
+                <a href="{% url 'admin:licenses_license_changelist' %}" class="button cancel-link">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends 'licenses/base.html' %}
+
+{% block title %}Загрузка GeoJSON карт{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 30px;
+    }
+    .upload-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 40px;
+    }
+    .upload-zone {
+        border: 3px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 40px;
+        text-align: center;
+        transition: all 0.3s;
+        background-color: #f8f9fa;
+    }
+    .upload-zone:hover {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+    .upload-icon {
+        font-size: 64px;
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+    .alert {
+        margin-top: 20px;
+    }
+    .result-details {
+        margin-top: 15px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+    }
+    .result-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .result-item:last-child {
+        border-bottom: none;
+    }
+    .instruction-box {
+        background-color: #e7f3ff;
+        border-left: 4px solid #0d6efd;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-card">
+        <h2 class="mb-4">Загрузка карт (GeoJSON)</h2>
+        
+        <div class="instruction-box">
+            <h5>Инструкция:</h5>
+            <ul class="mb-0">
+                <li>Выберите GeoJSON файл с картой лицензий</li>
+                <li>Файл должен содержать полигоны с информацией о лицензиях</li>
+                <li>Поддерживаются форматы: .geojson и .json</li>
+                <li>Все полигоны автоматически добавятся на единую карту</li>
+                <li>Если лицензия уже существует, данные будут обновлены</li>
+            </ul>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Ошибка!</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if success %}
+        <div class="alert alert-success" role="alert">
+            <strong>Успешно!</strong> {{ success }}
+            
+            {% if result %}
+            <div class="result-details">
+                <div class="result-item">
+                    <span><strong>Создано новых лицензий:</strong></span>
+                    <span class="badge bg-success">{{ result.imported }}</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Обновлено существующих:</strong></span>
+                    <span class="badge bg-info">{{ result.updated }}</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Пропущено:</strong></span>
+                    <span class="badge bg-warning">{{ result.skipped }}</span>
+                </div>
+                <div class="result-item">
+                    <span><strong>Всего обработано:</strong></span>
+                    <span class="badge bg-primary">{{ result.total }}</span>
+                </div>
+                
+                {% if result.errors %}
+                <div class="mt-3">
+                    <strong>Предупреждения и ошибки:</strong>
+                    <ul class="mt-2 mb-0">
+                        {% for error in result.errors %}
+                        <li class="text-muted small">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mt-3">
+                <a href="/" class="btn btn-primary">Перейти к карте</a>
+                <a href="{% url 'upload_geojson' %}" class="btn btn-outline-secondary">Загрузить еще</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if not success %}
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon">📤</div>
+                <h5>Выберите GeoJSON файл</h5>
+                <p class="text-muted">или перетащите файл сюда</p>
+                <input type="file" name="geojson_file" id="geojsonFile" accept=".geojson,.json" class="d-none" required>
+                <button type="button" class="btn btn-primary mt-3" onclick="document.getElementById('geojsonFile').click()">
+                    Выбрать файл
+                </button>
+            </div>
+            
+            <div id="selectedFile" class="mt-3" style="display: none;">
+                <div class="alert alert-info">
+                    <strong>Выбран файл:</strong> <span id="fileName"></span>
+                    <button type="button" class="btn-close float-end" onclick="clearFile()"></button>
+                </div>
+            </div>
+            
+            <div class="mt-4 d-grid gap-2">
+                <button type="submit" class="btn btn-success btn-lg" id="submitBtn" disabled>
+                    Загрузить и импортировать
+                </button>
+            </div>
+        </form>
+        {% endif %}
+        
+        <div class="mt-4">
+            <a href="/" class="btn btn-outline-secondary">Вернуться к карте</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const fileInput = document.getElementById('geojsonFile');
+const uploadZone = document.getElementById('uploadZone');
+const selectedFileDiv = document.getElementById('selectedFile');
+const fileNameSpan = document.getElementById('fileName');
+const submitBtn = document.getElementById('submitBtn');
+
+if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            fileNameSpan.textContent = file.name;
+            selectedFileDiv.style.display = 'block';
+            submitBtn.disabled = false;
+        }
+    });
+
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#0d6efd';
+        uploadZone.style.backgroundColor = '#e7f1ff';
+    });
+
+    uploadZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#dee2e6';
+        uploadZone.style.backgroundColor = '#f8f9fa';
+    });
+
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#dee2e6';
+        uploadZone.style.backgroundColor = '#f8f9fa';
+        
+        if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            const file = e.dataTransfer.files[0];
+            fileNameSpan.textContent = file.name;
+            selectedFileDiv.style.display = 'block';
+            submitBtn.disabled = false;
+        }
+    });
+}
+
+function clearFile() {
+    fileInput.value = '';
+    selectedFileDiv.style.display = 'none';
+    submitBtn.disabled = true;
+}
+
+const uploadForm = document.getElementById('uploadForm');
+if (uploadForm) {
+    uploadForm.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Загрузка и обработка...';
+    });
+}
+</script>
+{% endblock %}
