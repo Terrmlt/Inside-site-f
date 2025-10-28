@@ -8,13 +8,13 @@ class GeoJSONImporter:
     """
     Утилита для импорта лицензий из GeoJSON файлов
     """
-    
+
     def __init__(self):
         self.imported_count = 0
         self.skipped_count = 0
         self.updated_count = 0
         self.errors = []
-    
+
     def import_from_file(self, file_content):
         """
         Импортирует лицензии из GeoJSON файла
@@ -30,75 +30,91 @@ class GeoJSONImporter:
             data = json.loads(file_content)
         else:
             data = file_content
-        
+
         features = data.get('features', [])
-        
+
         for feature in features:
             try:
                 self._process_feature(feature)
             except Exception as e:
                 self.errors.append(f'Ошибка обработки объекта: {str(e)}')
                 self.skipped_count += 1
-        
+
         return {
             'imported': self.imported_count,
             'updated': self.updated_count,
             'skipped': self.skipped_count,
-            'total': self.imported_count + self.updated_count + self.skipped_count,
+            'total':
+            self.imported_count + self.updated_count + self.skipped_count,
             'errors': self.errors
         }
-    
+
     def _process_feature(self, feature):
         """Обрабатывает один объект из GeoJSON"""
         geometry = feature['geometry']
         properties = feature.get('properties', {})
         description = properties.get('description', '')
         fill_color = properties.get('fill', '')
-        
+
         # Парсим описание
         parsed = self.parse_description(description)
-        
+
         if not parsed['license_number']:
-            self.errors.append(f'Пропуск: не найден номер лицензии в "{description[:100]}"')
+            self.errors.append(
+                f'Пропуск: не найден номер лицензии в "{description[:100]}"')
             self.skipped_count += 1
             return
-        
+
         # Определяем статус по цвету
         status = self.get_status_from_color(fill_color, description)
-        
+
         # Вычисляем центр полигона
-        center = self.calculate_polygon_center(geometry['coordinates'], geometry.get('type', 'Polygon'))
-        
+        center = self.calculate_polygon_center(geometry['coordinates'],
+                                               geometry.get('type', 'Polygon'))
+
         # Определяем регион по префиксу номера лицензии
         region = self.extract_region(parsed['license_number'])
-        
-        # Создаем или обновляем лицензию
-        license_obj, created = License.objects.update_or_create(
-            license_number=parsed['license_number'],
-            defaults={
-                'license_type': parsed['license_type'],
-                'owner': parsed['owner'],
-                'latitude': center[1] if center else None,
-                'longitude': center[0] if center else None,
-                'polygon_data': geometry,
-                'region': region,
-                'area': parsed['area_name'],
-                'issue_date': date.today(),
-                'mineral_type': 'Золото',
-                'status': status,
-                'description': description.replace('<br/>', '\n'),
-            }
-        )
-        
-        if created:
-            self.imported_count += 1
-        else:
+
+        # Проверяем, существует ли лицензия
+        try:
+            license_obj = License.objects.get(license_number=parsed['license_number'])
+            # Лицензия существует - объединяем полигоны
+            merged_geometry = self.merge_polygons(license_obj.polygon_data, geometry)
+            license_obj.polygon_data = merged_geometry
+            
+            # Пересчитываем центр для нового объединённого полигона
+            new_center = self.calculate_polygon_center(
+                merged_geometry['coordinates'],
+                merged_geometry.get('type', 'Polygon')
+            )
+            if new_center:
+                license_obj.latitude = new_center[1]
+                license_obj.longitude = new_center[0]
+            
+            license_obj.save()
             self.updated_count += 1
-    
+        except License.DoesNotExist:
+            # Создаём новую лицензию
+            license_obj = License.objects.create(
+                license_number=parsed['license_number'],
+                license_type=parsed['license_type'],
+                owner=parsed['owner'],
+                latitude=center[1] if center else None,
+                longitude=center[0] if center else None,
+                polygon_data=geometry,
+                region=region,
+                area=parsed['area_name'],
+                issue_date=date.today(),
+                mineral_type='Золото',
+                status=status,
+                description=description.replace('<br/>', '\n'),
+            )
+            self.imported_count += 1
+
     def parse_description(self, description):
         """Парсит описание лицензии"""
         text = description.replace('<br/>', ' | ').strip()
-        
+
         result = {
             'license_number': '',
             'license_type': '',
@@ -106,36 +122,44 @@ class GeoJSONImporter:
             'owner': '',
             'area_size': ''
         }
-        
+
         parts = [p.strip() for p in text.split('|')]
-        
+
         if len(parts) > 0:
             first_part = parts[0]
-            
+
             # Извлекаем номер лицензии с видом (например, "МАГ 12345 БЭ")
-            license_match = re.search(r'([А-ЯЁ]{3}\s+\d{5,6}\s+[А-ЯЁ]{2})', first_part)
+            license_match = re.search(r'([А-ЯЁ]{3}\s+\d{5,6}\s+[А-ЯЁ]{2})',
+                                      first_part)
             if license_match:
                 result['license_number'] = license_match.group(1)
-                
+
                 remainder = first_part[license_match.end():].strip()
-                
+
                 # Извлекаем вид лицензии из номера
                 license_parts = result['license_number'].split()
                 if len(license_parts) >= 3:
                     license_type_code = license_parts[-1]  # БЭ, БП, БР и т.д.
-                    
+
                     # Вид пользования - только двухбуквенный код
                     result['license_type'] = license_type_code
-                    
+
                     # Название участка - очищаем от организаций и лишних данных
                     area_name = remainder if remainder else ''
                     # Убираем упоминания организаций (ООО, АО и т.д.)
-                    area_name = re.sub(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+[«"]?[^|»"]+[»"]?', '', area_name, flags=re.IGNORECASE)
+                    area_name = re.sub(
+                        r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+[«"]?[^|»"]+[»"]?',
+                        '',
+                        area_name,
+                        flags=re.IGNORECASE)
                     # Убираем площадь, если она попала
-                    area_name = re.sub(r'Площадь:?\s*[\d,]+\s*кв\.км', '', area_name, flags=re.IGNORECASE)
+                    area_name = re.sub(r'Площадь:?\s*[\d,]+\s*кв\.км',
+                                       '',
+                                       area_name,
+                                       flags=re.IGNORECASE)
                     # Убираем лишние пробелы и символы
                     area_name = area_name.strip(' |,-')
-                    
+
                     result['area_name'] = area_name
                 else:
                     result['license_type'] = remainder
@@ -148,19 +172,21 @@ class GeoJSONImporter:
                     remainder = first_part[license_match.end():].strip()
                     result['license_type'] = remainder
                     result['area_name'] = remainder
-        
+
         # Площадь
         if len(parts) > 1:
             area_match = re.search(r'Площадь:\s*([\d,]+)\s*кв\.км', parts[1])
             if area_match:
                 result['area_size'] = area_match.group(1)
-        
+
         # Владелец - ищем организацию во всех частях описания
         owner_found = False
         for part in parts:
             # Ищем организации: ООО, АО, ПАО, ЗАО, ИП и т.д.
             # Сначала пробуем найти с кавычками
-            owner_match = re.search(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+([«"][^»"]+[»"])', part, re.IGNORECASE)
+            owner_match = re.search(
+                r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+([«"][^»"]+[»"])',
+                part, re.IGNORECASE)
             if owner_match:
                 # Извлекаем полное название организации с кавычками
                 org_type = owner_match.group(1)
@@ -170,9 +196,11 @@ class GeoJSONImporter:
                 result['owner'] = f'{org_type} {org_name}'
                 owner_found = True
                 break
-            
+
             # Если не нашли с кавычками, ищем без них
-            owner_match = re.search(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+([^\|,\n]+?)(?=\s*(?:Площадь|кв\.км|\||$))', part, re.IGNORECASE)
+            owner_match = re.search(
+                r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+([^\|,\n]+?)(?=\s*(?:Площадь|кв\.км|\||$))',
+                part, re.IGNORECASE)
             if owner_match:
                 # Извлекаем название организации без кавычек
                 org_type = owner_match.group(1)
@@ -180,7 +208,7 @@ class GeoJSONImporter:
                 result['owner'] = f'{org_type} {org_name}'
                 owner_found = True
                 break
-        
+
         if not owner_found:
             # Если не нашли по паттерну, пробуем взять из второй или третьей части
             if len(parts) > 2:
@@ -189,13 +217,13 @@ class GeoJSONImporter:
                 result['owner'] = parts[1].strip()
             else:
                 result['owner'] = 'Не указан'
-        
+
         return result
-    
+
     def get_status_from_color(self, color, description):
         """Определяет статус лицензии по цвету"""
         color = color.lower()
-        
+
         if color == '#1bad03':
             return 'terminated'
         elif color == '#ed4543':
@@ -206,27 +234,75 @@ class GeoJSONImporter:
             return 'suspended'
         else:
             return 'active'
-    
+
     def calculate_polygon_center(self, coordinates, geom_type='Polygon'):
-        """Вычисляет центр полигона"""
+        """
+        Вычисляет центр полигона или мультиполигона
+        Для MultiPolygon учитывает все полигоны
+        """
         if not coordinates or len(coordinates) == 0:
             return None
+
+        all_points = []
         
         if geom_type == 'MultiPolygon':
-            if not coordinates[0] or len(coordinates[0]) == 0:
-                return None
-            outer_ring = coordinates[0][0]
+            # Для MultiPolygon собираем точки из всех полигонов
+            for polygon_coords in coordinates:
+                if polygon_coords and len(polygon_coords) > 0:
+                    # Берём внешний контур каждого полигона
+                    outer_ring = polygon_coords[0]
+                    if outer_ring and len(outer_ring) > 0:
+                        all_points.extend(outer_ring)
         else:
+            # Для Polygon берём внешний контур
             outer_ring = coordinates[0]
-        
-        if not outer_ring or len(outer_ring) == 0:
+            if outer_ring and len(outer_ring) > 0:
+                all_points.extend(outer_ring)
+
+        if not all_points:
             return None
-        
-        lon_sum = sum(coord[0] for coord in outer_ring)
-        lat_sum = sum(coord[1] for coord in outer_ring)
-        count = len(outer_ring)
-        
+
+        lon_sum = sum(coord[0] for coord in all_points)
+        lat_sum = sum(coord[1] for coord in all_points)
+        count = len(all_points)
+
         return [lon_sum / count, lat_sum / count]
+
+    def merge_polygons(self, existing_geometry, new_geometry):
+        """
+        Объединяет два полигона в MultiPolygon
+        
+        Args:
+            existing_geometry: существующая геометрия (Polygon или MultiPolygon)
+            new_geometry: новая геометрия для добавления (Polygon или MultiPolygon)
+        
+        Returns:
+            объединённая геометрия типа MultiPolygon (всегда)
+        """
+        # Список всех полигонов
+        all_polygons = []
+        
+        # Добавляем существующие полигоны (если есть)
+        if existing_geometry and existing_geometry.get('coordinates'):
+            existing_type = existing_geometry.get('type', 'Polygon')
+            if existing_type == 'MultiPolygon':
+                all_polygons.extend(existing_geometry['coordinates'])
+            elif existing_type == 'Polygon':
+                all_polygons.append(existing_geometry['coordinates'])
+        
+        # Добавляем новые полигоны
+        if new_geometry and new_geometry.get('coordinates'):
+            new_type = new_geometry.get('type', 'Polygon')
+            if new_type == 'MultiPolygon':
+                all_polygons.extend(new_geometry['coordinates'])
+            elif new_type == 'Polygon':
+                all_polygons.append(new_geometry['coordinates'])
+        
+        # Всегда возвращаем как MultiPolygon
+        return {
+            'type': 'MultiPolygon',
+            'coordinates': all_polygons
+        }
     
     def extract_region(self, license_number):
         """Извлекает название региона из префикса номера лицензии"""
@@ -235,15 +311,17 @@ class GeoJSONImporter:
             'КЕМ': 'Кемеровская область',
             'ПЕМ': 'Пермский край',
             'ЧИТ': 'Забайкальский край',
-            'САХ': 'Сахалинская область',
+            'ЮСХ': 'Сахалинская область',
             'ИРК': 'Иркутская область',
-            'АМУ': 'Амурская область',
+            'БЛГ': 'Амурская область',
             'ХАБ': 'Хабаровский край',
-            'КРА': 'Красноярский край',
-            'БУР': 'Республика Бурятия',
+            'КРР': 'Красноярский край',
+            'УДЭ': 'Республика Бурятия',
             'ЯКУ': 'Республика Саха (Якутия)',
             'ТЮМ': 'Тюменская область',
+            'ВЛВ': 'Приморский край',
+            'АБН': 'Республика Хакасия'
         }
-        
+
         prefix = license_number[:3]
         return regions.get(prefix, 'Регион не определён')

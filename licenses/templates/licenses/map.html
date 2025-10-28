@@ -7,6 +7,7 @@
     body {
         overflow-y: auto;
     }
+
     .main-container {
         display: flex;
         flex-direction: column;
@@ -15,11 +16,13 @@
         margin: 0 auto;
         padding: 0 20px;
     }
+
     .content-area {
         flex: 1;
         padding: 20px;
         background-color: #f8f9fa;
     }
+
     .map-container {
         width: 100%;
         height: 400px;
@@ -27,25 +30,29 @@
         border: 2px solid #dee2e6;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
+
     #map {
         width: 100%;
         height: 100%;
     }
+
     .filters-section {
         background: white;
         padding: 20px;
         border-radius: 8px;
         margin-bottom: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .licenses-list {
         background: white;
         padding: 15px;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .license-card {
         border: 1px solid #dee2e6;
         border-radius: 6px;
@@ -54,10 +61,12 @@
         cursor: pointer;
         transition: all 0.3s;
     }
+
     .license-card:hover {
         background-color: #f8f9fa;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+
     .status-badge {
         display: inline-block;
         padding: 4px 12px;
@@ -65,43 +74,65 @@
         font-size: 12px;
         font-weight: 500;
     }
-    .status-active { background-color: #d4edda; color: #155724; }
-    .status-expired { background-color: #d6d8db; color: #383d41; }
-    .status-suspended { background-color: #fff3cd; color: #856404; }
-    .status-terminated { background-color: #f8d7da; color: #721c24; }
+
+    .status-active {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-expired {
+        background-color: #d6d8db;
+        color: #383d41;
+    }
+
+    .status-suspended {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-terminated {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
     .filter-group {
         margin-bottom: 15px;
     }
+
     .filter-group label {
         font-weight: 600;
         margin-bottom: 5px;
         display: block;
     }
+
     .legend {
         background: white;
         padding: 12px;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         font-size: 13px;
         margin-bottom: 20px;
     }
+
     .legend-title {
         font-weight: 600;
         margin-bottom: 8px;
         font-size: 14px;
     }
+
     .legend-item {
         display: inline-flex;
         align-items: center;
         margin-right: 15px;
         margin-bottom: 5px;
     }
+
     .legend-color {
         width: 20px;
         height: 20px;
         border-radius: 3px;
         margin-right: 5px;
-        border: 1px solid rgba(0,0,0,0.2);
+        border: 1px solid rgba(0, 0, 0, 0.2);
     }
 </style>
 {% endblock %}
@@ -112,22 +143,22 @@
     <div class="map-container">
         <div id="map"></div>
     </div>
-    
+
     <!-- Основная область контента -->
     <div class="content-area">
         <!-- Легенда цветов -->
         <div class="legend">
             <div class="legend-title">🎨 Цвета полигонов по виду пользования недрами:</div>
             <div class="d-flex flex-wrap">
-                <div class="legend-item"><span class="legend-color" style="background-color: #3498db;"></span>БЭ - Геологическое изучение</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #27ae60;"></span>БП - Добыча</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #e67e22;"></span>БР - Разведка и добыча</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #1abc9c;"></span>ТЭ - Технические воды</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #9b59b6;"></span>ПВ - Подземные воды</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #f39c12;"></span>ГС - Геологическая съёмка</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #3498db;"></span>БЭ </div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #27ae60;"></span>БП</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #e67e22;"></span>БР</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #1abc9c;"></span>ТП</div>
+                <!--<div class="legend-item"><span class="legend-color" style="background-color: #9b59b6;"></span>ПВ - Подземные воды</div>-->
+                <!--<div class="legend-item"><span class="legend-color" style="background-color: #f39c12;"></span>ГС - Геологическая съёмка</div>-->
             </div>
         </div>
-        
+
         <!-- Фильтры -->
         <div class="filters-section">
             <h5 class="mb-3">🔍 Фильтры лицензий</h5>
@@ -175,14 +206,15 @@
                 <div class="col-12">
                     <div class="filter-group">
                         <label for="searchText">Поиск:</label>
-                        <input type="text" id="searchText" class="form-control" placeholder="Номер лицензии или недропользователь..." onkeyup="applyFilters()">
+                        <input type="text" id="searchText" class="form-control"
+                            placeholder="Номер лицензии или недропользователь..." onkeyup="applyFilters()">
                     </div>
                 </div>
             </div>
             <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Сбросить фильтры</button>
             <span class="ms-3 text-muted" id="resultsCount"></span>
         </div>
-        
+
         <!-- Список лицензий -->
         <div class="licenses-list">
             <h5 class="mb-3">📋 Список лицензий</h5>
@@ -217,120 +249,121 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://api-maps.yandex.ru/2.1/?apikey={{ yandex_maps_api_key }}&lang=ru_RU" type="text/javascript"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey={{ yandex_maps_api_key }}&lang=ru_RU"
+    type="text/javascript"></script>
 <script>
-let currentLicenseId = null;
-let myMap;
-let allLicenses = [];
-let filteredLicenses = [];
-let placemarks = [];
+    let currentLicenseId = null;
+    let myMap;
+    let allLicenses = [];
+    let filteredLicenses = [];
+    let placemarks = [];
 
-ymaps.ready(init);
+    ymaps.ready(init);
 
-function init() {
-    myMap = new ymaps.Map("map", {
-        center: [55.76, 37.64],
-        zoom: 5,
-        controls: ['zoomControl', 'searchControl', 'typeSelector', 'fullscreenControl']
-    });
+    function init() {
+        myMap = new ymaps.Map("map", {
+            center: [55.76, 37.64],
+            zoom: 5,
+            controls: ['zoomControl', 'searchControl', 'typeSelector', 'fullscreenControl']
+        });
 
-    loadLicenses();
-}
-
-function loadLicenses() {
-    fetch('/api/licenses/')
-        .then(response => response.json())
-        .then(data => {
-            console.log(`Загружено лицензий: ${data.length}`);
-            allLicenses = data;
-            filteredLicenses = data;
-            
-            // Заполняем фильтры уникальными значениями
-            populateFilters();
-            
-            // Отображаем лицензии
-            displayLicenses();
-            displayLicensesOnMap();
-        })
-        .catch(error => console.error('Ошибка загрузки лицензий:', error));
-}
-
-function populateFilters() {
-    const regions = [...new Set(allLicenses.map(l => l.region))].sort();
-    const types = [...new Set(allLicenses.map(l => l.license_type))].sort();
-    const minerals = [...new Set(allLicenses.map(l => l.mineral_type).filter(m => m))].sort();
-    
-    const regionSelect = document.getElementById('filterRegion');
-    regions.forEach(region => {
-        const option = document.createElement('option');
-        option.value = region;
-        option.textContent = region;
-        regionSelect.appendChild(option);
-    });
-    
-    const typeSelect = document.getElementById('filterType');
-    types.forEach(type => {
-        const option = document.createElement('option');
-        option.value = type;
-        option.textContent = type;
-        typeSelect.appendChild(option);
-    });
-    
-    const mineralSelect = document.getElementById('filterMineral');
-    minerals.forEach(mineral => {
-        const option = document.createElement('option');
-        option.value = mineral;
-        option.textContent = mineral;
-        mineralSelect.appendChild(option);
-    });
-}
-
-function applyFilters() {
-    const statusFilter = document.getElementById('filterStatus').value;
-    const regionFilter = document.getElementById('filterRegion').value;
-    const typeFilter = document.getElementById('filterType').value;
-    const mineralFilter = document.getElementById('filterMineral').value;
-    const searchText = document.getElementById('searchText').value.toLowerCase();
-    
-    filteredLicenses = allLicenses.filter(license => {
-        if (statusFilter && license.status !== statusFilter) return false;
-        if (regionFilter && license.region !== regionFilter) return false;
-        if (typeFilter && license.license_type !== typeFilter) return false;
-        if (mineralFilter && license.mineral_type !== mineralFilter) return false;
-        if (searchText && !license.license_number.toLowerCase().includes(searchText) && 
-            !license.owner.toLowerCase().includes(searchText)) return false;
-        return true;
-    });
-    
-    displayLicenses();
-    displayLicensesOnMap();
-    updateResultsCount();
-}
-
-function resetFilters() {
-    document.getElementById('filterStatus').value = '';
-    document.getElementById('filterRegion').value = '';
-    document.getElementById('filterType').value = '';
-    document.getElementById('filterMineral').value = '';
-    document.getElementById('searchText').value = '';
-    applyFilters();
-}
-
-function updateResultsCount() {
-    const count = filteredLicenses.length;
-    const total = allLicenses.length;
-    document.getElementById('resultsCount').textContent = `Найдено: ${count} из ${total}`;
-}
-
-function displayLicenses() {
-    const container = document.getElementById('licensesList');
-    
-    if (filteredLicenses.length === 0) {
-        container.innerHTML = '<p class="text-muted">Лицензии не найдены</p>';
-        return;
+        loadLicenses();
     }
-    
-    container.innerHTML = filteredLicenses.map(license => `
+
+    function loadLicenses() {
+        fetch('/api/licenses/')
+            .then(response => response.json())
+            .then(data => {
+                console.log(`Загружено лицензий: ${data.length}`);
+                allLicenses = data;
+                filteredLicenses = data;
+
+                // Заполняем фильтры уникальными значениями
+                populateFilters();
+
+                // Отображаем лицензии
+                displayLicenses();
+                displayLicensesOnMap();
+            })
+            .catch(error => console.error('Ошибка загрузки лицензий:', error));
+    }
+
+    function populateFilters() {
+        const regions = [...new Set(allLicenses.map(l => l.region))].sort();
+        const types = [...new Set(allLicenses.map(l => l.license_type))].sort();
+        const minerals = [...new Set(allLicenses.map(l => l.mineral_type).filter(m => m))].sort();
+
+        const regionSelect = document.getElementById('filterRegion');
+        regions.forEach(region => {
+            const option = document.createElement('option');
+            option.value = region;
+            option.textContent = region;
+            regionSelect.appendChild(option);
+        });
+
+        const typeSelect = document.getElementById('filterType');
+        types.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            typeSelect.appendChild(option);
+        });
+
+        const mineralSelect = document.getElementById('filterMineral');
+        minerals.forEach(mineral => {
+            const option = document.createElement('option');
+            option.value = mineral;
+            option.textContent = mineral;
+            mineralSelect.appendChild(option);
+        });
+    }
+
+    function applyFilters() {
+        const statusFilter = document.getElementById('filterStatus').value;
+        const regionFilter = document.getElementById('filterRegion').value;
+        const typeFilter = document.getElementById('filterType').value;
+        const mineralFilter = document.getElementById('filterMineral').value;
+        const searchText = document.getElementById('searchText').value.toLowerCase();
+
+        filteredLicenses = allLicenses.filter(license => {
+            if (statusFilter && license.status !== statusFilter) return false;
+            if (regionFilter && license.region !== regionFilter) return false;
+            if (typeFilter && license.license_type !== typeFilter) return false;
+            if (mineralFilter && license.mineral_type !== mineralFilter) return false;
+            if (searchText && !license.license_number.toLowerCase().includes(searchText) &&
+                !license.owner.toLowerCase().includes(searchText)) return false;
+            return true;
+        });
+
+        displayLicenses();
+        displayLicensesOnMap();
+        updateResultsCount();
+    }
+
+    function resetFilters() {
+        document.getElementById('filterStatus').value = '';
+        document.getElementById('filterRegion').value = '';
+        document.getElementById('filterType').value = '';
+        document.getElementById('filterMineral').value = '';
+        document.getElementById('searchText').value = '';
+        applyFilters();
+    }
+
+    function updateResultsCount() {
+        const count = filteredLicenses.length;
+        const total = allLicenses.length;
+        document.getElementById('resultsCount').textContent = `Найдено: ${count} из ${total}`;
+    }
+
+    function displayLicenses() {
+        const container = document.getElementById('licensesList');
+
+        if (filteredLicenses.length === 0) {
+            container.innerHTML = '<p class="text-muted">Лицензии не найдены</p>';
+            return;
+        }
+
+        container.innerHTML = filteredLicenses.map(license => `
         <div class="license-card" onclick="showLicenseDetails(${license.id})">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <h6 class="mb-0">${license.license_number}</h6>
@@ -341,33 +374,33 @@ function displayLicenses() {
             <p class="mb-0 text-muted small">${license.license_type}</p>
         </div>
     `).join('');
-    
-    updateResultsCount();
-}
 
-function displayLicensesOnMap() {
-    // Удаляем старые метки
-    myMap.geoObjects.removeAll();
-    placemarks = [];
-    
-    filteredLicenses.forEach(license => {
-        let geoObject;
-        
-        // Проверяем, есть ли полигон
-        if (license.polygon_data && license.polygon_data.coordinates) {
-            const geomType = license.polygon_data.type;
-            
-            // GeoJSON использует [longitude, latitude], а Яндекс [latitude, longitude]
-            if (geomType === 'Polygon') {
-                // Простой полигон - конвертируем координаты
-                const convertedCoords = license.polygon_data.coordinates.map(ring => 
-                    ring.map(coord => [coord[1], coord[0]])
-                );
-                geoObject = new ymaps.Polygon(
-                    convertedCoords,
-                {
-                    balloonContentHeader: `<strong>${license.license_number}</strong>`,
-                    balloonContentBody: `
+        updateResultsCount();
+    }
+
+    function displayLicensesOnMap() {
+        // Удаляем старые метки
+        myMap.geoObjects.removeAll();
+        placemarks = [];
+
+        filteredLicenses.forEach(license => {
+            let geoObject;
+
+            // Проверяем, есть ли полигон
+            if (license.polygon_data && license.polygon_data.coordinates) {
+                const geomType = license.polygon_data.type;
+
+                // GeoJSON использует [longitude, latitude], а Яндекс [latitude, longitude]
+                if (geomType === 'Polygon') {
+                    // Простой полигон - конвертируем координаты
+                    const convertedCoords = license.polygon_data.coordinates.map(ring =>
+                        ring.map(coord => [coord[1], coord[0]])
+                    );
+                    geoObject = new ymaps.Polygon(
+                        convertedCoords,
+                        {
+                            balloonContentHeader: `<strong>${license.license_number}</strong>`,
+                            balloonContentBody: `
                         <div class="license-info">
                             <p><strong>Недропользователь:</strong> ${license.owner}</p>
                             <p><strong>Регион:</strong> ${license.region}</p>
@@ -378,38 +411,6 @@ function displayLicensesOnMap() {
                             </button>
                         </div>
                     `,
-                    hintContent: license.license_number
-                },
-                {
-                    fillColor: getColorByUsageType(license.license_type),
-                    fillOpacity: 0.3,
-                    strokeColor: getColorByUsageType(license.license_type),
-                    strokeWidth: 2,
-                    strokeOpacity: 0.8
-                }
-                );
-            } else if (geomType === 'MultiPolygon') {
-                // MultiPolygon - создаем коллекцию полигонов
-                const collection = new ymaps.GeoObjectCollection();
-                license.polygon_data.coordinates.forEach(polygonCoords => {
-                    const convertedCoords = polygonCoords.map(ring => 
-                        ring.map(coord => [coord[1], coord[0]])
-                    );
-                    const polygon = new ymaps.Polygon(
-                        convertedCoords,
-                        {
-                            balloonContentHeader: `<strong>${license.license_number}</strong>`,
-                            balloonContentBody: `
-                                <div class="license-info">
-                                    <p><strong>Недропользователь:</strong> ${license.owner}</p>
-                                    <p><strong>Регион:</strong> ${license.region}</p>
-                                    <p><strong>Вид пользования:</strong> ${license.license_type}</p>
-                                    <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
-                                    <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
-                                        Подробнее
-                                    </button>
-                                </div>
-                            `,
                             hintContent: license.license_number
                         },
                         {
@@ -420,17 +421,49 @@ function displayLicensesOnMap() {
                             strokeOpacity: 0.8
                         }
                     );
-                    collection.add(polygon);
-                });
-                geoObject = collection;
-            }
-        } else if (license.latitude && license.longitude) {
-            // Создаём точку (для обратной совместимости)
-            geoObject = new ymaps.Placemark(
-                [license.latitude, license.longitude],
-                {
-                    balloonContentHeader: `<strong>${license.license_number}</strong>`,
-                    balloonContentBody: `
+                } else if (geomType === 'MultiPolygon') {
+                    // MultiPolygon - создаем коллекцию полигонов
+                    const collection = new ymaps.GeoObjectCollection();
+                    license.polygon_data.coordinates.forEach(polygonCoords => {
+                        const convertedCoords = polygonCoords.map(ring =>
+                            ring.map(coord => [coord[1], coord[0]])
+                        );
+                        const polygon = new ymaps.Polygon(
+                            convertedCoords,
+                            {
+                                balloonContentHeader: `<strong>${license.license_number}</strong>`,
+                                balloonContentBody: `
+                                <div class="license-info">
+                                    <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                                    <p><strong>Регион:</strong> ${license.region}</p>
+                                    <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                                    <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                                    <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
+                                        Подробнее
+                                    </button>
+                                </div>
+                            `,
+                                hintContent: license.license_number
+                            },
+                            {
+                                fillColor: getColorByUsageType(license.license_type),
+                                fillOpacity: 0.3,
+                                strokeColor: getColorByUsageType(license.license_type),
+                                strokeWidth: 2,
+                                strokeOpacity: 0.8
+                            }
+                        );
+                        collection.add(polygon);
+                    });
+                    geoObject = collection;
+                }
+            } else if (license.latitude && license.longitude) {
+                // Создаём точку (для обратной совместимости)
+                geoObject = new ymaps.Placemark(
+                    [license.latitude, license.longitude],
+                    {
+                        balloonContentHeader: `<strong>${license.license_number}</strong>`,
+                        balloonContentBody: `
                         <div class="license-info">
                             <p><strong>Недропользователь:</strong> ${license.owner}</p>
                             <p><strong>Регион:</strong> ${license.region}</p>
@@ -441,117 +474,117 @@ function displayLicensesOnMap() {
                             </button>
                         </div>
                     `,
-                    hintContent: license.license_number
-                },
-                {
-                    preset: getPresetByUsageType(license.license_type)
-                }
-            );
+                        hintContent: license.license_number
+                    },
+                    {
+                        preset: getPresetByUsageType(license.license_type)
+                    }
+                );
+            }
+
+            if (geoObject) {
+                myMap.geoObjects.add(geoObject);
+                placemarks.push(geoObject);
+            }
+        });
+
+        console.log(`Отображено объектов на карте: ${placemarks.length}`);
+
+        // Автоматически подстраиваем границы карты под объекты
+        if (placemarks.length > 0) {
+            try {
+                const bounds = myMap.geoObjects.getBounds();
+                console.log('Границы объектов:', bounds);
+                myMap.setBounds(bounds, {
+                    checkZoomRange: true,
+                    zoomMargin: 100,
+                    duration: 500
+                });
+            } catch (e) {
+                console.error('Ошибка установки границ:', e);
+            }
+        } else {
+            console.warn('Нет объектов для отображения на карте');
         }
-        
-        if (geoObject) {
-            myMap.geoObjects.add(geoObject);
-            placemarks.push(geoObject);
-        }
-    });
-    
-    console.log(`Отображено объектов на карте: ${placemarks.length}`);
-    
-    // Автоматически подстраиваем границы карты под объекты
-    if (placemarks.length > 0) {
-        try {
-            const bounds = myMap.geoObjects.getBounds();
-            console.log('Границы объектов:', bounds);
-            myMap.setBounds(bounds, {
-                checkZoomRange: true,
-                zoomMargin: 100,
-                duration: 500
-            });
-        } catch (e) {
-            console.error('Ошибка установки границ:', e);
-        }
-    } else {
-        console.warn('Нет объектов для отображения на карте');
     }
-}
 
-function getColorByUsageType(usageType) {
-    const colors = {
-        'БЭ': '#3498db',
-        'БП': '#27ae60',
-        'БР': '#e67e22',
-        'ТЭ': '#1abc9c',
-        'ПВ': '#9b59b6',
-        'ГС': '#f39c12',
-        'КП': '#e74c3c',
-        'РП': '#16a085',
-        'СП': '#8e44ad',
-        'УВС': '#2c3e50'
-    };
-    return colors[usageType] || '#95a5a6';
-}
+    function getColorByUsageType(usageType) {
+        const colors = {
+            'БЭ': '#3498db',
+            'БП': '#27ae60',
+            'БР': '#e67e22',
+            'ТП': '#1abc9c',
+            'ПВ': '#9b59b6',
+            'ГС': '#f39c12',
+            'КП': '#e74c3c',
+            'РП': '#16a085',
+            'СП': '#8e44ad',
+            'УВС': '#2c3e50'
+        };
+        return colors[usageType] || '#95a5a6';
+    }
 
-function getColorByStatus(status) {
-    const colors = {
-        'active': '#28a745',
-        'expired': '#6c757d',
-        'suspended': '#ffc107',
-        'terminated': '#dc3545'
-    };
-    return colors[status] || '#007bff';
-}
+    function getColorByStatus(status) {
+        const colors = {
+            'active': '#28a745',
+            'expired': '#6c757d',
+            'suspended': '#ffc107',
+            'terminated': '#dc3545'
+        };
+        return colors[status] || '#007bff';
+    }
 
-function getStatusText(status) {
-    const statuses = {
-        'active': 'Действующая',
-        'expired': 'Истекла',
-        'suspended': 'Приостановлена',
-        'terminated': 'Прекращена'
-    };
-    return statuses[status] || status;
-}
+    function getStatusText(status) {
+        const statuses = {
+            'active': 'Действующая',
+            'expired': 'Истекла',
+            'suspended': 'Приостановлена',
+            'terminated': 'Прекращена'
+        };
+        return statuses[status] || status;
+    }
 
-function getPresetByUsageType(usageType) {
-    const presets = {
-        'БЭ': 'islands#blueDotIcon',
-        'БП': 'islands#greenDotIcon',
-        'БР': 'islands#orangeDotIcon',
-        'ТЭ': 'islands#lightBlueDotIcon',
-        'ПВ': 'islands#violetDotIcon',
-        'ГС': 'islands#yellowDotIcon',
-        'КП': 'islands#redDotIcon',
-        'РП': 'islands#darkGreenDotIcon',
-        'СП': 'islands#darkBlueDotIcon',
-        'УВС': 'islands#grayDotIcon'
-    };
-    return presets[usageType] || 'islands#grayDotIcon';
-}
+    function getPresetByUsageType(usageType) {
+        const presets = {
+            'БЭ': 'islands#blueDotIcon',
+            'БП': 'islands#greenDotIcon',
+            'БР': 'islands#orangeDotIcon',
+            'ТП': 'islands#lightBlueDotIcon',
+            'ПВ': 'islands#violetDotIcon',
+            'ГС': 'islands#yellowDotIcon',
+            'КП': 'islands#redDotIcon',
+            'РП': 'islands#darkGreenDotIcon',
+            'СП': 'islands#darkBlueDotIcon',
+            'УВС': 'islands#grayDotIcon'
+        };
+        return presets[usageType] || 'islands#grayDotIcon';
+    }
 
-function getPresetByStatus(status) {
-    const presets = {
-        'active': 'islands#greenDotIcon',
-        'expired': 'islands#grayDotIcon',
-        'suspended': 'islands#yellowDotIcon',
-        'terminated': 'islands#redDotIcon'
-    };
-    return presets[status] || 'islands#blueDotIcon';
-}
+    function getPresetByStatus(status) {
+        const presets = {
+            'active': 'islands#greenDotIcon',
+            'expired': 'islands#grayDotIcon',
+            'suspended': 'islands#yellowDotIcon',
+            'terminated': 'islands#redDotIcon'
+        };
+        return presets[status] || 'islands#blueDotIcon';
+    }
 
-let currentLicense = null;
+    let currentLicense = null;
 
-function showLicenseDetails(licenseId) {
-    currentLicenseId = licenseId;
-    fetch(`/api/licenses/${licenseId}/`)
-        .then(response => response.json())
-        .then(license => {
-            currentLicense = license;
-            document.getElementById('modalTitle').innerHTML = `Лицензия ${license.license_number}`;
-            
-            let documentsHtml = '';
-            if (license.documents && license.documents.length > 0) {
-                documentsHtml = '<h6 class="mt-3">Документы:</h6><ul class="list-group">';
-                license.documents.forEach(doc => {
-                    documentsHtml += `
+    function showLicenseDetails(licenseId) {
+        currentLicenseId = licenseId;
+        fetch(`/api/licenses/${licenseId}/`)
+            .then(response => response.json())
+            .then(license => {
+                currentLicense = license;
+                document.getElementById('modalTitle').innerHTML = `Лицензия ${license.license_number}`;
+
+                let documentsHtml = '';
+                if (license.documents && license.documents.length > 0) {
+                    documentsHtml = '<h6 class="mt-3">Документы:</h6><ul class="list-group">';
+                    license.documents.forEach(doc => {
+                        documentsHtml += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             ${doc.title}
                             <a href="/api/documents/${doc.id}/download/" class="btn btn-sm btn-outline-primary">
@@ -559,13 +592,13 @@ function showLicenseDetails(licenseId) {
                             </a>
                         </li>
                     `;
-                });
-                documentsHtml += '</ul>';
-            } else {
-                documentsHtml = '<p class="text-muted mt-3">Нет прикрепленных документов</p>';
-            }
-            
-            document.getElementById('modalBody').innerHTML = `
+                    });
+                    documentsHtml += '</ul>';
+                } else {
+                    documentsHtml = '<p class="text-muted mt-3">Нет прикрепленных документов</p>';
+                }
+
+                document.getElementById('modalBody').innerHTML = `
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Номер лицензии:</strong> ${license.license_number}</p>
@@ -590,110 +623,110 @@ function showLicenseDetails(licenseId) {
                 </div>
                 ${documentsHtml}
             `;
-            
-            const modal = new bootstrap.Modal(document.getElementById('licenseModal'));
-            modal.show();
-        })
-        .catch(error => console.error('Ошибка загрузки деталей лицензии:', error));
-}
 
-function showUploadForm() {
-    if (!currentLicenseId) {
-        alert('Лицензия не выбрана');
-        return;
+                const modal = new bootstrap.Modal(document.getElementById('licenseModal'));
+                modal.show();
+            })
+            .catch(error => console.error('Ошибка загрузки деталей лицензии:', error));
     }
-    
-    const fileInput = document.createElement('input');
 
-    fileInput.type = 'file';
-    fileInput.accept = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.png';
-    
-    fileInput.onchange = () => {
-        if (fileInput.files.length === 0) return;
-        
-        const selectedFile = fileInput.files[0];
-        const defaultTitle = selectedFile.name;
-        
-        const title = prompt('Название документа:', defaultTitle);
-        if (!title) return;
-        
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('title', title);
-        formData.append('file_type', 'other');
-        
-        fetch(`/api/licenses/${currentLicenseId}/upload/`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Документ успешно загружен');
-                showLicenseDetails(currentLicenseId);
-            } else {
-                alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка загрузки документа:', error);
-            alert('Ошибка загрузки документа');
-        });
-    };
-    
-    fileInput.click();
-}
+    function showUploadForm() {
+        if (!currentLicenseId) {
+            alert('Лицензия не выбрана');
+            return;
+        }
 
-function showOnMap() {
-    if (!currentLicense) {
-        alert('Лицензия не загружена');
-        return;
+        const fileInput = document.createElement('input');
+
+        fileInput.type = 'file';
+        fileInput.accept = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.png';
+
+        fileInput.onchange = () => {
+            if (fileInput.files.length === 0) return;
+
+            const selectedFile = fileInput.files[0];
+            const defaultTitle = selectedFile.name;
+
+            const title = prompt('Название документа:', defaultTitle);
+            if (!title) return;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('title', title);
+            formData.append('file_type', 'other');
+
+            fetch(`/api/licenses/${currentLicenseId}/upload/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Документ успешно загружен');
+                        showLicenseDetails(currentLicenseId);
+                    } else {
+                        alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки документа:', error);
+                    alert('Ошибка загрузки документа');
+                });
+        };
+
+        fileInput.click();
     }
-    
-    // Закрываем модальное окно
-    const modal = bootstrap.Modal.getInstance(document.getElementById('licenseModal'));
-    modal.hide();
-    
-    // Прокручиваем к карте
-    document.querySelector('.map-container').scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
-    });
-    
-    // Центрируем карту на точном местоположении лицензии с увеличенным зумом
-    setTimeout(() => {
-        myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 15, {
-            checkZoomRange: true,
-            duration: 500
+
+    function showOnMap() {
+        if (!currentLicense) {
+            alert('Лицензия не загружена');
+            return;
+        }
+
+        // Закрываем модальное окно
+        const modal = bootstrap.Modal.getInstance(document.getElementById('licenseModal'));
+        modal.hide();
+
+        // Прокручиваем к карте
+        document.querySelector('.map-container').scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
         });
-        
-        // Находим соответствующий маркер по ID лицензии и открываем его балун
+
+        // Центрируем карту на точном местоположении лицензии с увеличенным зумом
         setTimeout(() => {
-            const placemarkIndex = filteredLicenses.findIndex(license => license.id === currentLicense.id);
-            
-            if (placemarkIndex !== -1 && placemarks[placemarkIndex]) {
-                placemarks[placemarkIndex].balloon.open();
-            }
-        }, 600);
-    }, 300);
-}
+            myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 15, {
+                checkZoomRange: true,
+                duration: 500
+            });
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+            // Находим соответствующий маркер по ID лицензии и открываем его балун
+            setTimeout(() => {
+                const placemarkIndex = filteredLicenses.findIndex(license => license.id === currentLicense.id);
+
+                if (placemarkIndex !== -1 && placemarks[placemarkIndex]) {
+                    placemarks[placemarkIndex].balloon.open();
+                }
+            }, 600);
+        }, 300);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 </script>
 {% endblock %}
