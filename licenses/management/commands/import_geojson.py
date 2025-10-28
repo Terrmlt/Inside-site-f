@@ -46,7 +46,7 @@ class Command(BaseCommand):
                 status = self.get_status_from_color(fill_color, description)
                 
                 # Вычисляем центр полигона
-                center = self.calculate_polygon_center(geometry['coordinates'])
+                center = self.calculate_polygon_center(geometry['coordinates'], geometry.get('type', 'Polygon'))
                 
                 # Определяем регион по префиксу номера лицензии
                 region = self.extract_region(parsed['license_number'])
@@ -155,15 +155,21 @@ class Command(BaseCommand):
         else:
             return 'active'
 
-    def calculate_polygon_center(self, coordinates):
-        """Вычисляет центр полигона"""
+    def calculate_polygon_center(self, coordinates, geom_type='Polygon'):
+        """Вычисляет центр полигона (поддерживает Polygon и MultiPolygon)"""
         if not coordinates or len(coordinates) == 0:
             return None
         
-        # Берём внешний контур полигона (первый массив)
-        outer_ring = coordinates[0]
+        if geom_type == 'MultiPolygon':
+            # Для MultiPolygon берём первый полигон
+            if not coordinates[0] or len(coordinates[0]) == 0:
+                return None
+            outer_ring = coordinates[0][0]
+        else:
+            # Для обычного Polygon берём внешний контур (первый массив)
+            outer_ring = coordinates[0]
         
-        if not outer_ring:
+        if not outer_ring or len(outer_ring) == 0:
             return None
         
         # Вычисляем среднее арифметическое координат

@@ -202,6 +202,7 @@ function loadLicenses() {
     fetch('/api/licenses/')
         .then(response => response.json())
         .then(data => {
+            console.log(`Загружено лицензий: ${data.length}`);
             allLicenses = data;
             filteredLicenses = data;
             
@@ -311,38 +312,138 @@ function displayLicensesOnMap() {
     placemarks = [];
     
     filteredLicenses.forEach(license => {
-        const placemark = new ymaps.Placemark(
-            [license.latitude, license.longitude],
-            {
-                balloonContentHeader: `<strong>${license.license_number}</strong>`,
-                balloonContentBody: `
-                    <div class="license-info">
-                        <p><strong>Недропользователь:</strong> ${license.owner}</p>
-                        <p><strong>Регион:</strong> ${license.region}</p>
-                        <p><strong>Вид пользования:</strong> ${license.license_type}</p>
-                        <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
-                        <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
-                            Подробнее
-                        </button>
-                    </div>
-                `,
-                hintContent: license.license_number
-            },
-            {
-                preset: getPresetByStatus(license.status)
+        let geoObject;
+        
+        // Проверяем, есть ли полигон
+        if (license.polygon_data && license.polygon_data.coordinates) {
+            const geomType = license.polygon_data.type;
+            
+            // GeoJSON использует [longitude, latitude], а Яндекс [latitude, longitude]
+            if (geomType === 'Polygon') {
+                // Простой полигон - конвертируем координаты
+                const convertedCoords = license.polygon_data.coordinates.map(ring => 
+                    ring.map(coord => [coord[1], coord[0]])
+                );
+                geoObject = new ymaps.Polygon(
+                    convertedCoords,
+                {
+                    balloonContentHeader: `<strong>${license.license_number}</strong>`,
+                    balloonContentBody: `
+                        <div class="license-info">
+                            <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                            <p><strong>Регион:</strong> ${license.region}</p>
+                            <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                            <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                            <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
+                                Подробнее
+                            </button>
+                        </div>
+                    `,
+                    hintContent: license.license_number
+                },
+                {
+                    fillColor: getColorByStatus(license.status),
+                    fillOpacity: 0.3,
+                    strokeColor: getColorByStatus(license.status),
+                    strokeWidth: 2,
+                    strokeOpacity: 0.8
+                }
+                );
+            } else if (geomType === 'MultiPolygon') {
+                // MultiPolygon - создаем коллекцию полигонов
+                const collection = new ymaps.GeoObjectCollection();
+                license.polygon_data.coordinates.forEach(polygonCoords => {
+                    const convertedCoords = polygonCoords.map(ring => 
+                        ring.map(coord => [coord[1], coord[0]])
+                    );
+                    const polygon = new ymaps.Polygon(
+                        convertedCoords,
+                        {
+                            balloonContentHeader: `<strong>${license.license_number}</strong>`,
+                            balloonContentBody: `
+                                <div class="license-info">
+                                    <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                                    <p><strong>Регион:</strong> ${license.region}</p>
+                                    <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                                    <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                                    <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
+                                        Подробнее
+                                    </button>
+                                </div>
+                            `,
+                            hintContent: license.license_number
+                        },
+                        {
+                            fillColor: getColorByStatus(license.status),
+                            fillOpacity: 0.3,
+                            strokeColor: getColorByStatus(license.status),
+                            strokeWidth: 2,
+                            strokeOpacity: 0.8
+                        }
+                    );
+                    collection.add(polygon);
+                });
+                geoObject = collection;
             }
-        );
-        myMap.geoObjects.add(placemark);
-        placemarks.push(placemark);
+        } else if (license.latitude && license.longitude) {
+            // Создаём точку (для обратной совместимости)
+            geoObject = new ymaps.Placemark(
+                [license.latitude, license.longitude],
+                {
+                    balloonContentHeader: `<strong>${license.license_number}</strong>`,
+                    balloonContentBody: `
+                        <div class="license-info">
+                            <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                            <p><strong>Регион:</strong> ${license.region}</p>
+                            <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                            <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                            <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
+                                Подробнее
+                            </button>
+                        </div>
+                    `,
+                    hintContent: license.license_number
+                },
+                {
+                    preset: getPresetByStatus(license.status)
+                }
+            );
+        }
+        
+        if (geoObject) {
+            myMap.geoObjects.add(geoObject);
+            placemarks.push(geoObject);
+        }
     });
     
-    // Автоматически подстраиваем границы карты под маркеры
+    console.log(`Отображено объектов на карте: ${placemarks.length}`);
+    
+    // Автоматически подстраиваем границы карты под объекты
     if (placemarks.length > 0) {
-        myMap.setBounds(myMap.geoObjects.getBounds(), {
-            checkZoomRange: true,
-            zoomMargin: 50
-        });
+        try {
+            const bounds = myMap.geoObjects.getBounds();
+            console.log('Границы объектов:', bounds);
+            myMap.setBounds(bounds, {
+                checkZoomRange: true,
+                zoomMargin: 100,
+                duration: 500
+            });
+        } catch (e) {
+            console.error('Ошибка установки границ:', e);
+        }
+    } else {
+        console.warn('Нет объектов для отображения на карте');
     }
+}
+
+function getColorByStatus(status) {
+    const colors = {
+        'active': '#28a745',
+        'expired': '#6c757d',
+        'suspended': '#ffc107',
+        'terminated': '#dc3545'
+    };
+    return colors[status] || '#007bff';
 }
 
 function getStatusText(status) {
