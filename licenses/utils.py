@@ -159,13 +159,24 @@ class GeoJSONImporter:
         owner_found = False
         for part in parts:
             # Ищем организации: ООО, АО, ПАО, ЗАО, ИП и т.д.
-            owner_match = re.search(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+[«"]?([^|»"]+)[»"]?', part, re.IGNORECASE)
+            # Сначала пробуем найти с кавычками
+            owner_match = re.search(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+([«"][^»"]+[»"])', part, re.IGNORECASE)
             if owner_match:
-                # Извлекаем полное название организации
+                # Извлекаем полное название организации с кавычками
                 org_type = owner_match.group(1)
                 org_name = owner_match.group(2).strip()
-                # Удаляем лишние символы в конце
-                org_name = re.sub(r'\s*(Площадь|кв\.км).*$', '', org_name, flags=re.IGNORECASE).strip()
+                # Убираем внешние кавычки, оставляя внутренние
+                org_name = org_name.strip('«»""')
+                result['owner'] = f'{org_type} {org_name}'
+                owner_found = True
+                break
+            
+            # Если не нашли с кавычками, ищем без них
+            owner_match = re.search(r'(ООО|АО|ПАО|ЗАО|ОАО|ИП|ГУП|МУП|ФГУП)\s+([^\|,\n]+?)(?=\s*(?:Площадь|кв\.км|\||$))', part, re.IGNORECASE)
+            if owner_match:
+                # Извлекаем название организации без кавычек
+                org_type = owner_match.group(1)
+                org_name = owner_match.group(2).strip()
                 result['owner'] = f'{org_type} {org_name}'
                 owner_found = True
                 break

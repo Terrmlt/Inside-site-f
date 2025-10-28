@@ -77,6 +77,32 @@
         margin-bottom: 5px;
         display: block;
     }
+    .legend {
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+    .legend-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    .legend-item {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 15px;
+        margin-bottom: 5px;
+    }
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+        margin-right: 5px;
+        border: 1px solid rgba(0,0,0,0.2);
+    }
 </style>
 {% endblock %}
 
@@ -89,6 +115,19 @@
     
     <!-- Основная область контента -->
     <div class="content-area">
+        <!-- Легенда цветов -->
+        <div class="legend">
+            <div class="legend-title">🎨 Цвета полигонов по виду пользования недрами:</div>
+            <div class="d-flex flex-wrap">
+                <div class="legend-item"><span class="legend-color" style="background-color: #3498db;"></span>БЭ - Геологическое изучение</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #27ae60;"></span>БП - Добыча</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #e67e22;"></span>БР - Разведка и добыча</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #1abc9c;"></span>ТЭ - Технические воды</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #9b59b6;"></span>ПВ - Подземные воды</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #f39c12;"></span>ГС - Геологическая съёмка</div>
+            </div>
+        </div>
+        
         <!-- Фильтры -->
         <div class="filters-section">
             <h5 class="mb-3">🔍 Фильтры лицензий</h5>
@@ -342,9 +381,9 @@ function displayLicensesOnMap() {
                     hintContent: license.license_number
                 },
                 {
-                    fillColor: getColorByStatus(license.status),
+                    fillColor: getColorByUsageType(license.license_type),
                     fillOpacity: 0.3,
-                    strokeColor: getColorByStatus(license.status),
+                    strokeColor: getColorByUsageType(license.license_type),
                     strokeWidth: 2,
                     strokeOpacity: 0.8
                 }
@@ -374,9 +413,9 @@ function displayLicensesOnMap() {
                             hintContent: license.license_number
                         },
                         {
-                            fillColor: getColorByStatus(license.status),
+                            fillColor: getColorByUsageType(license.license_type),
                             fillOpacity: 0.3,
-                            strokeColor: getColorByStatus(license.status),
+                            strokeColor: getColorByUsageType(license.license_type),
                             strokeWidth: 2,
                             strokeOpacity: 0.8
                         }
@@ -405,7 +444,7 @@ function displayLicensesOnMap() {
                     hintContent: license.license_number
                 },
                 {
-                    preset: getPresetByStatus(license.status)
+                    preset: getPresetByUsageType(license.license_type)
                 }
             );
         }
@@ -436,6 +475,22 @@ function displayLicensesOnMap() {
     }
 }
 
+function getColorByUsageType(usageType) {
+    const colors = {
+        'БЭ': '#3498db',
+        'БП': '#27ae60',
+        'БР': '#e67e22',
+        'ТЭ': '#1abc9c',
+        'ПВ': '#9b59b6',
+        'ГС': '#f39c12',
+        'КП': '#e74c3c',
+        'РП': '#16a085',
+        'СП': '#8e44ad',
+        'УВС': '#2c3e50'
+    };
+    return colors[usageType] || '#95a5a6';
+}
+
 function getColorByStatus(status) {
     const colors = {
         'active': '#28a745',
@@ -454,6 +509,22 @@ function getStatusText(status) {
         'terminated': 'Прекращена'
     };
     return statuses[status] || status;
+}
+
+function getPresetByUsageType(usageType) {
+    const presets = {
+        'БЭ': 'islands#blueDotIcon',
+        'БП': 'islands#greenDotIcon',
+        'БР': 'islands#orangeDotIcon',
+        'ТЭ': 'islands#lightBlueDotIcon',
+        'ПВ': 'islands#violetDotIcon',
+        'ГС': 'islands#yellowDotIcon',
+        'КП': 'islands#redDotIcon',
+        'РП': 'islands#darkGreenDotIcon',
+        'СП': 'islands#darkBlueDotIcon',
+        'УВС': 'islands#grayDotIcon'
+    };
+    return presets[usageType] || 'islands#grayDotIcon';
 }
 
 function getPresetByStatus(status) {
