@@ -33,10 +33,6 @@ outputType = "webview"
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 34595
-externalPort = 3000
-
 [deployment]
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "python manage.py collectstatic --noinput && gunicorn --bind=0.0.0.0:5000 --reuse-port mineral_licenses.wsgi:application"]
