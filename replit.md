@@ -4,7 +4,11 @@
 This project is a Django-based web application designed to manage a database of subsurface use licenses. It features an interactive Yandex.Map for visualizing licenses, detailed license information through modal windows, and document upload/download functionality. The application aims to provide a comprehensive tool for tracking and managing mineral extraction licenses, offering filtering, search capabilities, and GeoJSON map integration. It is built with a focus on ease of use for administrators and clear visualization for all users, with an eye towards future integration with external databases and LDAP authentication for enterprise environments.
 
 ## Recent Changes
-- **November 1, 2025 (Latest):** Complete redesign in Orrivo style - modern, light, and clean:
+- **November 1, 2025 (Latest - Quick Improvements):** Added three productivity enhancements:
+  - **Quick Filter Tabs**: Interactive tabs for instant filtering by license type (All, БЭ, БП, БР, ТП) with live counters
+  - **Excel Export**: One-click export to professionally formatted Excel with current filters applied (openpyxl integration)
+  - **Auto Status Updates**: Automatic expiration detection in API + management command for batch updates (`python manage.py update_license_statuses`)
+- **November 1, 2025:** Complete redesign in Orrivo style - modern, light, and clean:
   - Switched to light color scheme with white background and dark text for better readability
   - Added hero section with dark gradient background featuring large typography
   - Implemented live statistics dashboard (total licenses, active licenses, regions, license types)

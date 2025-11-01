@@ -6,6 +6,10 @@ from django.views.decorators.http import require_http_methods
 from django.core.files.storage import FileSystemStorage
 from .models import License, Document
 import json
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from io import BytesIO
+from datetime import datetime
 
 
 def map_view(request):
@@ -237,3 +241,129 @@ def upload_geojson(request):
             })
     
     return render(request, 'licenses/upload_geojson.html')
+
+
+def export_licenses_excel(request):
+    """
+    Экспорт лицензий в Excel файл с учетом фильтров
+    """
+    # Получаем параметры фильтрации из GET параметров
+    status_filter = request.GET.get('status', '')
+    region_filter = request.GET.get('region', '')
+    type_filter = request.GET.get('type', '')
+    mineral_filter = request.GET.get('mineral', '')
+    search_text = request.GET.get('search', '')
+    
+    # Начинаем с всех лицензий
+    licenses = License.objects.all()
+    
+    # Применяем фильтры
+    if status_filter:
+        licenses = licenses.filter(status=status_filter)
+    if region_filter:
+        licenses = licenses.filter(region=region_filter)
+    if type_filter:
+        licenses = licenses.filter(license_type=type_filter)
+    if mineral_filter:
+        licenses = licenses.filter(mineral_type=mineral_filter)
+    if search_text:
+        from django.db.models import Q
+        licenses = licenses.filter(
+            Q(license_number__icontains=search_text) | 
+            Q(owner__icontains=search_text)
+        )
+    
+    # Создаем Excel файл
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Лицензии"
+    
+    # Определяем стили
+    header_fill = PatternFill(start_color="FF6B35", end_color="FF6B35", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True, size=12)
+    header_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    
+    border_style = Border(
+        left=Side(style='thin', color='CCCCCC'),
+        right=Side(style='thin', color='CCCCCC'),
+        top=Side(style='thin', color='CCCCCC'),
+        bottom=Side(style='thin', color='CCCCCC')
+    )
+    
+    # Заголовки столбцов
+    headers = [
+        'Номер лицензии', 'Вид пользования', 'Недропользователь', 
+        'Регион', 'Площадь (км²)', 'Дата выдачи', 'Дата окончания',
+        'Полезное ископаемое', 'Статус', 'Широта', 'Долгота', 'Описание'
+    ]
+    
+    ws.append(headers)
+    
+    # Применяем стили к заголовкам
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+        cell.border = border_style
+    
+    # Заполняем данные
+    for license in licenses:
+        # Обновляем статус перед экспортом
+        license.update_status_if_expired()
+        
+        status_text = {
+            'active': 'Действующая',
+            'expired': 'Истекла',
+            'suspended': 'Приостановлена',
+            'terminated': 'Прекращена'
+        }.get(license.status, license.status)
+        
+        row_data = [
+            license.license_number,
+            license.license_type,
+            license.owner,
+            license.region,
+            license.area,
+            license.issue_date.strftime('%d.%m.%Y') if license.issue_date else '',
+            license.expiry_date.strftime('%d.%m.%Y') if license.expiry_date else '',
+            license.mineral_type or '',
+            status_text,
+            float(license.latitude) if license.latitude else '',
+            float(license.longitude) if license.longitude else '',
+            license.description or ''
+        ]
+        
+        ws.append(row_data)
+    
+    # Применяем границы ко всем ячейкам с данными
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(headers)):
+        for cell in row:
+            cell.border = border_style
+            cell.alignment = Alignment(vertical="center", wrap_text=True)
+    
+    # Автоматически подбираем ширину столбцов
+    column_widths = [20, 15, 30, 25, 12, 12, 12, 25, 15, 12, 12, 40]
+    for i, width in enumerate(column_widths, 1):
+        ws.column_dimensions[chr(64 + i)].width = width
+    
+    # Фиксируем первую строку
+    ws.freeze_panes = 'A2'
+    
+    # Сохраняем в поток
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    # Генерируем имя файла с датой и временем
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f'licenses_export_{timestamp}.xlsx'
+    
+    # Возвращаем файл
+    response = HttpResponse(
+        output.read(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    return response
