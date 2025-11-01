@@ -6,29 +6,111 @@
 <style>
     body {
         overflow-y: auto;
+        background-color: #ffffff;
     }
 
     .main-container {
-        display: flex;
-        flex-direction: column;
-        min-height: calc(100vh - 100px);
         max-width: 1400px;
         margin: 0 auto;
-        padding: 2rem 1.5rem;
+        padding: 0;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: white;
+        padding: 4rem 2rem 3rem;
+        position: relative;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 3rem;
+        font-weight: 400;
+    }
+
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-4px);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 1rem;
+        opacity: 0.9;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--accent-color);
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 600;
     }
 
     .content-area {
-        flex: 1;
+        padding: 3rem 2rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        letter-spacing: -0.03em;
+    }
+
+    .section-subtitle {
+        font-size: 1.125rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
     }
 
     .map-container {
         width: 100%;
-        height: 500px;
-        margin-bottom: 2rem;
-        border-radius: 12px;
+        height: 600px;
+        margin-bottom: 3rem;
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: var(--shadow-lg);
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-xl);
     }
 
     #map {
@@ -36,90 +118,110 @@
         height: 100%;
     }
 
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 1.5rem;
-        letter-spacing: -0.025em;
-    }
-
     .filters-section {
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
+        background: var(--bg-section);
+        padding: 2.5rem;
+        border-radius: 16px;
+        margin-bottom: 3rem;
     }
 
     .filters-section h5 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: var(--text-dark);
-        margin-bottom: 1.5rem;
-        letter-spacing: -0.025em;
+        margin-bottom: 2rem;
+        letter-spacing: -0.03em;
     }
 
     .licenses-list {
         background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
+        padding: 0;
     }
 
     .licenses-list h5 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: var(--text-dark);
-        margin-bottom: 1.5rem;
-        letter-spacing: -0.025em;
+        margin-bottom: 2rem;
+        letter-spacing: -0.03em;
     }
 
     .license-card {
         background: white;
         border: 1px solid var(--border-color);
-        border-radius: 10px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
         cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
     }
 
     .license-card:hover {
-        transform: translateY(-2px);
+        transform: translateY(-4px);
         box-shadow: var(--shadow-lg);
         border-color: var(--accent-color);
     }
 
-    .license-card h6 {
-        font-size: 1.1rem;
-        font-weight: 600;
+    .license-card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
         color: var(--text-dark);
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
     }
 
-    .license-card p {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
+    .license-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
     }
 
-    .license-card strong {
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .meta-icon {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+        background: var(--bg-section);
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    .meta-content {
+        flex: 1;
+    }
+
+    .meta-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .meta-value {
+        font-size: 1rem;
         color: var(--text-dark);
         font-weight: 600;
     }
 
     .status-badge {
         display: inline-block;
-        padding: 0.375rem 0.875rem;
-        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
         font-size: 0.75rem;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.025em;
+        letter-spacing: 0.05em;
     }
 
     .status-active {
@@ -128,70 +230,74 @@
     }
 
     .status-expired {
-        background-color: #e2e8f0;
-        color: #64748b;
+        background-color: #e5e5e5;
+        color: #666666;
     }
 
     .status-suspended {
-        background-color: #fed7aa;
+        background-color: #fef3c7;
         color: var(--warning-color);
     }
 
     .status-terminated {
-        background-color: #fecaca;
+        background-color: #fee2e2;
         color: var(--danger-color);
     }
 
     .filter-group {
-        margin-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
     }
 
     .filter-group label {
         font-weight: 600;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
         display: block;
         color: var(--text-dark);
-        font-size: 0.875rem;
+        font-size: 0.9375rem;
     }
 
     .form-select, .form-control {
         border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 0.625rem 1rem;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
         transition: all 0.2s;
-        font-size: 0.9375rem;
+        font-size: 1rem;
+        background: white;
     }
 
     .form-select:focus, .form-control:focus {
         border-color: var(--accent-color);
-        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+        outline: none;
     }
 
     .btn {
-        border-radius: 8px;
-        padding: 0.625rem 1.25rem;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
         font-weight: 600;
         transition: all 0.2s;
         border: none;
+        font-size: 1rem;
     }
 
     .btn-secondary {
-        background-color: var(--text-muted);
-        color: white;
+        background-color: #e5e5e5;
+        color: var(--text-dark);
     }
 
     .btn-secondary:hover {
-        background-color: #4a5568;
-        transform: translateY(-1px);
+        background-color: #d4d4d4;
+        transform: translateY(-2px);
     }
 
     .btn-info {
-        background-color: var(--accent-color);
+        background-color: var(--info-color);
         color: white;
     }
 
     .btn-info:hover {
-        background-color: var(--accent-hover);
+        background-color: #2563eb;
+        transform: translateY(-2px);
     }
 
     .btn-primary {
@@ -201,75 +307,78 @@
 
     .btn-primary:hover {
         background-color: var(--accent-hover);
-        transform: translateY(-1px);
+        transform: translateY(-2px);
     }
 
     .legend {
         background: white;
-        padding: 1.25rem;
+        padding: 1.5rem 2rem;
         border-radius: 12px;
-        box-shadow: var(--shadow-md);
-        font-size: 0.875rem;
-        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+        font-size: 0.9375rem;
+        margin-bottom: 3rem;
         border: 1px solid var(--border-color);
     }
 
     .legend-title {
         font-weight: 700;
-        margin-bottom: 1rem;
-        font-size: 1rem;
+        margin-bottom: 1.25rem;
+        font-size: 1.125rem;
         color: var(--text-dark);
     }
 
     .legend-item {
         display: inline-flex;
         align-items: center;
-        margin-right: 1.5rem;
-        margin-bottom: 0.5rem;
+        margin-right: 2rem;
+        margin-bottom: 0.75rem;
         font-weight: 500;
         color: var(--text-dark);
     }
 
     .legend-color {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
-        margin-right: 0.5rem;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        margin-right: 0.75rem;
         border: 2px solid rgba(0, 0, 0, 0.1);
     }
 
     .results-count {
         font-weight: 500;
         color: var(--text-muted);
-        font-size: 0.9375rem;
+        font-size: 1rem;
     }
 
     .modal-content {
-        border-radius: 12px;
+        border-radius: 16px;
         border: none;
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--shadow-xl);
     }
 
     .modal-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary-light) 100%);
         color: white;
-        border-radius: 12px 12px 0 0;
+        border-radius: 16px 16px 0 0;
         border-bottom: none;
-        padding: 1.5rem;
+        padding: 2rem;
     }
 
     .modal-title {
         font-weight: 700;
-        font-size: 1.25rem;
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
     }
 
     .modal-body {
-        padding: 2rem;
+        padding: 2.5rem;
     }
 
     .modal-footer {
         border-top: 1px solid var(--border-color);
-        padding: 1.25rem 1.5rem;
+        padding: 1.5rem 2rem;
+        background: var(--bg-section);
+        border-radius: 0 0 16px 16px;
     }
 
     .btn-close {
@@ -280,27 +389,60 @@
 
 {% block content %}
 <div class="main-container">
-    <!-- Карта вверху в аккуратном окошке -->
-    <div class="map-container">
-        <div id="map"></div>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">База лицензий на недропользование</h1>
+            <p class="hero-subtitle">Интерактивная система управления и визуализации лицензий на право пользования недрами</p>
+            
+            <!-- Statistics Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount">-</div>
+                    <div class="stat-label">Всего лицензий</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeCount">-</div>
+                    <div class="stat-label">Действующие</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="regionCount">-</div>
+                    <div class="stat-label">Регионов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="typeCount">-</div>
+                    <div class="stat-label">Типов недропользования</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Основная область контента -->
+    <!-- Content Area -->
     <div class="content-area">
-        <!-- Легенда цветов -->
+        <!-- Map Section -->
+        <div class="section-header">
+            <h2 class="section-title">Интерактивная карта</h2>
+            <p class="section-subtitle">Визуализация месторасположения лицензионных участков на интерактивной карте</p>
+        </div>
+        
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+
+        <!-- Legend -->
         <div class="legend">
             <div class="legend-title">Цвета полигонов по виду пользования недрами</div>
             <div class="d-flex flex-wrap">
-                <div class="legend-item"><span class="legend-color" style="background-color: #3498db;"></span>БЭ </div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #27ae60;"></span>БП</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #e67e22;"></span>БР</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: #1abc9c;"></span>ТП</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #3498db;"></span>БЭ - Геологическое изучение с добычей</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #27ae60;"></span>БП - Добыча полезных ископаемых</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #e67e22;"></span>БР - Геологическое изучение</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #1abc9c;"></span>ТП - Разведка и добыча</div>
             </div>
         </div>
 
-        <!-- Фильтры -->
+        <!-- Filters -->
         <div class="filters-section">
-            <h5 class="mb-3">Фильтры лицензий</h5>
+            <h5>Фильтры и поиск</h5>
             <div class="row">
                 <div class="col-md-6">
                     <div class="filter-group">
@@ -417,6 +559,9 @@
                 allLicenses = data;
                 filteredLicenses = data;
 
+                // Обновляем статистику
+                updateStatistics();
+
                 // Заполняем фильтры уникальными значениями
                 populateFilters();
 
@@ -425,6 +570,23 @@
                 displayLicensesOnMap();
             })
             .catch(error => console.error('Ошибка загрузки лицензий:', error));
+    }
+
+    function updateStatistics() {
+        // Общее количество лицензий
+        document.getElementById('totalCount').textContent = allLicenses.length;
+        
+        // Количество активных лицензий
+        const activeCount = allLicenses.filter(l => l.status === 'active').length;
+        document.getElementById('activeCount').textContent = activeCount;
+        
+        // Количество уникальных регионов
+        const uniqueRegions = [...new Set(allLicenses.map(l => l.region))];
+        document.getElementById('regionCount').textContent = uniqueRegions.length;
+        
+        // Количество типов недропользования
+        const uniqueTypes = [...new Set(allLicenses.map(l => l.license_type))];
+        document.getElementById('typeCount').textContent = uniqueTypes.length;
     }
 
     function populateFilters() {
@@ -498,19 +660,50 @@
         const container = document.getElementById('licensesList');
 
         if (filteredLicenses.length === 0) {
-            container.innerHTML = '<p class="text-muted">Лицензии не найдены</p>';
+            container.innerHTML = '<p class="text-muted text-center py-5">Лицензии не найдены</p>';
             return;
         }
 
         container.innerHTML = filteredLicenses.map(license => `
         <div class="license-card" onclick="showLicenseDetails(${license.id})">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <h6 class="mb-0">${license.license_number}</h6>
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="license-card-title">${license.license_number}</div>
                 <span class="status-badge status-${license.status}">${getStatusText(license.status)}</span>
             </div>
-            <p class="mb-1"><strong>Недропользователь:</strong> ${license.owner}</p>
-            <p class="mb-1"><strong>Регион:</strong> ${license.region}</p>
-            <p class="mb-0 text-muted small">${license.license_type}</p>
+            <p style="color: var(--text-muted); margin: 0.5rem 0 0 0;">${license.owner}</p>
+            
+            <div class="license-meta">
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <div class="meta-content">
+                        <div class="meta-label">Регион</div>
+                        <div class="meta-value">${license.region}</div>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    <div class="meta-content">
+                        <div class="meta-label">Тип</div>
+                        <div class="meta-value">${license.license_type}</div>
+                    </div>
+                </div>
+                ${license.mineral_type ? `
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                    <div class="meta-content">
+                        <div class="meta-label">Полезное ископаемое</div>
+                        <div class="meta-value">${license.mineral_type}</div>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
         </div>
     `).join('');
 
