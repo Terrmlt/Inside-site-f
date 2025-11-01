@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.http import require_http_methods
 from django.core.files.storage import FileSystemStorage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import License, Document
 import json
 from openpyxl import Workbook
@@ -24,7 +25,64 @@ def map_view(request):
 
 def licenses_json(request):
     """
-    API endpoint для получения списка лицензий в формате JSON
+    API endpoint для получения списка лицензий в формате JSON с пагинацией
+    """
+    licenses = License.objects.all()
+    
+    # Получаем параметры пагинации
+    page_number = request.GET.get('page', 1)
+    page_size = int(request.GET.get('page_size', 12))
+    
+    # Создаем пагинатор
+    paginator = Paginator(licenses, page_size)
+    
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+    
+    data = []
+    for license in page_obj:
+        # Проверяем и обновляем статус, если срок истек
+        license.update_status_if_expired()
+
+        data.append({
+            'id': license.id,
+            'license_number': license.license_number,
+            'license_type': license.license_type,
+            'owner': license.owner,
+            'latitude': float(license.latitude) if license.latitude else None,
+            'longitude': float(license.longitude) if license.longitude else None,
+            'polygon_data': license.polygon_data,
+            'region': license.region,
+            'area': license.area,
+            'issue_date': license.issue_date.strftime('%Y-%m-%d'),
+            'expiry_date': license.expiry_date.strftime('%Y-%m-%d') if license.expiry_date else None,
+            'mineral_type': license.mineral_type,
+            'status': license.status,
+            'description': license.description,
+        })
+    
+    # Возвращаем данные с метаинформацией о пагинации
+    return JsonResponse({
+        'results': data,
+        'pagination': {
+            'current_page': page_obj.number,
+            'total_pages': paginator.num_pages,
+            'total_count': paginator.count,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous(),
+            'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+            'previous_page': page_obj.previous_page_number() if page_obj.has_previous() else None,
+        }
+    })
+
+
+def licenses_all_json(request):
+    """
+    API endpoint для получения ВСЕХ лицензий без пагинации (для статистики и графиков)
     """
     licenses = License.objects.all()
     data = []
