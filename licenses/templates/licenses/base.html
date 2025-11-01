@@ -5,10 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}База лицензий на недропользование{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --primary-dark: #0f2540;
+            --primary-light: #2c4a73;
+            --accent-color: #0066cc;
+            --accent-hover: #0052a3;
+            --text-dark: #1a202c;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --bg-light: #f7fafc;
+            --success-color: #38a169;
+            --warning-color: #dd6b20;
+            --danger-color: #c53030;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .modern-navbar {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            padding: 1rem 0;
+            box-shadow: var(--shadow-md);
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .modern-navbar .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.025em;
+            transition: opacity 0.2s;
+        }
+
+        .modern-navbar .navbar-brand:hover {
+            opacity: 0.9;
+            color: white;
+        }
+
+        .modern-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            margin: 0 0.25rem;
+        }
+
+        .modern-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modern-navbar .nav-link.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .container-fluid {
+            max-width: 1400px;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark modern-navbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">База лицензий на недропользование</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -22,7 +97,7 @@
                         <a class="nav-link" href="{% url 'upload_geojson' %}">Загрузить GeoJSON</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/">Админ-панель</a>
+                        <a class="nav-link" href="/admin/">Панель управления</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
