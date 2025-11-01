@@ -1,407 +1,231 @@
 {% extends 'licenses/base.html' %}
 
-{% block title %}Карта лицензий{% endblock %}
+{% block title %}Интерактивная карта лицензий{% endblock %}
 
 {% block extra_css %}
 <style>
     body {
         overflow-y: auto;
-        background: var(--primary-dark);
     }
 
     .main-container {
-        display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 20px;
-        min-height: calc(100vh - 65px);
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 56px);
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .content-area {
+        flex: 1;
         padding: 20px;
-        max-width: 100%;
+        background-color: #f8f9fa;
     }
 
-    @media (max-width: 1200px) {
-        .main-container {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .map-section {
-        position: relative;
-        background: var(--secondary-dark);
-        border: 1px solid var(--border-color);
+    .map-container {
+        width: 100%;
+        height: 400px;
+        margin: 20px 0;
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     #map {
         width: 100%;
-        height: calc(100vh - 105px);
-        min-height: 500px;
+        height: 100%;
     }
 
-    .controls-section {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        max-height: calc(100vh - 105px);
-        overflow-y: auto;
-    }
-
-    .control-block {
-        background: var(--secondary-dark);
-        border: 1px solid var(--border-color);
+    .filters-section {
+        background: white;
         padding: 20px;
-    }
-
-    .control-block h3 {
-        color: var(--text-primary);
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .legend-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        color: var(--text-secondary);
-    }
-
-    .legend-color {
-        width: 16px;
-        height: 16px;
-        border: 1px solid var(--border-color);
-    }
-
-    .filter-group {
-        margin-bottom: 16px;
-    }
-
-    .filter-group label {
-        display: block;
-        color: var(--text-secondary);
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-    }
-
-    .form-select, .form-control {
-        background: var(--tertiary-dark);
-        border: 1px solid var(--border-color);
-        color: var(--text-primary);
-        padding: 10px 12px;
-        font-size: 13px;
-        transition: all 0.2s;
-    }
-
-    .form-select:focus, .form-control:focus {
-        background: var(--secondary-dark);
-        border-color: var(--accent-cyan);
-        color: var(--text-primary);
-        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
-        outline: none;
-    }
-
-    .form-select option {
-        background: var(--tertiary-dark);
-        color: var(--text-primary);
-    }
-
-    .btn-reset {
-        background: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-secondary);
-        padding: 8px 16px;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-
-    .btn-reset:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-    }
-
-    .results-count {
-        color: var(--text-secondary);
-        font-size: 12px;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .licenses-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .license-card {
-        background: var(--tertiary-dark);
-        border: 1px solid var(--border-color);
-        padding: 16px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 10px;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s;
     }
 
     .license-card:hover {
-        border-color: var(--accent-cyan);
-        background: var(--secondary-dark);
-    }
-
-    .license-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 12px;
-    }
-
-    .license-number {
-        color: var(--text-primary);
-        font-size: 14px;
-        font-weight: 700;
-        font-family: 'Courier New', monospace;
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .status-badge {
-        padding: 4px 10px;
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border: 1px solid;
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
     }
 
     .status-active {
-        color: #10b981;
-        border-color: #10b981;
-        background: rgba(16, 185, 129, 0.1);
+        background-color: #d4edda;
+        color: #155724;
     }
 
     .status-expired {
-        color: #6b7280;
-        border-color: #6b7280;
-        background: rgba(107, 114, 128, 0.1);
+        background-color: #d6d8db;
+        color: #383d41;
     }
 
     .status-suspended {
-        color: #f59e0b;
-        border-color: #f59e0b;
-        background: rgba(245, 158, 11, 0.1);
+        background-color: #fff3cd;
+        color: #856404;
     }
 
     .status-terminated {
-        color: #ef4444;
-        border-color: #ef4444;
-        background: rgba(239, 68, 68, 0.1);
+        background-color: #f8d7da;
+        color: #721c24;
     }
 
-    .license-info {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
+    .filter-group {
+        margin-bottom: 15px;
     }
 
-    .license-row {
-        display: flex;
-        font-size: 12px;
-    }
-
-    .license-label {
-        color: var(--text-secondary);
-        min-width: 80px;
-    }
-
-    .license-value {
-        color: var(--text-primary);
-    }
-
-    .modal-content {
-        background: var(--secondary-dark);
-        border: 1px solid var(--border-color);
-        color: var(--text-primary);
-    }
-
-    .modal-header {
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .modal-title {
-        font-size: 16px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .modal-footer {
-        border-top: 1px solid var(--border-color);
-    }
-
-    .btn-close {
-        filter: invert(1);
-    }
-
-    .btn {
-        padding: 10px 20px;
-        font-size: 12px;
+    .filter-group label {
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border: 1px solid var(--border-color);
-        transition: all 0.2s;
+        margin-bottom: 5px;
+        display: block;
     }
 
-    .btn-primary {
-        background: var(--accent-blue);
-        border-color: var(--accent-blue);
-        color: white;
+    .legend {
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 13px;
+        margin-bottom: 20px;
     }
 
-    .btn-primary:hover {
-        background: #1d4ed8;
-        border-color: #1d4ed8;
-    }
-
-    .btn-info {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: var(--primary-dark);
-    }
-
-    .btn-info:hover {
-        background: #0891b2;
-        border-color: #0891b2;
-    }
-
-    .btn-secondary {
-        background: transparent;
-        color: var(--text-secondary);
-    }
-
-    .btn-secondary:hover {
-        background: var(--tertiary-dark);
-        color: var(--text-primary);
-    }
-
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: var(--primary-dark);
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: var(--border-color);
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--accent-steel);
-    }
-
-    .no-licenses {
-        color: var(--text-secondary);
-        text-align: center;
-        padding: 40px 20px;
+    .legend-title {
+        font-weight: 600;
+        margin-bottom: 8px;
         font-size: 14px;
+    }
+
+    .legend-item {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 15px;
+        margin-bottom: 5px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+        margin-right: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="main-container">
-    <div class="map-section">
+    <!-- Карта вверху в аккуратном окошке -->
+    <div class="map-container">
         <div id="map"></div>
     </div>
 
-    <div class="controls-section">
-        <div class="control-block">
-            <h3>Легенда</h3>
-            <div class="legend-grid">
-                <div class="legend-item">
-                    <span class="legend-color" style="background-color: #3498db;"></span>
-                    <span>БЭ</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background-color: #27ae60;"></span>
-                    <span>БП</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background-color: #e67e22;"></span>
-                    <span>БР</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background-color: #1abc9c;"></span>
-                    <span>ТП</span>
-                </div>
+    <!-- Основная область контента -->
+    <div class="content-area">
+        <!-- Легенда цветов -->
+        <div class="legend">
+            <div class="legend-title">🎨 Цвета полигонов по виду пользования недрами:</div>
+            <div class="d-flex flex-wrap">
+                <div class="legend-item"><span class="legend-color" style="background-color: #3498db;"></span>БЭ </div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #27ae60;"></span>БП</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #e67e22;"></span>БР</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #1abc9c;"></span>ТП</div>
+                <!--<div class="legend-item"><span class="legend-color" style="background-color: #9b59b6;"></span>ПВ - Подземные воды</div>-->
+                <!--<div class="legend-item"><span class="legend-color" style="background-color: #f39c12;"></span>ГС - Геологическая съёмка</div>-->
             </div>
         </div>
 
-        <div class="control-block">
-            <h3>Фильтры</h3>
-            <div class="filter-group">
-                <label for="filterStatus">Статус</label>
-                <select id="filterStatus" class="form-select" onchange="applyFilters()">
-                    <option value="">Все</option>
-                    <option value="active">Действующая</option>
-                    <option value="expired">Истекла</option>
-                    <option value="suspended">Приостановлена</option>
-                    <option value="terminated">Прекращена</option>
-                </select>
+        <!-- Фильтры -->
+        <div class="filters-section">
+            <h5 class="mb-3">🔍 Фильтры лицензий</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <label for="filterStatus">Статус:</label>
+                        <select id="filterStatus" class="form-select" onchange="applyFilters()">
+                            <option value="">Все статусы</option>
+                            <option value="active">Действующая</option>
+                            <option value="expired">Истекла</option>
+                            <option value="suspended">Приостановлена</option>
+                            <option value="terminated">Прекращена</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <label for="filterRegion">Регион:</label>
+                        <select id="filterRegion" class="form-select" onchange="applyFilters()">
+                            <option value="">Все регионы</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-
-            <div class="filter-group">
-                <label for="filterRegion">Регион</label>
-                <select id="filterRegion" class="form-select" onchange="applyFilters()">
-                    <option value="">Все</option>
-                </select>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <label for="filterType">Вид пользования:</label>
+                        <select id="filterType" class="form-select" onchange="applyFilters()">
+                            <option value="">Все виды</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <label for="filterMineral">Полезное ископаемое:</label>
+                        <select id="filterMineral" class="form-select" onchange="applyFilters()">
+                            <option value="">Все виды</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-
-            <div class="filter-group">
-                <label for="filterType">Вид пользования</label>
-                <select id="filterType" class="form-select" onchange="applyFilters()">
-                    <option value="">Все</option>
-                </select>
+            <div class="row">
+                <div class="col-12">
+                    <div class="filter-group">
+                        <label for="searchText">Поиск:</label>
+                        <input type="text" id="searchText" class="form-control"
+                            placeholder="Номер лицензии или недропользователь..." onkeyup="applyFilters()">
+                    </div>
+                </div>
             </div>
-
-            <div class="filter-group">
-                <label for="filterMineral">Полезное ископаемое</label>
-                <select id="filterMineral" class="form-select" onchange="applyFilters()">
-                    <option value="">Все</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="searchText">Поиск</label>
-                <input type="text" id="searchText" class="form-control"
-                    placeholder="Номер или недропользователь" onkeyup="applyFilters()">
-            </div>
-
-            <button class="btn-reset" onclick="resetFilters()">Сбросить</button>
-            <div class="results-count" id="resultsCount"></div>
+            <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Сбросить фильтры</button>
+            <span class="ms-3 text-muted" id="resultsCount"></span>
         </div>
 
-        <div class="control-block">
-            <h3>Лицензии</h3>
-            <div class="licenses-list" id="licensesList">
+        <!-- Список лицензий -->
+        <div class="licenses-list">
+            <h5 class="mb-3">📋 Список лицензий</h5>
+            <div id="licensesList">
+                <!-- Здесь будут карточки лицензий -->
             </div>
         </div>
     </div>
 </div>
 
+<!-- Модальное окно для детальной информации о лицензии -->
 <div class="modal fade" id="licenseModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -410,9 +234,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="modalBody">
+                <!-- Здесь будет отображаться детальная информация -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" onclick="showOnMap()">Показать на карте</button>
+                <button type="button" class="btn btn-info" onclick="showOnMap()">📍 Показать на карте</button>
                 {% if user.is_authenticated %}
                 <button type="button" class="btn btn-primary" onclick="showUploadForm()">Загрузить документ</button>
                 {% endif %}
@@ -453,7 +278,10 @@
                 allLicenses = data;
                 filteredLicenses = data;
 
+                // Заполняем фильтры уникальными значениями
                 populateFilters();
+
+                // Отображаем лицензии
                 displayLicenses();
                 displayLicensesOnMap();
             })
@@ -524,37 +352,26 @@
     function updateResultsCount() {
         const count = filteredLicenses.length;
         const total = allLicenses.length;
-        document.getElementById('resultsCount').textContent = `Показано: ${count} / ${total}`;
+        document.getElementById('resultsCount').textContent = `Найдено: ${count} из ${total}`;
     }
 
     function displayLicenses() {
         const container = document.getElementById('licensesList');
 
         if (filteredLicenses.length === 0) {
-            container.innerHTML = '<div class="no-licenses">Лицензии не найдены</div>';
+            container.innerHTML = '<p class="text-muted">Лицензии не найдены</p>';
             return;
         }
 
         container.innerHTML = filteredLicenses.map(license => `
         <div class="license-card" onclick="showLicenseDetails(${license.id})">
-            <div class="license-header">
-                <div class="license-number">${license.license_number}</div>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0">${license.license_number}</h6>
                 <span class="status-badge status-${license.status}">${getStatusText(license.status)}</span>
             </div>
-            <div class="license-info">
-                <div class="license-row">
-                    <div class="license-label">Компания:</div>
-                    <div class="license-value">${license.owner}</div>
-                </div>
-                <div class="license-row">
-                    <div class="license-label">Регион:</div>
-                    <div class="license-value">${license.region}</div>
-                </div>
-                <div class="license-row">
-                    <div class="license-label">Тип:</div>
-                    <div class="license-value">${license.license_type}</div>
-                </div>
-            </div>
+            <p class="mb-1"><strong>Недропользователь:</strong> ${license.owner}</p>
+            <p class="mb-1"><strong>Регион:</strong> ${license.region}</p>
+            <p class="mb-0 text-muted small">${license.license_type}</p>
         </div>
     `).join('');
 
@@ -562,16 +379,20 @@
     }
 
     function displayLicensesOnMap() {
+        // Удаляем старые метки
         myMap.geoObjects.removeAll();
         placemarks = [];
 
         filteredLicenses.forEach(license => {
             let geoObject;
 
+            // Проверяем, есть ли полигон
             if (license.polygon_data && license.polygon_data.coordinates) {
                 const geomType = license.polygon_data.type;
 
+                // GeoJSON использует [longitude, latitude], а Яндекс [latitude, longitude]
                 if (geomType === 'Polygon') {
+                    // Простой полигон - конвертируем координаты
                     const convertedCoords = license.polygon_data.coordinates.map(ring =>
                         ring.map(coord => [coord[1], coord[0]])
                     );
@@ -580,16 +401,16 @@
                         {
                             balloonContentHeader: `<strong>${license.license_number}</strong>`,
                             balloonContentBody: `
-                            <div style="color: #000;">
-                                <p><strong>Недропользователь:</strong> ${license.owner}</p>
-                                <p><strong>Регион:</strong> ${license.region}</p>
-                                <p><strong>Вид пользования:</strong> ${license.license_type}</p>
-                                <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
-                                <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
-                                    Подробнее
-                                </button>
-                            </div>
-                        `,
+                        <div class="license-info">
+                            <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                            <p><strong>Регион:</strong> ${license.region}</p>
+                            <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                            <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                            <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
+                                Подробнее
+                            </button>
+                        </div>
+                    `,
                             hintContent: license.license_number
                         },
                         {
@@ -601,6 +422,7 @@
                         }
                     );
                 } else if (geomType === 'MultiPolygon') {
+                    // MultiPolygon - создаем коллекцию полигонов
                     const collection = new ymaps.GeoObjectCollection();
                     license.polygon_data.coordinates.forEach(polygonCoords => {
                         const convertedCoords = polygonCoords.map(ring =>
@@ -611,16 +433,16 @@
                             {
                                 balloonContentHeader: `<strong>${license.license_number}</strong>`,
                                 balloonContentBody: `
-                                    <div style="color: #000;">
-                                        <p><strong>Недропользователь:</strong> ${license.owner}</p>
-                                        <p><strong>Регион:</strong> ${license.region}</p>
-                                        <p><strong>Вид пользования:</strong> ${license.license_type}</p>
-                                        <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
-                                        <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
-                                            Подробнее
-                                        </button>
-                                    </div>
-                                `,
+                                <div class="license-info">
+                                    <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                                    <p><strong>Регион:</strong> ${license.region}</p>
+                                    <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                                    <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                                    <button class="btn btn-sm btn-primary mt-2" onclick="showLicenseDetails(${license.id})">
+                                        Подробнее
+                                    </button>
+                                </div>
+                            `,
                                 hintContent: license.license_number
                             },
                             {
@@ -636,12 +458,13 @@
                     geoObject = collection;
                 }
             } else if (license.latitude && license.longitude) {
+                // Создаём точку (для обратной совместимости)
                 geoObject = new ymaps.Placemark(
                     [license.latitude, license.longitude],
                     {
                         balloonContentHeader: `<strong>${license.license_number}</strong>`,
                         balloonContentBody: `
-                        <div style="color: #000;">
+                        <div class="license-info">
                             <p><strong>Недропользователь:</strong> ${license.owner}</p>
                             <p><strong>Регион:</strong> ${license.region}</p>
                             <p><strong>Вид пользования:</strong> ${license.license_type}</p>
@@ -667,13 +490,14 @@
 
         console.log(`Отображено объектов на карте: ${placemarks.length}`);
 
+        // Автоматически подстраиваем границы карты под объекты
         if (placemarks.length > 0) {
             try {
                 const bounds = myMap.geoObjects.getBounds();
                 console.log('Границы объектов:', bounds);
                 myMap.setBounds(bounds, {
                     checkZoomRange: true,
-                    zoomMargin: 50,
+                    zoomMargin: 100,
                     duration: 500
                 });
             } catch (e) {
@@ -700,9 +524,19 @@
         return colors[usageType] || '#95a5a6';
     }
 
+    function getColorByStatus(status) {
+        const colors = {
+            'active': '#28a745',
+            'expired': '#6c757d',
+            'suspended': '#ffc107',
+            'terminated': '#dc3545'
+        };
+        return colors[status] || '#007bff';
+    }
+
     function getStatusText(status) {
         const statuses = {
-            'active': 'Действует',
+            'active': 'Действующая',
             'expired': 'Истекла',
             'suspended': 'Приостановлена',
             'terminated': 'Прекращена'
@@ -726,6 +560,16 @@
         return presets[usageType] || 'islands#grayDotIcon';
     }
 
+    function getPresetByStatus(status) {
+        const presets = {
+            'active': 'islands#greenDotIcon',
+            'expired': 'islands#grayDotIcon',
+            'suspended': 'islands#yellowDotIcon',
+            'terminated': 'islands#redDotIcon'
+        };
+        return presets[status] || 'islands#blueDotIcon';
+    }
+
     let currentLicense = null;
 
     function showLicenseDetails(licenseId) {
@@ -734,68 +578,51 @@
             .then(response => response.json())
             .then(license => {
                 currentLicense = license;
-                document.getElementById('modalTitle').innerHTML = license.license_number;
+                document.getElementById('modalTitle').innerHTML = `Лицензия ${license.license_number}`;
 
                 let documentsHtml = '';
                 if (license.documents && license.documents.length > 0) {
-                    documentsHtml = `
-                        <div style="margin-top: 20px;">
-                            <h6 style="color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Документы</h6>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                ${license.documents.map(doc => `
-                                    <a href="/api/documents/${doc.id}/download/" 
-                                       style="color: var(--accent-cyan); text-decoration: none; font-size: 13px; padding: 8px; background: var(--tertiary-dark); border: 1px solid var(--border-color);">
-                                        ${doc.name} (${doc.type})
-                                    </a>
-                                `).join('')}
-                            </div>
-                        </div>
+                    documentsHtml = '<h6 class="mt-3">Документы:</h6><ul class="list-group">';
+                    license.documents.forEach(doc => {
+                        documentsHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${doc.title}
+                            <a href="/api/documents/${doc.id}/download/" class="btn btn-sm btn-outline-primary">
+                                Скачать
+                            </a>
+                        </li>
                     `;
+                    });
+                    documentsHtml += '</ul>';
+                } else {
+                    documentsHtml = '<p class="text-muted mt-3">Нет прикрепленных документов</p>';
                 }
 
                 document.getElementById('modalBody').innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <div style="display: grid; grid-template-columns: 150px 1fr; gap: 12px; font-size: 13px;">
-                            <div style="color: var(--text-secondary);">Номер лицензии:</div>
-                            <div style="color: var(--text-primary); font-weight: 700; font-family: 'Courier New', monospace;">${license.license_number}</div>
-                            
-                            <div style="color: var(--text-secondary);">Статус:</div>
-                            <div><span class="status-badge status-${license.status}">${getStatusText(license.status)}</span></div>
-                            
-                            <div style="color: var(--text-secondary);">Недропользователь:</div>
-                            <div style="color: var(--text-primary);">${license.owner}</div>
-                            
-                            <div style="color: var(--text-secondary);">Вид пользования:</div>
-                            <div style="color: var(--text-primary);">${license.license_type}</div>
-                            
-                            <div style="color: var(--text-secondary);">Регион:</div>
-                            <div style="color: var(--text-primary);">${license.region}</div>
-                            
-                            <div style="color: var(--text-secondary);">Участок недр:</div>
-                            <div style="color: var(--text-primary);">${license.area || '-'}</div>
-                            
-                            ${license.mineral_type ? `
-                            <div style="color: var(--text-secondary);">Полезное ископаемое:</div>
-                            <div style="color: var(--text-primary);">${license.mineral_type}</div>
-                            ` : ''}
-                            
-                            <div style="color: var(--text-secondary);">Дата выдачи:</div>
-                            <div style="color: var(--text-primary);">${license.issue_date || '-'}</div>
-                            
-                            <div style="color: var(--text-secondary);">Дата окончания:</div>
-                            <div style="color: var(--text-primary);">${license.expiry_date || '-'}</div>
-                        </div>
-                        
-                        ${license.description ? `
-                        <div>
-                            <div style="color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Описание:</div>
-                            <div style="color: var(--text-primary); font-size: 13px; line-height: 1.6;">${license.description}</div>
-                        </div>
-                        ` : ''}
-                        
-                        ${documentsHtml}
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Номер лицензии:</strong> ${license.license_number}</p>
+                        <p><strong>Недропользователь:</strong> ${license.owner}</p>
+                        <p><strong>Вид пользования:</strong> ${license.license_type}</p>
+                        <p><strong>Регион:</strong> ${license.region}</p>
+                        <p><strong>Участок недр:</strong> ${license.area || 'Не указан'}</p>
                     </div>
-                `;
+                    <div class="col-md-6">
+                        <p><strong>Дата выдачи:</strong> ${license.issue_date}</p>
+                        <p><strong>Дата окончания:</strong> ${license.expiry_date || 'Не указана'}</p>
+                        <p><strong>Полезное ископаемое:</strong> ${license.mineral_type || 'Не указано'}</p>
+                        <p><strong>Статус:</strong> ${getStatusText(license.status)}</p>
+                        <p><strong>Координаты:</strong> ${license.latitude}, ${license.longitude}</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <p><strong>Описание:</strong></p>
+                        <p>${license.description || 'Нет описания'}</p>
+                    </div>
+                </div>
+                ${documentsHtml}
+            `;
 
                 const modal = new bootstrap.Modal(document.getElementById('licenseModal'));
                 modal.show();
@@ -803,25 +630,88 @@
             .catch(error => console.error('Ошибка загрузки деталей лицензии:', error));
     }
 
-    function showOnMap() {
-        if (currentLicense) {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('licenseModal'));
-            modal.hide();
-
-            if (currentLicense.latitude && currentLicense.longitude) {
-                myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 12);
-            } else if (currentLicense.polygon_data && currentLicense.polygon_data.coordinates) {
-                const bounds = myMap.geoObjects.getBounds();
-                myMap.setBounds(bounds, {
-                    checkZoomRange: true,
-                    zoomMargin: 100
-                });
-            }
+    function showUploadForm() {
+        if (!currentLicenseId) {
+            alert('Лицензия не выбрана');
+            return;
         }
+
+        const fileInput = document.createElement('input');
+
+        fileInput.type = 'file';
+        fileInput.accept = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.png';
+
+        fileInput.onchange = () => {
+            if (fileInput.files.length === 0) return;
+
+            const selectedFile = fileInput.files[0];
+            const defaultTitle = selectedFile.name;
+
+            const title = prompt('Название документа:', defaultTitle);
+            if (!title) return;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('title', title);
+            formData.append('file_type', 'other');
+
+            fetch(`/api/licenses/${currentLicenseId}/upload/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Документ успешно загружен');
+                        showLicenseDetails(currentLicenseId);
+                    } else {
+                        alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки документа:', error);
+                    alert('Ошибка загрузки документа');
+                });
+        };
+
+        fileInput.click();
     }
 
-    function showUploadForm() {
-        alert('Функция загрузки документов в разработке');
+    function showOnMap() {
+        if (!currentLicense) {
+            alert('Лицензия не загружена');
+            return;
+        }
+
+        // Закрываем модальное окно
+        const modal = bootstrap.Modal.getInstance(document.getElementById('licenseModal'));
+        modal.hide();
+
+        // Прокручиваем к карте
+        document.querySelector('.map-container').scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+
+        // Центрируем карту на точном местоположении лицензии с увеличенным зумом
+        setTimeout(() => {
+            myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 15, {
+                checkZoomRange: true,
+                duration: 500
+            });
+
+            // Находим соответствующий маркер по ID лицензии и открываем его балун
+            setTimeout(() => {
+                const placemarkIndex = filteredLicenses.findIndex(license => license.id === currentLicense.id);
+
+                if (placemarkIndex !== -1 && placemarks[placemarkIndex]) {
+                    placemarks[placemarkIndex].balloon.open();
+                }
+            }, 600);
+        }, 300);
     }
 
     function getCookie(name) {

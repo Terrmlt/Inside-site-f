@@ -5,64 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}База лицензий на недропользование{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-dark: #0a0e14;
-            --secondary-dark: #161b22;
-            --tertiary-dark: #1f2937;
-            --accent-steel: #4a5568;
-            --accent-blue: #2563eb;
-            --accent-cyan: #06b6d4;
-            --text-primary: #e5e7eb;
-            --text-secondary: #9ca3af;
-            --border-color: #374151;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: var(--primary-dark);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .navbar {
-            background: var(--secondary-dark) !important;
-            border-bottom: 1px solid var(--border-color);
-            padding: 0.75rem 0;
-        }
-
-        .navbar-brand {
-            color: var(--text-primary) !important;
-            font-weight: 600;
-            font-size: 16px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .nav-link {
-            color: var(--text-secondary) !important;
-            font-weight: 500;
-            padding: 0.5rem 1rem !important;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover {
-            color: var(--accent-cyan) !important;
-        }
-    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">ГЕОЛИЦЕНЗИИ</a>
+            <a class="navbar-brand" href="/">База лицензий на недропользование</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -71,18 +19,18 @@
                     {% if user.is_authenticated %} 
                     {% if user.is_staff %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'upload_geojson' %}">ЗАГРУЗИТЬ ДАННЫЕ</a>
+                        <a class="nav-link" href="{% url 'upload_geojson' %}">Загрузить GeoJSON</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/">АДМИН</a>
+                        <a class="nav-link" href="/admin/">Админ-панель</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">ВЫХОД ({{ user.username }})</a>
+                        <a class="nav-link" href="{% url 'logout' %}">Выход ({{ user.username }})</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">ВХОД</a>
+                        <a class="nav-link" href="{% url 'login' %}">Вход</a>
                     </li>
                     {% endif %}
                 </ul>
