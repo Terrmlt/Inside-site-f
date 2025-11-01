@@ -24,19 +24,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*kd=nc*+5frcmt#3ev&esny@u_wy6*6c(n8)+-5&nlqxg!hsja'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['*']
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    # In development, use insecure default
+    # In production deployment, SECRET_KEY must be set via Replit Secrets
+    SECRET_KEY = 'django-insecure-*kd=nc*+5frcmt#3ev&esny@u_wy6*6c(n8)+-5&nlqxg!hsja'
+    if not DEBUG:
+        raise ValueError("SECRET_KEY environment variable must be set when DEBUG=False (production mode)")
+
+# ALLOWED_HOSTS configuration
+ALLOWED_HOSTS_ENV = os.getenv('ALLOWED_HOSTS', '')
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
+else:
+    if not DEBUG:
+        raise ValueError("ALLOWED_HOSTS environment variable must be set when DEBUG=False (production mode)")
+    ALLOWED_HOSTS = ['*']
 
 # CSRF settings for Replit
-# CSRF_TRUSTED_ORIGINS = [
-#     'https://*.replit.dev',
-#     'https://*.repl.co',
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.replit.dev',
+    'https://*.repl.co',
+]
 
 
 # Application definition
@@ -153,12 +166,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
-# CSRF settings for Replit
-#CSRF_TRUSTED_ORIGINS = [
-#    'https://*.replit.dev',
-#    'https://*.repl.co',
-#]
 
 # Яндекс.Карты API ключ
 # Получите свой API ключ на https://developer.tech.yandex.ru/
