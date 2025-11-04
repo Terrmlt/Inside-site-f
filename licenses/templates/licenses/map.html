@@ -1115,6 +1115,10 @@
         const minerals = [...new Set(allLicenses.map(l => l.mineral_type).filter(m => m))].sort();
 
         const regionSelect = document.getElementById('filterRegion');
+        // Очищаем старые опции, оставляя только первую ("Все регионы")
+        while (regionSelect.options.length > 1) {
+            regionSelect.remove(1);
+        }
         regions.forEach(region => {
             const option = document.createElement('option');
             option.value = region;
@@ -1123,6 +1127,10 @@
         });
 
         const typeSelect = document.getElementById('filterType');
+        // Очищаем старые опции, оставляя только первую ("Все виды")
+        while (typeSelect.options.length > 1) {
+            typeSelect.remove(1);
+        }
         types.forEach(type => {
             const option = document.createElement('option');
             option.value = type;
@@ -1131,6 +1139,10 @@
         });
 
         const mineralSelect = document.getElementById('filterMineral');
+        // Очищаем старые опции, оставляя только первую ("Все виды")
+        while (mineralSelect.options.length > 1) {
+            mineralSelect.remove(1);
+        }
         minerals.forEach(mineral => {
             const option = document.createElement('option');
             option.value = mineral;
