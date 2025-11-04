@@ -859,6 +859,11 @@
 
                 // Заполняем фильтры уникальными значениями
                 populateFilters();
+                
+                // Обновляем карту, если фильтры не применены
+                if (!currentFiltersActive) {
+                    displayLicensesOnMap();
+                }
             })
             .catch(error => console.error('Ошибка загрузки статистики:', error));
     }
