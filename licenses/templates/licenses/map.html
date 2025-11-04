@@ -806,6 +806,8 @@
     let placemarks = [];
     let currentPage = 1;
     let paginationData = null;
+    let currentFiltersActive = false;
+    const ITEMS_PER_PAGE = 12;
 
     ymaps.ready(init);
 
@@ -934,20 +936,123 @@
     }
     
     function changePage(direction) {
-        let newPage;
-        
-        if (direction === 'prev') {
-            newPage = paginationData.previous_page;
-        } else if (direction === 'next') {
-            newPage = paginationData.next_page;
+        if (currentFiltersActive) {
+            // Клиентская пагинация (с фильтрами)
+            let newPage;
+            
+            const totalPages = Math.ceil(filteredLicenses.length / ITEMS_PER_PAGE);
+            
+            if (direction === 'prev') {
+                newPage = Math.max(1, currentPage - 1);
+            } else if (direction === 'next') {
+                newPage = Math.min(totalPages, currentPage + 1);
+            } else {
+                newPage = direction; // Номер страницы
+            }
+            
+            displayFilteredPage(newPage);
         } else {
-            newPage = direction; // Номер страницы
+            // Серверная пагинация (без фильтров)
+            let newPage;
+            
+            if (direction === 'prev') {
+                newPage = paginationData.previous_page;
+            } else if (direction === 'next') {
+                newPage = paginationData.next_page;
+            } else {
+                newPage = direction; // Номер страницы
+            }
+            
+            if (newPage) {
+                loadLicenses(newPage);
+            }
         }
         
-        if (newPage) {
-            loadLicenses(newPage);
-            // Прокрутка наверх списка
-            document.getElementById('licensesList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Прокрутка наверх списка
+        document.getElementById('licensesList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updatePagination(totalItems, currentPageNum, isFiltered) {
+        const container = document.querySelector('.pagination-container');
+        const pageNumbersDiv = document.getElementById('pageNumbers');
+        const paginationInfo = document.getElementById('paginationInfo');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        
+        // Скрываем пагинацию если результатов мало
+        if (totalItems <= ITEMS_PER_PAGE) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'flex';
+        
+        // Обновляем кнопки Назад/Вперёд
+        prevBtn.disabled = currentPageNum <= 1;
+        nextBtn.disabled = currentPageNum >= totalPages;
+        
+        // Информация о странице
+        const start = (currentPageNum - 1) * ITEMS_PER_PAGE + 1;
+        const end = Math.min(currentPageNum * ITEMS_PER_PAGE, totalItems);
+        paginationInfo.innerHTML = `Показано ${start}–${end} из ${totalItems}`;
+        
+        // Генерируем номера страниц
+        pageNumbersDiv.innerHTML = '';
+        const current = currentPageNum;
+        
+        // Определяем диапазон страниц для отображения
+        let startPage = Math.max(1, current - 2);
+        let endPage = Math.min(totalPages, current + 2);
+        
+        // Корректируем диапазон, если мы близко к началу или концу
+        if (current <= 3) {
+            endPage = Math.min(5, totalPages);
+        }
+        if (current >= totalPages - 2) {
+            startPage = Math.max(1, totalPages - 4);
+        }
+        
+        // Первая страница
+        if (startPage > 1) {
+            const btn = document.createElement('button');
+            btn.className = 'pagination-btn';
+            btn.textContent = '1';
+            btn.onclick = () => changePage(1);
+            pageNumbersDiv.appendChild(btn);
+            
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'pagination-ellipsis';
+                ellipsis.textContent = '...';
+                pageNumbersDiv.appendChild(ellipsis);
+            }
+        }
+        
+        // Страницы в диапазоне
+        for (let i = startPage; i <= endPage; i++) {
+            const btn = document.createElement('button');
+            btn.className = `pagination-btn ${i === current ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => changePage(i);
+            pageNumbersDiv.appendChild(btn);
+        }
+        
+        // Последняя страница
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'pagination-ellipsis';
+                ellipsis.textContent = '...';
+                pageNumbersDiv.appendChild(ellipsis);
+            }
+            
+            const btn = document.createElement('button');
+            btn.className = 'pagination-btn';
+            btn.textContent = totalPages;
+            btn.onclick = () => changePage(totalPages);
+            pageNumbersDiv.appendChild(btn);
         }
     }
 
@@ -1036,6 +1141,9 @@
         const mineralFilter = document.getElementById('filterMineral').value;
         const searchText = document.getElementById('searchText').value.toLowerCase();
 
+        // Проверяем, применены ли фильтры
+        const hasActiveFilters = statusFilter || regionFilter || typeFilter || mineralFilter || searchText;
+
         filteredLicenses = allLicenses.filter(license => {
             if (statusFilter && license.status !== statusFilter) return false;
             if (regionFilter && license.region !== regionFilter) return false;
@@ -1046,9 +1154,17 @@
             return true;
         });
 
-        displayLicenses();
-        displayLicensesOnMap();
-        updateResultsCount();
+        if (hasActiveFilters) {
+            // Переключаемся на клиентскую пагинацию
+            currentFiltersActive = true;
+            displayFilteredPage(1);
+        } else {
+            // Если фильтров нет, возвращаемся к серверной пагинации
+            currentFiltersActive = false;
+            displayLicenses();
+            displayLicensesOnMap();
+            updateResultsCount();
+        }
     }
 
     function resetFilters() {
@@ -1057,7 +1173,16 @@
         document.getElementById('filterType').value = '';
         document.getElementById('filterMineral').value = '';
         document.getElementById('searchText').value = '';
-        applyFilters();
+        
+        // Сбрасываем активный таб
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector('.tab-button[data-type=""]').classList.add('active');
+        
+        // Возвращаемся к серверной пагинации
+        currentFiltersActive = false;
+        loadLicenses(1);
     }
     
     function exportToExcel() {
@@ -1140,6 +1265,69 @@
         </div>
     `).join('');
 
+        updateResultsCount();
+    }
+
+    function displayFilteredPage(pageNum) {
+        currentPage = pageNum;
+        
+        const start = (pageNum - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const pageData = filteredLicenses.slice(start, end);
+        
+        const container = document.getElementById('licensesList');
+        
+        if (filteredLicenses.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center py-5">Лицензии не найдены</p>';
+            updatePagination(0, 1, true);
+            return;
+        }
+        
+        container.innerHTML = pageData.map(license => `
+        <div class="license-card" onclick="showLicenseDetails(${license.id})">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="license-card-title">${license.license_number}</div>
+                <span class="status-badge status-${license.status}">${getStatusText(license.status)}</span>
+            </div>
+            <p style="color: var(--text-muted); margin: 0.5rem 0 0 0;">${license.owner}</p>
+            
+            <div class="license-meta">
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <div class="meta-content">
+                        <div class="meta-label">Регион</div>
+                        <div class="meta-value">${license.region}</div>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    <div class="meta-content">
+                        <div class="meta-label">Тип</div>
+                        <div class="meta-value">${license.license_type}</div>
+                    </div>
+                </div>
+                ${license.mineral_type ? `
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                    <div class="meta-content">
+                        <div class="meta-label">Полезное ископаемое</div>
+                        <div class="meta-value">${license.mineral_type}</div>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        </div>
+        `).join('');
+        
+        updatePagination(filteredLicenses.length, pageNum, true);
+        displayLicensesOnMap();
         updateResultsCount();
     }
 
