@@ -4,7 +4,13 @@
 This project is a Django-based web application designed to manage a database of subsurface use licenses. It features an interactive Yandex.Map for visualizing licenses, detailed license information through modal windows, and document upload/download functionality. The application aims to provide a comprehensive tool for tracking and managing mineral extraction licenses, offering filtering, search capabilities, and GeoJSON map integration. It is built with a focus on ease of use for administrators and clear visualization for all users, with an eye towards future integration with external databases and LDAP authentication for enterprise environments.
 
 ## Recent Changes
-- **November 1, 2025 (Latest - Pagination & Analytics):** Added pagination and data analytics with Chart.js:
+- **November 4, 2025 (Latest - Navigation & Analytics Separation):** Separated analytics to dedicated page and added navigation:
+  - **Separate Analytics Page**: Created `/analytics/` with own view and template, showing all three Chart.js visualizations
+  - **Quick Navigation Menu**: Sticky navigation bar with smooth-scroll anchors (Статистика, Лицензии, Карта) + external link to Analytics
+  - **Back to Top Button**: Fixed button (bottom-right) with smooth animation, appears after 300px scroll
+  - **Main Page Cleanup**: Removed analytics section, Chart.js dependency, and related code from homepage
+  - **Orrivo Styling**: Navigation menu and buttons styled with orange accents (#ff6b35) and clean design
+- **November 1, 2025 (Pagination & Analytics):** Added pagination and data analytics with Chart.js:
   - **Pagination**: Smart pagination with 12 licenses per page, page navigation controls (prev/next, numbered pages with ellipsis), and "Showing X-Y of Z" counter
   - **Analytics Dashboard**: Three interactive Chart.js visualizations in Orrivo style:
     - Круговая диаграмма распределения по типам недропользования
@@ -35,7 +41,9 @@ The application is a Django web application.
 - **UI/UX:** The interface features a modern Orrivo-inspired design with:
   - Hero section with dark gradient background (#1a1a1a to #2d2d2d) and large white typography
   - Live statistics dashboard showing total licenses, active count, regions, and license types
-  - Analytics section with three Chart.js visualizations (doughnut, bar, line) styled with Orrivo palette
+  - Sticky quick navigation menu with smooth-scroll anchors and external analytics link
+  - Back-to-top button (fixed, bottom-right, appears on scroll >300px)
+  - Dedicated analytics page (`/analytics/`) with three Chart.js visualizations (doughnut, bar, line) styled with Orrivo palette
   - Clean white navigation header with subtle shadows
   - Light color scheme (white #ffffff background, dark #1a1a1a text, accent orange #ff6b35)
   - License cards with large typography, SVG icons, and metadata grid showing region, type, and minerals
@@ -58,10 +66,17 @@ The application is a Django web application.
     - **Document Model:** Links to a license, stores document name, file, type, upload date, and user.
 - **System Design Choices:**
     - **Modularity:** The project is organized into `mineral_licenses` (project settings) and `licenses` (core application) Django apps.
+    - **Page Routes:**
+      - `/` - Main page with statistics, licenses, map, and navigation
+      - `/analytics/` - Dedicated analytics page with Chart.js visualizations
     - **API Endpoints:** Provides RESTful API for:
       - Licenses: `GET /api/licenses/` (paginated), `GET /api/licenses/all/` (complete dataset), `GET /api/licenses/<id>/`
       - Documents: `POST /api/licenses/<id>/upload/`, `GET /api/documents/<id>/download/`
       - Export: `GET /api/licenses/export/excel/`
+    - **Navigation Features:**
+      - Sticky quick navigation with smooth-scroll anchors
+      - Back-to-top button with scroll-triggered visibility
+      - Section IDs for anchor links: #statistics, #licenses, #map-section
     - **Environment Configuration:** Uses environment variables for sensitive data (`SECRET_KEY`, `YANDEX_MAPS_API_KEY`) and database connection.
 
 ## External Dependencies

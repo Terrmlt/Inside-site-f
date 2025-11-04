@@ -1,0 +1,445 @@
+{% extends 'licenses/base.html' %}
+
+{% block title %}Аналитика лицензий{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        overflow-y: auto;
+        background-color: #ffffff;
+    }
+
+    .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: white;
+        padding: 4rem 2rem 3rem;
+        position: relative;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 3rem;
+        font-weight: 400;
+    }
+
+    .content-area {
+        padding: 3rem 2rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        letter-spacing: -0.03em;
+    }
+
+    .section-subtitle {
+        font-size: 1.125rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+
+    .chart-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s;
+    }
+
+    .chart-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .chart-card-wide {
+        grid-column: 1 / -1;
+    }
+
+    .chart-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: var(--accent-color);
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin-bottom: 2rem;
+    }
+
+    .back-link:hover {
+        background: var(--accent-hover);
+        color: white;
+        transform: translateX(-4px);
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .loading-overlay.hidden {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loading-overlay" id="loadingOverlay">
+    Загрузка данных...
+</div>
+
+<div class="main-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Аналитика лицензий</h1>
+            <p class="hero-subtitle">Визуализация статистических данных по лицензиям на недропользование</p>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area">
+        <a href="/" class="back-link">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg>
+            Назад к главной
+        </a>
+
+        <div class="analytics-grid">
+            <div class="chart-card">
+                <h5 class="chart-title">Распределение по типам недропользования</h5>
+                <canvas id="typeChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h5 class="chart-title">Топ-5 регионов</h5>
+                <canvas id="regionChart"></canvas>
+            </div>
+            <div class="chart-card chart-card-wide">
+                <h5 class="chart-title">График истечения лицензий (прогноз на 12 месяцев)</h5>
+                <canvas id="expiryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    let allLicenses = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAllLicensesForAnalytics();
+    });
+
+    function loadAllLicensesForAnalytics() {
+        fetch('/api/licenses/all/')
+            .then(response => response.json())
+            .then(data => {
+                allLicenses = data;
+                console.log('Загружено лицензий для аналитики:', allLicenses.length);
+                createAnalyticsCharts();
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки данных:', error);
+                document.getElementById('loadingOverlay').innerHTML = 'Ошибка загрузки данных';
+            });
+    }
+
+    function createAnalyticsCharts() {
+        createTypeChart();
+        createRegionChart();
+        createExpiryChart();
+    }
+
+    function createTypeChart() {
+        const typeCount = {};
+        allLicenses.forEach(license => {
+            const type = license.license_type || 'Неизвестно';
+            typeCount[type] = (typeCount[type] || 0) + 1;
+        });
+        
+        const ctx = document.getElementById('typeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(typeCount),
+                datasets: [{
+                    data: Object.values(typeCount),
+                    backgroundColor: [
+                        '#ff6b35',
+                        '#ff8956',
+                        '#ffa777',
+                        '#ffc599',
+                        '#ffe3bb'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                family: 'Inter, system-ui, sans-serif',
+                                size: 13,
+                                weight: '600'
+                            },
+                            color: '#1a1a1a'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                        titleFont: {
+                            family: 'Inter, system-ui, sans-serif',
+                            size: 14,
+                            weight: '700'
+                        },
+                        bodyFont: {
+                            family: 'Inter, system-ui, sans-serif',
+                            size: 13
+                        },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+    }
+
+    function createRegionChart() {
+        const regionCount = {};
+        allLicenses.forEach(license => {
+            const region = license.region || 'Неизвестно';
+            regionCount[region] = (regionCount[region] || 0) + 1;
+        });
+        
+        // Топ-5 регионов
+        const sorted = Object.entries(regionCount)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+        
+        const ctx = document.getElementById('regionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sorted.map(item => item[0]),
+                datasets: [{
+                    label: 'Количество лицензий',
+                    data: sorted.map(item => item[1]),
+                    backgroundColor: '#ff6b35',
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                        titleFont: {
+                            family: 'Inter, system-ui, sans-serif',
+                            size: 14,
+                            weight: '700'
+                        },
+                        bodyFont: {
+                            family: 'Inter, system-ui, sans-serif',
+                            size: 13
+                        },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                family: 'Inter, system-ui, sans-serif',
+                                size: 12
+                            },
+                            color: '#6b7280'
+                        },
+                        grid: {
+                            color: '#f3f4f6'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                family: 'Inter, system-ui, sans-serif',
+                                size: 12,
+                                weight: '600'
+                            },
+                            color: '#1a1a1a'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createExpiryChart() {
+        // Группируем лицензии по месяцам истечения на следующие 12 месяцев
+        const now = new Date();
+        const monthsData = [];
+        const monthLabels = [];
+        
+        for (let i = 0; i < 12; i++) {
+            const monthDate = new Date(now.getFullYear(), now.getMonth() + i, 1);
+            const monthName = monthDate.toLocaleDateString('ru-RU', { month: 'short', year: 'numeric' });
+            monthLabels.push(monthName);
+            
+            const count = allLicenses.filter(license => {
+                if (!license.expiry_date) return false;
+                const expiryDate = new Date(license.expiry_date);
+                return expiryDate.getFullYear() === monthDate.getFullYear() &&
+                       expiryDate.getMonth() === monthDate.getMonth();
+            }).length;
+            
+            monthsData.push(count);
+        }
+        
+        const ctx = document.getElementById('expiryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthLabels,
+                datasets: [{
+                    label: 'Истекающие лицензии',
+                    data: monthsData,
+                    borderColor: '#ff6b35',
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ff6b35',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                        titleFont: {
+                            family: 'Inter, system-ui, sans-serif',
+                            size: 14,
+                            weight: '700'
+                        },
+                        bodyFont: {
+                            family: 'Inter, system-ui, sans-serif',
+                            size: 13
+                        },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                family: 'Inter, system-ui, sans-serif',
+                                size: 12
+                            },
+                            color: '#6b7280',
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: '#f3f4f6'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                family: 'Inter, system-ui, sans-serif',
+                                size: 12,
+                                weight: '600'
+                            },
+                            color: '#1a1a1a'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

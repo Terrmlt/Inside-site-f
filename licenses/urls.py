@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.map_view, name='map'),
+    path('analytics/', views.analytics_view, name='analytics'),
     path('api/licenses/', views.licenses_json, name='licenses_json'),
     path('api/licenses/all/', views.licenses_all_json, name='licenses_all_json'),
     path('api/licenses/<int:license_id>/', views.license_detail, name='license_detail'),

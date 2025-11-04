@@ -23,6 +23,13 @@ def map_view(request):
     })
 
 
+def analytics_view(request):
+    """
+    Страница аналитики с графиками
+    """
+    return render(request, 'licenses/analytics.html')
+
+
 def licenses_json(request):
     """
     API endpoint для получения списка лицензий в формате JSON с пагинацией
