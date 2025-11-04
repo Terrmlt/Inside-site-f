@@ -4,12 +4,12 @@
 This project is a Django-based web application designed to manage a database of subsurface use licenses. It features an interactive Yandex.Map for visualizing licenses, detailed license information through modal windows, and document upload/download functionality. The application aims to provide a comprehensive tool for tracking and managing mineral extraction licenses, offering filtering, search capabilities, and GeoJSON map integration. It is built with a focus on ease of use for administrators and clear visualization for all users, with an eye towards future integration with external databases and LDAP authentication for enterprise environments.
 
 ## Recent Changes
-- **November 4, 2025 (Latest - Dynamic UI Generation):** Made all UI elements fully dynamic to support arbitrary license types:
-  - **Dynamic Statistics Cards**: Hero section cards auto-generate based on data (3 fixed cards + one per license type)
+- **November 4, 2025 (Latest - Dynamic UI Generation):** Made filter buttons and map legend fully dynamic to support arbitrary license types:
+  - **Static Statistics Cards**: Hero section shows 4 fixed cards (Total licenses, Active, Regions, License types count)
   - **Dynamic Filter Buttons**: Quick filter tabs generate automatically from unique license types with live counters
   - **Dynamic Map Legend**: Color legend generates based on actual license types in data using `getColorByUsageType()`
-  - **Automatic Updates**: All filters, counters, and legends update when new GeoJSON files with different license types are loaded
-  - **Functions**: `generateLicenseTypeTabs()`, `generateMapLegend()`, dynamic `updateStatistics()`, and `updateTabCounts()`
+  - **Automatic Updates**: Filters, counters, and legend update when new GeoJSON files with different license types are loaded
+  - **Functions**: `generateLicenseTypeTabs()`, `generateMapLegend()`, `updateStatistics()`, and `updateTabCounts()`
 - **November 4, 2025 (Bug Fixes):** Fixed pagination and filter duplication issues:
   - Fixed dual-mode pagination (server-side without filters, client-side with filters)
   - Fixed filter dropdown duplication by clearing old options before repopulating

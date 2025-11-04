@@ -1046,10 +1046,10 @@
         const totalCount = allLicenses.length;
         const activeCount = allLicenses.filter(l => l.status === 'active').length;
         const uniqueRegions = [...new Set(allLicenses.map(l => l.region))];
-        const uniqueTypes = [...new Set(allLicenses.map(l => l.license_type))].sort();
+        const uniqueTypes = [...new Set(allLicenses.map(l => l.license_type))];
         
-        // Генерируем статистические карточки
-        let html = `
+        // 4 фиксированные статистические карточки
+        container.innerHTML = `
             <div class="stat-card">
                 <div class="stat-number">${totalCount}</div>
                 <div class="stat-label">Всего лицензий</div>
@@ -1062,20 +1062,11 @@
                 <div class="stat-number">${uniqueRegions.length}</div>
                 <div class="stat-label">Регионов</div>
             </div>
-        `;
-        
-        // Добавляем карточки для каждого типа недропользования
-        uniqueTypes.forEach(type => {
-            const count = allLicenses.filter(l => l.license_type === type).length;
-            html += `
             <div class="stat-card">
-                <div class="stat-number">${count}</div>
-                <div class="stat-label">${type}</div>
+                <div class="stat-number">${uniqueTypes.length}</div>
+                <div class="stat-label">Типов недропользования</div>
             </div>
-            `;
-        });
-        
-        container.innerHTML = html;
+        `;
     }
     
     function updateTabCounts() {
