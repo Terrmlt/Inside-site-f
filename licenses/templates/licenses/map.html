@@ -843,6 +843,9 @@
                 
                 // Отображаем пагинацию
                 displayPagination();
+                
+                // Обновляем счетчик результатов
+                updateResultsCount();
             })
             .catch(error => console.error('Ошибка загрузки лицензий:', error));
     }
@@ -1178,9 +1181,7 @@
         } else {
             // Если фильтров нет, возвращаемся к серверной пагинации
             currentFiltersActive = false;
-            displayLicenses();
-            displayLicensesOnMap();
-            updateResultsCount();
+            loadLicenses(1);
         }
     }
 
