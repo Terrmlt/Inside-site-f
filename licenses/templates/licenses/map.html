@@ -1336,7 +1336,10 @@
         myMap.geoObjects.removeAll();
         placemarks = [];
 
-        filteredLicenses.forEach(license => {
+        // Используем все лицензии если фильтры не применены, иначе только отфильтрованные
+        const licensesToDisplay = currentFiltersActive ? filteredLicenses : allLicenses;
+
+        licensesToDisplay.forEach(license => {
             let geoObject;
 
             // Проверяем, есть ли полигон
