@@ -4,7 +4,14 @@
 This project is a Django-based web application designed to manage a database of subsurface use licenses. It features an interactive Yandex.Map for visualizing licenses, detailed license information through modal windows, and document upload/download functionality. The application aims to provide a comprehensive tool for tracking and managing mineral extraction licenses, offering filtering, search capabilities, and GeoJSON map integration. It is built with a focus on ease of use for administrators and clear visualization for all users, with an eye towards future integration with external databases and LDAP authentication for enterprise environments.
 
 ## Recent Changes
-- **November 4, 2025 (Latest - Dynamic UI Generation):** Made filter buttons and map legend fully dynamic to support arbitrary license types:
+- **November 5, 2025 (Latest - UX Enhancements & LDAP):** Added drag-and-drop file upload and LDAP authentication templates:
+  - **Drag-and-Drop GeoJSON Upload**: Admin panel now features interactive file drop zone with visual feedback (hover effects, file validation)
+  - **Dual Upload Methods**: Both drag-and-drop and traditional file picker work simultaneously
+  - **LDAP Authentication Ready**: Complete LDAP setup with templates, detailed configuration file (`settings_ldap.py`), and comprehensive documentation
+  - **LDAP Documentation**: Created `LDAP_SETUP.md` with step-by-step instructions, examples for Active Directory/OpenLDAP/FreeIPA, and troubleshooting guide
+  - **Conditional LDAP**: LDAP enabled via `USE_LDAP=true` environment variable, disabled by default
+  - **Installed Packages**: `django-auth-ldap` (5.2.0) and `python-ldap` (3.4.5)
+- **November 4, 2025 (Dynamic UI Generation):** Made filter buttons and map legend fully dynamic to support arbitrary license types:
   - **Static Statistics Cards**: Hero section shows 4 fixed cards (Total licenses, Active, Regions, License types count)
   - **Dynamic Filter Buttons**: Quick filter tabs generate automatically from unique license types with live counters
   - **Dynamic Map Legend**: Color legend generates based on actual license types in data using `getColorByUsageType()`
@@ -69,8 +76,8 @@ The application is a Django web application.
     - **Data Management:** CRUD operations for `License` and `Document` models, accessible via Django Admin and API endpoints.
     - **Filtering & Search:** Licenses can be filtered by status, region, type, and mineral, and searched by license number and user.
     - **Document Management:** Upload and download functionality for documents linked to licenses.
-    - **GeoJSON Integration:** Web and admin interfaces allow for uploading GeoJSON files, which automatically update or create license data, parse information, determine regions, and calculate polygon centers.
-    - **Authentication:** Django's built-in authentication is used, with placeholders for LDAP integration.
+    - **GeoJSON Integration:** Web and admin interfaces allow for uploading GeoJSON files via drag-and-drop or traditional file picker, which automatically update or create license data, parse information, determine regions, and calculate polygon centers.
+    - **Authentication:** Django's built-in authentication is default. LDAP authentication ready to enable via `USE_LDAP=true` environment variable. Full LDAP configuration templates included for Active Directory, OpenLDAP, and FreeIPA with detailed documentation in `LDAP_SETUP.md` and `mineral_licenses/settings_ldap.py`.
     - **Database:** PostgreSQL is configured as the production database, with SQLite for development.
 - **Feature Specifications:**
     - **License Model:** Stores unique license number, mineral usage type, user, coordinates, region, dates, mineral type, status, and description.

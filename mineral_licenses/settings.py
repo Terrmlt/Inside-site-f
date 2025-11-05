@@ -171,24 +171,37 @@ CORS_ALLOW_CREDENTIALS = True
 # Получите свой API ключ на https://developer.tech.yandex.ru/
 YANDEX_MAPS_API_KEY = os.getenv('YANDEX_MAPS_API_KEY', '')
 
-# ЗАГЛУШКА: LDAP Authentication
-# Раскомментируйте и настройте при подключении к LDAP серверу
-# import ldap
-# from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+# =============================================================================
+# LDAP AUTHENTICATION
+# =============================================================================
+# LDAP аутентификация по умолчанию ВЫКЛЮЧЕНА
 # 
-# AUTHENTICATION_BACKENDS = [
-#     'django_auth_ldap.backend.LDAPBackend',
-#     'django.contrib.auth.backends.ModelBackend',
-# ]
+# Для активации установите переменную окружения: USE_LDAP=true
 # 
-# AUTH_LDAP_SERVER_URI = 'ldap://your-ldap-server.com'
-# AUTH_LDAP_BIND_DN = 'cn=admin,dc=example,dc=com'
-# AUTH_LDAP_BIND_PASSWORD = 'your-password'
-# AUTH_LDAP_USER_SEARCH = LDAPSearch(
-#     'ou=users,dc=example,dc=com',
-#     ldap.SCOPE_SUBTREE,
-#     '(uid=%(user)s)'
-# )
+# Настройки LDAP находятся в файле mineral_licenses/settings_ldap.py
+# Там вы найдёте подробные комментарии и примеры для Active Directory и OpenLDAP
+# 
+# Документация по подключению: см. LDAP_SETUP.md
+# =============================================================================
+
+USE_LDAP = os.getenv('USE_LDAP', 'false').lower() in ('true', '1', 'yes')
+
+if USE_LDAP:
+    # Импортируем все настройки LDAP из settings_ldap.py
+    from mineral_licenses.settings_ldap import *
+    
+    # Настраиваем backend аутентификации
+    AUTHENTICATION_BACKENDS = [
+        'django_auth_ldap.backend.LDAPBackend',  # Сначала проверяем LDAP
+        'django.contrib.auth.backends.ModelBackend',  # Затем локальную БД Django
+    ]
+    
+    print("✓ LDAP authentication enabled")
+else:
+    # LDAP выключен, используем только стандартную аутентификацию Django
+    AUTHENTICATION_BACKENDS = [
+        'django.contrib.auth.backends.ModelBackend',
+    ]
 
 # ЗАГЛУШКА: Внешняя база данных
 # Замените на свои настройки при подключении к продакшн БД

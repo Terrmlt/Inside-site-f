@@ -4,7 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
-packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "tcl", "tk", "zlib"]
+packages = ["cyrus_sasl", "freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openldap", "tcl", "tk", "zlib"]
 
 [workflows]
 runButton = "Project"
@@ -41,6 +41,10 @@ externalPort = 3000
 [[ports]]
 localPort = 44317
 externalPort = 3001
+
+[[ports]]
+localPort = 46375
+externalPort = 3002
 
 [deployment]
 deploymentTarget = "autoscale"
