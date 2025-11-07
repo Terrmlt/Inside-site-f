@@ -57,7 +57,7 @@ I prefer simple language and clear explanations. I like iterative development an
 ## System Architecture
 The application is a Django web application.
 - **UI/UX:** The interface features a modern Orrivo-inspired design with:
-  - Hero section with light blue gradient background (#E0F2FE to #BAE6FD) and large dark typography
+  - Hero section with light cyan-to-blue gradient background (#ecfeff to #eff6ff) and large dark typography
   - Live statistics dashboard showing total licenses, active count, regions, and license types
   - Sticky quick navigation menu with smooth-scroll anchors and external analytics link
   - Back-to-top button (fixed, bottom-right, appears on scroll >300px)
