@@ -62,3 +62,9 @@ The application is a Django web application.
 - **Excel Export:** `openpyxl`.
 - **PDF Export:** `reportlab`.
 - **LDAP Integration (optional):** `django-auth-ldap`, `python-ldap`.
+
+## Documentation
+- **DEPLOYMENT_LOCAL.md** - Полная методичка по развертыванию на локальном ПК с детальными инструкциями по PostgreSQL
+- **PostgreSQL_CHEATSHEET.md** - Шпаргалка по командам PostgreSQL для быстрой справки
+- **requirements.txt** - Список зависимостей Python для установки через pip
+- **/help/** - Встроенная справка пользователя в веб-интерфейсе
