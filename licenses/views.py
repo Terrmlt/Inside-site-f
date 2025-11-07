@@ -445,14 +445,39 @@ def export_licenses_pdf(request):
     """
     Экспорт лицензий в PDF файл с учетом фильтров
     """
-    from reportlab.lib import colors
+    from reportlab.pdfgen import canvas
     from reportlab.lib.pagesizes import A4, landscape
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors as rl_colors
     from reportlab.lib.units import cm
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    
+    # Регистрируем DejaVu Sans шрифт для поддержки кириллицы
+    # Этот шрифт обычно доступен в системе
+    try:
+        # Пробуем разные пути к DejaVu Sans
+        font_paths = [
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            '/System/Library/Fonts/Supplemental/DejaVuSans.ttf',
+            'DejaVuSans.ttf',
+        ]
+        
+        font_registered = False
+        for font_path in font_paths:
+            try:
+                pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
+                font_registered = True
+                break
+            except:
+                continue
+        
+        if not font_registered:
+            # Используем базовые шрифты без кириллицы
+            use_unicode_font = False
+        else:
+            use_unicode_font = True
+    except:
+        use_unicode_font = False
     
     # Получаем параметры фильтрации из GET параметров
     status_filter = request.GET.get('status', '')
@@ -483,135 +508,112 @@ def export_licenses_pdf(request):
     # Создаем PDF файл
     output = BytesIO()
     
-    # Используем альбомную ориентацию для широкой таблицы
-    doc = SimpleDocTemplate(
-        output,
-        pagesize=landscape(A4),
-        rightMargin=1*cm,
-        leftMargin=1*cm,
-        topMargin=2*cm,
-        bottomMargin=1*cm
-    )
+    # Создаем canvas с альбомной ориентацией
+    c = canvas.Canvas(output, pagesize=landscape(A4))
+    width, height = landscape(A4)
     
-    # Элементы документа
-    elements = []
+    # Устанавливаем шрифт
+    font_name = 'DejaVuSans' if use_unicode_font else 'Helvetica'
     
-    # Стили
-    styles = getSampleStyleSheet()
+    # Заголовок
+    c.setFont(font_name, 18)
+    c.setFillColorRGB(59/255, 130/255, 246/255)  # Синий цвет #3B82F6
+    title = 'База лицензий на недропользование' if use_unicode_font else 'Database of Subsurface Use Licenses'
+    c.drawCentredString(width/2, height - 50, title)
     
-    # Заголовок документа
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=18,
-        textColor=colors.HexColor('#3B82F6'),
-        spaceAfter=30,
-        alignment=TA_CENTER,
-        fontName='Helvetica-Bold'
-    )
-    
-    title = Paragraph('База лицензий на недропользование', title_style)
-    elements.append(title)
-    
-    subtitle_style = ParagraphStyle(
-        'CustomSubtitle',
-        parent=styles['Normal'],
-        fontSize=10,
-        textColor=colors.HexColor('#6B7280'),
-        spaceAfter=20,
-        alignment=TA_CENTER
-    )
-    
+    # Подзаголовок с датой
+    c.setFont(font_name, 10)
+    c.setFillColorRGB(107/255, 114/255, 128/255)  # Серый #6B7280
     current_date = datetime.now().strftime('%d.%m.%Y %H:%M')
-    subtitle = Paragraph(f'Дата формирования: {current_date}', subtitle_style)
-    elements.append(subtitle)
-    elements.append(Spacer(1, 0.5*cm))
+    subtitle = f'Дата формирования: {current_date}' if use_unicode_font else f'Generated: {current_date}'
+    c.drawCentredString(width/2, height - 70, subtitle)
     
-    # Данные таблицы
-    data = []
+    # Начальная позиция для таблицы
+    y_position = height - 120
+    x_start = 40
     
-    # Заголовки
+    # Ширины колонок
+    col_widths = [30, 90, 55, 120, 90, 70, 70, 100, 80]
+    
+    # Заголовки таблицы
     headers = ['№', 'Номер лицензии', 'Вид', 'Недропользователь', 'Регион', 
-               'Дата выдачи', 'Дата окончания', 'Полезное ископаемое', 'Статус']
-    data.append(headers)
+               'Дата выдачи', 'Дата окончания', 'Полезное ископаемое', 'Статус'] if use_unicode_font else [
+               '№', 'License #', 'Type', 'User', 'Region', 
+               'Issue Date', 'Expiry Date', 'Mineral', 'Status']
     
-    # Заполняем данные
-    for idx, license in enumerate(licenses, 1):
+    # Рисуем заголовок таблицы
+    c.setFillColorRGB(59/255, 130/255, 246/255)  # Синий фон
+    c.rect(x_start, y_position - 5, sum(col_widths), 25, fill=1, stroke=0)
+    
+    c.setFillColorRGB(1, 1, 1)  # Белый текст
+    c.setFont(font_name, 9)
+    x = x_start + 5
+    for i, header in enumerate(headers):
+        c.drawString(x, y_position + 5, header)
+        x += col_widths[i]
+    
+    y_position -= 30
+    row_num = 0
+    
+    # Данные
+    c.setFont(font_name, 8)
+    
+    for idx, license in enumerate(licenses[:50], 1):  # Ограничиваем 50 записями на странице
+        if y_position < 50:  # Новая страница если места мало
+            c.showPage()
+            c.setFont(font_name, 8)
+            y_position = height - 50
+        
         # Обновляем статус перед экспортом
         license.update_status_if_expired()
         
         status_text = {
-            'active': 'Действующая',
-            'expired': 'Истекла',
-            'suspended': 'Приостановлена',
-            'terminated': 'Прекращена'
+            'active': 'Действующая' if use_unicode_font else 'Active',
+            'expired': 'Истекла' if use_unicode_font else 'Expired',
+            'suspended': 'Приостановлена' if use_unicode_font else 'Suspended',
+            'terminated': 'Прекращена' if use_unicode_font else 'Terminated'
         }.get(license.status, license.status)
         
-        row = [
+        # Чередующиеся цвета строк
+        if row_num % 2 == 1:
+            c.setFillColorRGB(249/255, 250/255, 251/255)  # Светло-серый #F9FAFB
+            c.rect(x_start, y_position - 5, sum(col_widths), 20, fill=1, stroke=0)
+        
+        # Рамка строки
+        c.setStrokeColorRGB(229/255, 231/255, 235/255)  # Серая рамка
+        c.setLineWidth(0.5)
+        c.rect(x_start, y_position - 5, sum(col_widths), 20, fill=0, stroke=1)
+        
+        c.setFillColorRGB(0, 0, 0)  # Черный текст
+        
+        row_data = [
             str(idx),
             license.license_number or '',
             license.license_type or '',
-            (license.owner[:30] + '...') if license.owner and len(license.owner) > 30 else (license.owner or ''),
+            (license.owner[:18] + '...') if license.owner and len(license.owner) > 18 else (license.owner or ''),
             license.region or '',
             license.issue_date.strftime('%d.%m.%Y') if license.issue_date else '',
             license.expiry_date.strftime('%d.%m.%Y') if license.expiry_date else '',
-            (license.mineral_type[:20] + '...') if license.mineral_type and len(license.mineral_type) > 20 else (license.mineral_type or ''),
+            (license.mineral_type[:15] + '...') if license.mineral_type and len(license.mineral_type) > 15 else (license.mineral_type or ''),
             status_text
         ]
-        data.append(row)
-    
-    # Создаем таблицу
-    table = Table(data, colWidths=[1*cm, 3.5*cm, 2*cm, 4.5*cm, 3.5*cm, 2.5*cm, 2.5*cm, 3.5*cm, 2.5*cm])
-    
-    # Стили таблицы
-    table_style = TableStyle([
-        # Заголовок
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3B82F6')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('TOPPADDING', (0, 0), (-1, 0), 12),
         
-        # Данные
-        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-        ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # Номер по центру
-        ('ALIGN', (1, 1), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 8),
-        ('TOPPADDING', (0, 1), (-1, -1), 6),
-        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
-        ('LEFTPADDING', (0, 1), (-1, -1), 6),
-        ('RIGHTPADDING', (0, 1), (-1, -1), 6),
+        x = x_start + 5
+        for i, cell_data in enumerate(row_data):
+            c.drawString(x, y_position + 2, cell_data)
+            x += col_widths[i]
         
-        # Сетка
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E5E7EB')),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        
-        # Чередующиеся строки
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F9FAFB')])
-    ])
+        y_position -= 20
+        row_num += 1
     
-    table.setStyle(table_style)
-    elements.append(table)
+    # Футер
+    c.setFont(font_name, 9)
+    c.setFillColorRGB(107/255, 114/255, 128/255)
+    footer_text = f'Всего записей: {licenses.count()}' if use_unicode_font else f'Total records: {licenses.count()}'
+    c.drawString(x_start, y_position - 20, footer_text)
     
-    # Добавляем информацию о количестве записей
-    elements.append(Spacer(1, 0.5*cm))
-    footer_style = ParagraphStyle(
-        'Footer',
-        parent=styles['Normal'],
-        fontSize=9,
-        textColor=colors.HexColor('#6B7280'),
-        alignment=TA_LEFT
-    )
-    footer_text = f'Всего записей: {licenses.count()}'
-    footer = Paragraph(footer_text, footer_style)
-    elements.append(footer)
-    
-    # Генерируем PDF
-    doc.build(elements)
+    # Сохраняем PDF
+    c.save()
     
     # Получаем данные PDF
     output.seek(0)
