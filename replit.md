@@ -4,7 +4,14 @@
 This project is a Django-based web application designed to manage a database of subsurface use licenses. It features an interactive Yandex.Map for visualizing licenses, detailed license information through modal windows, and document upload/download functionality. The application aims to provide a comprehensive tool for tracking and managing mineral extraction licenses, offering filtering, search capabilities, and GeoJSON map integration. It is built with a focus on ease of use for administrators and clear visualization for all users, with an eye towards future integration with external databases and LDAP authentication for enterprise environments.
 
 ## Recent Changes
-- **November 7, 2025 (Latest - Light/Dark Theme Toggle + Refinements):** Implemented complete theme switching system with user-requested improvements:
+- **November 7, 2025 (Latest - User Documentation Page):** Added comprehensive user documentation:
+  - **Help Page**: Created dedicated `/help/` page with complete user guide covering all system features
+  - **8 Documentation Sections**: Introduction, viewing licenses, filtering/search, map usage, data export, analytics, theme switching, and admin functions
+  - **Table of Contents**: Quick navigation links to each documentation section with anchor scrolling
+  - **Orrivo Styling**: Consistent design with full light/dark theme support using CSS variables
+  - **Navigation Integration**: Added "Help" link to quick navigation menu alongside Analytics
+  - **Professional Layout**: Clean sections with icons, code examples, notes, and clear instructions
+- **November 7, 2025 (Light/Dark Theme Toggle + Refinements):** Implemented complete theme switching system with user-requested improvements:
   - **CSS Variables Architecture**: Full set of theme variables for both light and dark modes (backgrounds, text, borders, shadows, accents)
   - **Theme Toggle Button**: Navigation header includes sun/moon icon toggle with smooth rotation animation
   - **LocalStorage Persistence**: User theme preference saved and restored across sessions
