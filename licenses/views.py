@@ -351,7 +351,7 @@ def export_licenses_excel(request):
     ws.title = "Лицензии"
     
     # Определяем стили
-    header_fill = PatternFill(start_color="FF6B35", end_color="FF6B35", fill_type="solid")
+    header_fill = PatternFill(start_color="3B82F6", end_color="3B82F6", fill_type="solid")
     header_font = Font(color="FFFFFF", bold=True, size=12)
     header_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
     
@@ -436,6 +436,192 @@ def export_licenses_excel(request):
         output.read(),
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    return response
+
+
+def export_licenses_pdf(request):
+    """
+    Экспорт лицензий в PDF файл с учетом фильтров
+    """
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import cm
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    
+    # Получаем параметры фильтрации из GET параметров
+    status_filter = request.GET.get('status', '')
+    region_filter = request.GET.get('region', '')
+    type_filter = request.GET.get('type', '')
+    mineral_filter = request.GET.get('mineral', '')
+    search_text = request.GET.get('search', '')
+    
+    # Начинаем с всех лицензий
+    licenses = License.objects.all()
+    
+    # Применяем фильтры
+    if status_filter:
+        licenses = licenses.filter(status=status_filter)
+    if region_filter:
+        licenses = licenses.filter(region=region_filter)
+    if type_filter:
+        licenses = licenses.filter(license_type=type_filter)
+    if mineral_filter:
+        licenses = licenses.filter(mineral_type=mineral_filter)
+    if search_text:
+        from django.db.models import Q
+        licenses = licenses.filter(
+            Q(license_number__icontains=search_text) | 
+            Q(owner__icontains=search_text)
+        )
+    
+    # Создаем PDF файл
+    output = BytesIO()
+    
+    # Используем альбомную ориентацию для широкой таблицы
+    doc = SimpleDocTemplate(
+        output,
+        pagesize=landscape(A4),
+        rightMargin=1*cm,
+        leftMargin=1*cm,
+        topMargin=2*cm,
+        bottomMargin=1*cm
+    )
+    
+    # Элементы документа
+    elements = []
+    
+    # Стили
+    styles = getSampleStyleSheet()
+    
+    # Заголовок документа
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        textColor=colors.HexColor('#3B82F6'),
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    title = Paragraph('База лицензий на недропользование', title_style)
+    elements.append(title)
+    
+    subtitle_style = ParagraphStyle(
+        'CustomSubtitle',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=colors.HexColor('#6B7280'),
+        spaceAfter=20,
+        alignment=TA_CENTER
+    )
+    
+    current_date = datetime.now().strftime('%d.%m.%Y %H:%M')
+    subtitle = Paragraph(f'Дата формирования: {current_date}', subtitle_style)
+    elements.append(subtitle)
+    elements.append(Spacer(1, 0.5*cm))
+    
+    # Данные таблицы
+    data = []
+    
+    # Заголовки
+    headers = ['№', 'Номер лицензии', 'Вид', 'Недропользователь', 'Регион', 
+               'Дата выдачи', 'Дата окончания', 'Полезное ископаемое', 'Статус']
+    data.append(headers)
+    
+    # Заполняем данные
+    for idx, license in enumerate(licenses, 1):
+        # Обновляем статус перед экспортом
+        license.update_status_if_expired()
+        
+        status_text = {
+            'active': 'Действующая',
+            'expired': 'Истекла',
+            'suspended': 'Приостановлена',
+            'terminated': 'Прекращена'
+        }.get(license.status, license.status)
+        
+        row = [
+            str(idx),
+            license.license_number or '',
+            license.license_type or '',
+            (license.owner[:30] + '...') if license.owner and len(license.owner) > 30 else (license.owner or ''),
+            license.region or '',
+            license.issue_date.strftime('%d.%m.%Y') if license.issue_date else '',
+            license.expiry_date.strftime('%d.%m.%Y') if license.expiry_date else '',
+            (license.mineral_type[:20] + '...') if license.mineral_type and len(license.mineral_type) > 20 else (license.mineral_type or ''),
+            status_text
+        ]
+        data.append(row)
+    
+    # Создаем таблицу
+    table = Table(data, colWidths=[1*cm, 3.5*cm, 2*cm, 4.5*cm, 3.5*cm, 2.5*cm, 2.5*cm, 3.5*cm, 2.5*cm])
+    
+    # Стили таблицы
+    table_style = TableStyle([
+        # Заголовок
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#3B82F6')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('TOPPADDING', (0, 0), (-1, 0), 12),
+        
+        # Данные
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # Номер по центру
+        ('ALIGN', (1, 1), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+        ('TOPPADDING', (0, 1), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+        ('LEFTPADDING', (0, 1), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 1), (-1, -1), 6),
+        
+        # Сетка
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E5E7EB')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        
+        # Чередующиеся строки
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F9FAFB')])
+    ])
+    
+    table.setStyle(table_style)
+    elements.append(table)
+    
+    # Добавляем информацию о количестве записей
+    elements.append(Spacer(1, 0.5*cm))
+    footer_style = ParagraphStyle(
+        'Footer',
+        parent=styles['Normal'],
+        fontSize=9,
+        textColor=colors.HexColor('#6B7280'),
+        alignment=TA_LEFT
+    )
+    footer_text = f'Всего записей: {licenses.count()}'
+    footer = Paragraph(footer_text, footer_style)
+    elements.append(footer)
+    
+    # Генерируем PDF
+    doc.build(elements)
+    
+    # Получаем данные PDF
+    output.seek(0)
+    
+    # Генерируем имя файла с датой и временем
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f'licenses_export_{timestamp}.pdf'
+    
+    # Возвращаем файл
+    response = HttpResponse(output.read(), content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     return response
