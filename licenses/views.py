@@ -30,6 +30,13 @@ def analytics_view(request):
     return render(request, 'licenses/analytics.html')
 
 
+def help_page(request):
+    """
+    Страница документации и помощи для пользователей
+    """
+    return render(request, 'licenses/help.html')
+
+
 def licenses_json(request):
     """
     API endpoint для получения списка лицензий в формате JSON с пагинацией
