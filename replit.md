@@ -57,13 +57,13 @@ I prefer simple language and clear explanations. I like iterative development an
 ## System Architecture
 The application is a Django web application.
 - **UI/UX:** The interface features a modern Orrivo-inspired design with:
-  - Hero section with blue gradient background (#2563EB to #1E40AF) and large white typography
+  - Hero section with light blue gradient background (#E0F2FE to #BAE6FD) and large dark typography
   - Live statistics dashboard showing total licenses, active count, regions, and license types
   - Sticky quick navigation menu with smooth-scroll anchors and external analytics link
   - Back-to-top button (fixed, bottom-right, appears on scroll >300px)
-  - Dedicated analytics page (`/analytics/`) with three Chart.js visualizations (doughnut, bar, line) styled with blue-green palette
+  - Dedicated analytics page (`/analytics/`) with three Chart.js visualizations (doughnut, bar, line) styled with blue palette
   - Clean white navigation header with subtle shadows
-  - Light color scheme (white #ffffff background, blue #1E40AF text, accent green #10B981)
+  - Light color scheme (white #ffffff background, black #1a1a1a text, accent blue #3B82F6)
   - License cards with large typography, SVG icons, and metadata grid showing region, type, and minerals
   - Pagination controls with numbered pages, prev/next buttons, and item counters
   - Interactive Yandex.Map with 600px height and rounded corners

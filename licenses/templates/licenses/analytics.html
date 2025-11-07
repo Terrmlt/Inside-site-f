@@ -16,8 +16,8 @@
     }
 
     .hero-section {
-        background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
-        color: white;
+        background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+        color: #1a1a1a;
         padding: 4rem 2rem 3rem;
         position: relative;
     }
@@ -32,7 +32,7 @@
 
     .hero-subtitle {
         font-size: 1.25rem;
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(26, 26, 26, 0.7);
         margin-bottom: 3rem;
         font-weight: 400;
     }
@@ -222,11 +222,11 @@
                 datasets: [{
                     data: Object.values(typeCount),
                     backgroundColor: [
-                        '#10B981',
-                        '#34D399',
-                        '#6EE7B7',
-                        '#A7F3D0',
-                        '#D1FAE5'
+                        '#3B82F6',
+                        '#60A5FA',
+                        '#93C5FD',
+                        '#BFDBFE',
+                        '#DBEAFE'
                     ],
                     borderWidth: 2,
                     borderColor: '#ffffff'
@@ -245,11 +245,11 @@
                                 size: 13,
                                 weight: '600'
                             },
-                            color: '#1E40AF'
+                            color: '#1a1a1a'
                         }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(30, 64, 175, 0.9)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.9)',
                         titleFont: {
                             family: 'Inter, system-ui, sans-serif',
                             size: 14,
@@ -287,7 +287,7 @@
                 datasets: [{
                     label: 'Количество лицензий',
                     data: sorted.map(item => item[1]),
-                    backgroundColor: '#10B981',
+                    backgroundColor: '#3B82F6',
                     borderRadius: 8,
                     borderWidth: 0
                 }]
@@ -300,7 +300,7 @@
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(30, 64, 175, 0.9)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.9)',
                         titleFont: {
                             family: 'Inter, system-ui, sans-serif',
                             size: 14,
@@ -375,12 +375,12 @@
                 datasets: [{
                     label: 'Истекающие лицензии',
                     data: monthsData,
-                    borderColor: '#10B981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#10B981',
+                    pointBackgroundColor: '#3B82F6',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 5,
@@ -395,7 +395,7 @@
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(30, 64, 175, 0.9)',
+                        backgroundColor: 'rgba(30, 58, 138, 0.9)',
                         titleFont: {
                             family: 'Inter, system-ui, sans-serif',
                             size: 14,
