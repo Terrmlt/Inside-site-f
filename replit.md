@@ -21,8 +21,10 @@ The application is a Django web application.
   - Interactive Yandex.Map (600px height, rounded corners).
   - Section headers with centered titles.
   - Integrated light/dark theme toggle with CSS variables and `localStorage` persistence.
+  - Modern login page (`/login/`) with gradient background, centered card, SVG icons in input fields, and full theme support.
   - Uses Bootstrap 5, Chart.js 4.4.0, Vanilla JavaScript, and Inter font family.
   - Dedicated `/help/` page with comprehensive user documentation.
+  - Export buttons with Bootstrap tooltips and loading indicators for better UX.
 
 - **Technical Implementations:**
     - **Interactive Map:** Displays licenses using Yandex.Maps JavaScript API 2.1, with markers and polygons colored by mineral usage type.
