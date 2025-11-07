@@ -4,7 +4,12 @@
 This project is a Django-based web application designed to manage a database of subsurface use licenses. It features an interactive Yandex.Map for visualizing licenses, detailed license information through modal windows, and document upload/download functionality. The application aims to provide a comprehensive tool for tracking and managing mineral extraction licenses, offering filtering, search capabilities, and GeoJSON map integration. It is built with a focus on ease of use for administrators and clear visualization for all users, with an eye towards future integration with external databases and LDAP authentication for enterprise environments.
 
 ## Recent Changes
-- **November 7, 2025 (Latest - User Documentation Page):** Added comprehensive user documentation:
+- **November 7, 2025 (Latest - UI Polish & Support):** Final refinements to navigation and layout consistency:
+  - **Navigation Menu**: Removed "Статистика" link (redundant), made "Аналитика" regular link, kept "Помощь" with blue highlight
+  - **Menu Structure**: Compact navigation with Лицензии | Карта | Аналитика | Помощь
+  - **Section Alignment**: Unified styling for "Список лицензий" and "Фильтры и поиск" sections (matching padding, border-radius, margins)
+  - **Support Contact**: Added "Связь с поддержкой" section to /help/ page with contact card (phone 5123, email 5123@goldintercom.ru)
+- **November 7, 2025 (User Documentation Page):** Added comprehensive user documentation:
   - **Help Page**: Created dedicated `/help/` page with complete user guide covering all system features
   - **8 Documentation Sections**: Introduction, viewing licenses, filtering/search, map usage, data export, analytics, theme switching, and admin functions
   - **Table of Contents**: Quick navigation links to each documentation section with anchor scrolling
