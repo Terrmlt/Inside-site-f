@@ -277,10 +277,13 @@ def upload_geojson(request):
             # Читаем содержимое файла
             file_content = geojson_file.read().decode('utf-8')
             
+            # Парсим JSON
+            geojson_data = json.loads(file_content)
+            
             # Импортируем данные
             from .utils import GeoJSONImporter
             importer = GeoJSONImporter()
-            result = importer.import_from_file(file_content)
+            result = importer.import_from_file(geojson_data)
             
             # Формируем сообщение об успехе
             success_message = f"""
