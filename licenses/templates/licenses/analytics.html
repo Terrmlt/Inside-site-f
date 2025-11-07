@@ -6,7 +6,7 @@
 <style>
     body {
         overflow-y: auto;
-        background-color: #ffffff;
+        background-color: var(--bg-light);
     }
 
     .main-container {
@@ -16,8 +16,8 @@
     }
 
     .hero-section {
-        background: linear-gradient(135deg, #ecfeff 0%, #eff6ff 100%);
-        color: #1a1a1a;
+        background: linear-gradient(135deg, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 100%);
+        color: var(--text-dark);
         padding: 4rem 2rem 3rem;
         position: relative;
         border-radius: 0 0 32px 32px;
@@ -33,7 +33,7 @@
 
     .hero-subtitle {
         font-size: 1.25rem;
-        color: rgba(26, 26, 26, 0.7);
+        color: var(--text-muted);
         margin-bottom: 3rem;
         font-weight: 400;
     }
@@ -70,7 +70,7 @@
     }
 
     .chart-card {
-        background: white;
+        background: var(--bg-light);
         border: 1px solid var(--border-color);
         border-radius: 16px;
         padding: 2rem;
@@ -121,7 +121,8 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.95);
+        background: var(--bg-light);
+        opacity: 0.98;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -182,10 +183,26 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
     let allLicenses = [];
+    let typeChart, regionChart, expiryChart;
 
     document.addEventListener('DOMContentLoaded', function() {
         loadAllLicensesForAnalytics();
+        
+        window.addEventListener('themeChanged', function(e) {
+            updateChartsTheme(e.detail.theme);
+        });
     });
+
+    function getThemeColors() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            text: isDark ? '#f1f5f9' : '#1a1a1a',
+            textMuted: isDark ? '#94a3b8' : '#666666',
+            border: isDark ? '#334155' : '#e5e5e5',
+            tooltipBg: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(30, 58, 138, 0.9)',
+            gridColor: isDark ? 'rgba(100, 116, 139, 0.2)' : 'rgba(0, 0, 0, 0.08)'
+        };
+    }
 
     function loadAllLicensesForAnalytics() {
         fetch('/api/licenses/all/')
@@ -208,6 +225,10 @@
         createExpiryChart();
     }
 
+    function updateChartsTheme() {
+        createAnalyticsCharts();
+    }
+
     function createTypeChart() {
         const typeCount = {};
         allLicenses.forEach(license => {
@@ -216,7 +237,10 @@
         });
         
         const ctx = document.getElementById('typeChart').getContext('2d');
-        new Chart(ctx, {
+        const colors = getThemeColors();
+        
+        if (typeChart) typeChart.destroy();
+        typeChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: Object.keys(typeCount),
@@ -230,7 +254,7 @@
                         '#DBEAFE'
                     ],
                     borderWidth: 2,
-                    borderColor: '#ffffff'
+                    borderColor: colors.border
                 }]
             },
             options: {
@@ -246,11 +270,11 @@
                                 size: 13,
                                 weight: '600'
                             },
-                            color: '#1a1a1a'
+                            color: colors.text
                         }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(30, 58, 138, 0.9)',
+                        backgroundColor: colors.tooltipBg,
                         titleFont: {
                             family: 'Inter, system-ui, sans-serif',
                             size: 14,
@@ -281,7 +305,10 @@
             .slice(0, 5);
         
         const ctx = document.getElementById('regionChart').getContext('2d');
-        new Chart(ctx, {
+        const colors = getThemeColors();
+        
+        if (regionChart) regionChart.destroy();
+        regionChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: sorted.map(item => item[0]),
@@ -301,7 +328,7 @@
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(30, 58, 138, 0.9)',
+                        backgroundColor: colors.tooltipBg,
                         titleFont: {
                             family: 'Inter, system-ui, sans-serif',
                             size: 14,
@@ -323,10 +350,10 @@
                                 family: 'Inter, system-ui, sans-serif',
                                 size: 12
                             },
-                            color: '#6b7280'
+                            color: colors.textMuted
                         },
                         grid: {
-                            color: '#f3f4f6'
+                            color: colors.gridColor
                         }
                     },
                     x: {
@@ -336,7 +363,7 @@
                                 size: 12,
                                 weight: '600'
                             },
-                            color: '#1a1a1a'
+                            color: colors.text
                         },
                         grid: {
                             display: false
@@ -369,7 +396,10 @@
         }
         
         const ctx = document.getElementById('expiryChart').getContext('2d');
-        new Chart(ctx, {
+        const colors = getThemeColors();
+        
+        if (expiryChart) expiryChart.destroy();
+        expiryChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: monthLabels,
@@ -382,7 +412,7 @@
                     fill: true,
                     tension: 0.4,
                     pointBackgroundColor: '#3B82F6',
-                    pointBorderColor: '#ffffff',
+                    pointBorderColor: colors.border,
                     pointBorderWidth: 2,
                     pointRadius: 5,
                     pointHoverRadius: 7
@@ -396,7 +426,7 @@
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(30, 58, 138, 0.9)',
+                        backgroundColor: colors.tooltipBg,
                         titleFont: {
                             family: 'Inter, system-ui, sans-serif',
                             size: 14,
@@ -418,11 +448,11 @@
                                 family: 'Inter, system-ui, sans-serif',
                                 size: 12
                             },
-                            color: '#6b7280',
+                            color: colors.textMuted,
                             stepSize: 1
                         },
                         grid: {
-                            color: '#f3f4f6'
+                            color: colors.gridColor
                         }
                     },
                     x: {
@@ -432,7 +462,7 @@
                                 size: 12,
                                 weight: '600'
                             },
-                            color: '#1a1a1a'
+                            color: colors.text
                         },
                         grid: {
                             display: false
