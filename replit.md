@@ -4,7 +4,7 @@
 This project is a Django-based web application designed to manage a database of subsurface use licenses. It features an interactive Yandex.Map for visualizing licenses, detailed license information through modal windows, and document upload/download functionality. The application aims to provide a comprehensive tool for tracking and managing mineral extraction licenses, offering filtering, search capabilities, and GeoJSON map integration. It is built with a focus on ease of use for administrators and clear visualization for all users, with an eye towards future integration with external databases and LDAP authentication for enterprise environments.
 
 ## Recent Changes
-- **November 7, 2025 (Latest - Light/Dark Theme Toggle):** Implemented complete theme switching system:
+- **November 7, 2025 (Latest - Light/Dark Theme Toggle + Refinements):** Implemented complete theme switching system with user-requested improvements:
   - **CSS Variables Architecture**: Full set of theme variables for both light and dark modes (backgrounds, text, borders, shadows, accents)
   - **Theme Toggle Button**: Navigation header includes sun/moon icon toggle with smooth rotation animation
   - **LocalStorage Persistence**: User theme preference saved and restored across sessions
@@ -13,6 +13,7 @@ This project is a Django-based web application designed to manage a database of 
   - **Full Coverage**: All UI elements adapted (hero sections, cards, buttons, filters, pagination, modals, overlays)
   - **Hero Design**: Very light blue gradient (#ecfeff → #eff6ff) for light mode, dark gradient for dark mode with rounded bottom corners (32px)
   - **No Hard-coded Colors**: All backgrounds, borders, and text colors use CSS variables for theme compatibility
+  - **Refinements**: Fixed modal window dark theme readability, changed stat cards from gray to white background with subtle shadows
 - **November 5, 2025 (UX Enhancements & LDAP):** Added drag-and-drop file upload and LDAP authentication templates:
   - **Drag-and-Drop GeoJSON Upload**: Admin panel now features interactive file drop zone with visual feedback (hover effects, file validation)
   - **Dual Upload Methods**: Both drag-and-drop and traditional file picker work simultaneously
