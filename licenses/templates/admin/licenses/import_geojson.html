@@ -118,6 +118,10 @@
     const fileInput = document.getElementById('id_geojson_file');
     const fileInfo = document.getElementById('fileInfo');
     const fileName = document.getElementById('fileName');
+    const uploadForm = document.getElementById('uploadForm');
+    const submitBtn = uploadForm.querySelector('input[type="submit"]');
+    
+    let selectedFile = null;
     
     dropZone.addEventListener('click', () => {
         fileInput.click();
@@ -154,10 +158,7 @@
             const file = files[0];
             
             if (file.name.endsWith('.geojson') || file.name.endsWith('.json')) {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                fileInput.files = dataTransfer.files;
-                
+                selectedFile = file;
                 showFileInfo(file.name);
             } else {
                 alert('Пожалуйста, выберите файл .geojson или .json');
@@ -167,8 +168,57 @@
     
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
-            showFileInfo(e.target.files[0].name);
+            selectedFile = e.target.files[0];
+            showFileInfo(selectedFile.name);
         }
+    });
+    
+    uploadForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        if (!selectedFile && fileInput.files.length === 0) {
+            alert('Пожалуйста, выберите файл для загрузки');
+            return;
+        }
+        
+        const fileToUpload = selectedFile || fileInput.files[0];
+        
+        if (!fileToUpload.name.endsWith('.geojson') && !fileToUpload.name.endsWith('.json')) {
+            alert('Неверный формат файла. Поддерживаются только .geojson и .json');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('geojson_file', fileToUpload);
+        formData.append('csrfmiddlewaretoken', uploadForm.querySelector('[name=csrfmiddlewaretoken]').value);
+        
+        submitBtn.value = 'Загрузка...';
+        submitBtn.disabled = true;
+        
+        fetch(uploadForm.action || window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': uploadForm.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                return response.text().then(text => {
+                    document.open();
+                    document.write(text);
+                    document.close();
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки:', error);
+            alert('Произошла ошибка при загрузке файла. Попробуйте еще раз.');
+            submitBtn.value = 'Импортировать';
+            submitBtn.disabled = false;
+        });
     });
     
     function showFileInfo(name) {
