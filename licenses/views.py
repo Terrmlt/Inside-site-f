@@ -529,11 +529,10 @@ def export_licenses_pdf(request):
     c.drawCentredString(width/2, height - 70, subtitle)
     
     # Начальная позиция для таблицы
-    y_position = height - 120
-    x_start = 40
+    x_start = 30
     
-    # Ширины колонок
-    col_widths = [30, 90, 55, 120, 90, 70, 70, 100, 80]
+    # Ширины колонок (оптимизированы для альбомной A4)
+    col_widths = [25, 80, 65, 150, 90, 65, 65, 100, 90]
     
     # Заголовки таблицы
     headers = ['№', 'Номер лицензии', 'Вид', 'Недропользователь', 'Регион', 
@@ -541,28 +540,33 @@ def export_licenses_pdf(request):
                '№', 'License #', 'Type', 'User', 'Region', 
                'Issue Date', 'Expiry Date', 'Mineral', 'Status']
     
-    # Рисуем заголовок таблицы
-    c.setFillColorRGB(59/255, 130/255, 246/255)  # Синий фон
-    c.rect(x_start, y_position - 5, sum(col_widths), 25, fill=1, stroke=0)
+    # Функция для рисования заголовка таблицы
+    def draw_table_header(canvas_obj, y_pos):
+        canvas_obj.setFillColorRGB(59/255, 130/255, 246/255)  # Синий фон
+        canvas_obj.rect(x_start, y_pos - 5, sum(col_widths), 25, fill=1, stroke=0)
+        
+        canvas_obj.setFillColorRGB(1, 1, 1)  # Белый текст
+        canvas_obj.setFont(font_name, 8)
+        x = x_start + 3
+        for i, header in enumerate(headers):
+            canvas_obj.drawString(x, y_pos + 5, header)
+            x += col_widths[i]
+        return y_pos - 30
     
-    c.setFillColorRGB(1, 1, 1)  # Белый текст
-    c.setFont(font_name, 9)
-    x = x_start + 5
-    for i, header in enumerate(headers):
-        c.drawString(x, y_position + 5, header)
-        x += col_widths[i]
-    
-    y_position -= 30
+    # Рисуем заголовок на первой странице
+    y_position = draw_table_header(c, height - 120)
     row_num = 0
     
-    # Данные
-    c.setFont(font_name, 8)
+    # Данные - экспортируем ВСЕ лицензии
+    c.setFont(font_name, 7)
     
-    for idx, license in enumerate(licenses[:50], 1):  # Ограничиваем 50 записями на странице
+    for idx, license in enumerate(licenses, 1):
         if y_position < 50:  # Новая страница если места мало
             c.showPage()
-            c.setFont(font_name, 8)
-            y_position = height - 50
+            # Рисуем заголовок на новой странице
+            y_position = draw_table_header(c, height - 50)
+            c.setFont(font_name, 7)
+            row_num = 0
         
         # Обновляем статус перед экспортом
         license.update_status_if_expired()
@@ -588,17 +592,17 @@ def export_licenses_pdf(request):
         
         row_data = [
             str(idx),
-            license.license_number or '',
-            license.license_type or '',
-            (license.owner[:18] + '...') if license.owner and len(license.owner) > 18 else (license.owner or ''),
-            license.region or '',
+            (license.license_number[:15] + '...') if license.license_number and len(license.license_number) > 15 else (license.license_number or ''),
+            (license.license_type[:12] + '...') if license.license_type and len(license.license_type) > 12 else (license.license_type or ''),
+            (license.owner[:28] + '...') if license.owner and len(license.owner) > 28 else (license.owner or ''),
+            (license.region[:18] + '...') if license.region and len(license.region) > 18 else (license.region or ''),
             license.issue_date.strftime('%d.%m.%Y') if license.issue_date else '',
             license.expiry_date.strftime('%d.%m.%Y') if license.expiry_date else '',
-            (license.mineral_type[:15] + '...') if license.mineral_type and len(license.mineral_type) > 15 else (license.mineral_type or ''),
+            (license.mineral_type[:18] + '...') if license.mineral_type and len(license.mineral_type) > 18 else (license.mineral_type or ''),
             status_text
         ]
         
-        x = x_start + 5
+        x = x_start + 3
         for i, cell_data in enumerate(row_data):
             c.drawString(x, y_position + 2, cell_data)
             x += col_widths[i]
