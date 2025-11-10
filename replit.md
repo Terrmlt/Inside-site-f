@@ -32,10 +32,10 @@ The application is a Django web application.
     - **Analytics Dashboard:** Chart.js 4.4.0 for type distribution, regional analysis, and expiry forecast.
     - **Data Management:** CRUD operations for `License` and `Document` models via Django Admin and API.
     - **Filtering & Search:** Filters by status, region, type, mineral; search by license number and user. Dynamic filter buttons and map legend based on license types.
-    - **Document Management:** Upload/download functionality for license-linked documents.
+    - **Document Management:** Upload/download functionality for license-linked documents. **Security:** All document downloads, Excel exports, and PDF exports require user authentication via `@login_required` decorator.
     - **GeoJSON Integration:** Web and admin interfaces support drag-and-drop or traditional GeoJSON uploads, automatically updating license data, parsing info, determining regions, and calculating polygon centers.
     - **Authentication:** Django's built-in authentication by default; **Multi-domain LDAP authentication** is configurable via `USE_LDAP=true` environment variable. Supports automatic domain detection or manual domain selection by users. Custom `MultiDomainLDAPBackend` handles authentication across multiple LDAP domains (Active Directory, OpenLDAP).
-    - **Data Export:** Supports export to Excel (using `openpyxl`) and PDF (using `reportlab`) with filter integration and professional styling.
+    - **Data Export:** Supports export to Excel (using `openpyxl`) and PDF (using `reportlab`) with filter integration and professional styling. **Security:** Both export endpoints require user authentication.
     - **Automatic Status Updates:** Expiration detection in API and management command for batch updates.
 
 - **Feature Specifications:**
@@ -65,6 +65,7 @@ The application is a Django web application.
 
 ## Documentation
 - **DEPLOYMENT_LOCAL.md** - Полная методичка по развертыванию на локальном ПК с детальными инструкциями по PostgreSQL
+- **DEPLOYMENT_UBUNTU_SERVER.md** - Полная методичка по развертыванию на Ubuntu Server 22.04 LTS с Apache, mod_wsgi, двумя дисками, SSL, и автоматическими бэкапами
 - **PostgreSQL_CHEATSHEET.md** - Шпаргалка по командам PostgreSQL для быстрой справки
 - **LDAP_MULTI_DOMAIN.md** - Инструкция по настройке мультидоменной LDAP аутентификации
 - **LDAP_SETUP.md** - Общая документация по LDAP аутентификации

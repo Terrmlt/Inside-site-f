@@ -196,6 +196,7 @@ def upload_document(request, license_id):
     return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
 
 
+@login_required
 def download_document(request, document_id):
     """
     Скачивание документа
@@ -328,6 +329,7 @@ def upload_geojson(request):
     return render(request, 'licenses/upload_geojson.html')
 
 
+@login_required
 def export_licenses_excel(request):
     """
     Экспорт лицензий в Excel файл с учетом фильтров
@@ -454,6 +456,7 @@ def export_licenses_excel(request):
     return response
 
 
+@login_required
 def export_licenses_pdf(request):
     """
     Экспорт лицензий в PDF файл с учетом фильтров
