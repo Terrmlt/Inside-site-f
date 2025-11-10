@@ -461,7 +461,8 @@
         font-size: 0.9375rem;
     }
 
-    .form-select, .form-control {
+    .form-select,
+    .form-control {
         border: 1px solid var(--border-color);
         border-radius: 10px;
         padding: 0.75rem 1rem;
@@ -471,7 +472,8 @@
         color: var(--text-dark);
     }
 
-    .form-select:focus, .form-control:focus {
+    .form-select:focus,
+    .form-control:focus {
         border-color: var(--accent-color);
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         outline: none;
@@ -611,7 +613,8 @@
 <!-- Back to Top Button -->
 <button class="back-to-top" id="backToTop">
     <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+        <path fill-rule="evenodd"
+            d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z" />
     </svg>
 </button>
 
@@ -620,8 +623,9 @@
     <div class="hero-section" id="hero">
         <div class="container">
             <h1 class="hero-title">База лицензий на недропользование</h1>
-            <p class="hero-subtitle">Интерактивная система управления и визуализации лицензий на право пользования недрами</p>
-            
+            <p class="hero-subtitle">Интерактивная система управления и визуализации лицензий на право пользования
+                недрами</p>
+
             <!-- Statistics Cards (динамически генерируются) -->
             <div class="stats-container" id="statistics"></div>
         </div>
@@ -634,10 +638,10 @@
             <h2 class="section-title">Интерактивная карта</h2>
             <p class="section-subtitle">Визуализация месторасположения лицензионных участков на интерактивной карте</p>
         </div>
-        
+
         <!-- License Type Tabs (динамически генерируются) -->
         <div class="license-tabs" id="licenseTypeTabs"></div>
-        
+
         <div class="map-container">
             <div id="map"></div>
         </div>
@@ -706,25 +710,23 @@
                     <span class="ms-3 results-count" id="resultsCount"></span>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
-                    <button class="btn btn-primary export-btn" 
-                            onclick="exportToExcel()"
-                            data-bs-toggle="tooltip" 
-                            data-bs-placement="top" 
-                            title="Экспортировать данные в формат Excel для анализа и обработки">
+                    <button class="btn btn-primary export-btn" onclick="exportToExcel()" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="Экспортировать данные в формат Excel для анализа и обработки">
                         <svg width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16">
-                            <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z"/>
-                            <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                            <path
+                                d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                            <path
+                                d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                         </svg>
                         <span class="export-text">Экспорт в Excel</span>
                     </button>
-                    <button class="btn btn-primary export-btn" 
-                            onclick="exportToPDF()"
-                            data-bs-toggle="tooltip" 
-                            data-bs-placement="top" 
-                            title="Экспортировать данные в формат PDF для печати и отчетности">
+                    <button class="btn btn-primary export-btn" onclick="exportToPDF()" data-bs-toggle="tooltip"
+                        data-bs-placement="top" title="Экспортировать данные в формат PDF для печати и отчетности">
                         <svg width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16">
-                            <path d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5z"/>
-                            <path d="M1.6 11.85H0v3.999h.791v-1.342h.803c.287 0 .531-.057.732-.173.203-.117.358-.275.463-.474a1.42 1.42 0 0 0 .161-.677c0-.25-.053-.476-.158-.677a1.176 1.176 0 0 0-.46-.477c-.2-.12-.443-.179-.732-.179Zm.545 1.333a.795.795 0 0 1-.085.38.574.574 0 0 1-.238.241.794.794 0 0 1-.375.082H.788V12.48h.66c.218 0 .389.06.512.181.123.122.185.296.185.522Zm1.217-1.333v3.999h1.46c.401 0 .734-.08.998-.237a1.45 1.45 0 0 0 .595-.689c.13-.3.196-.662.196-1.084 0-.42-.065-.778-.196-1.075a1.426 1.426 0 0 0-.589-.68c-.264-.156-.599-.234-1.005-.234H3.362Zm.791.645h.563c.248 0 .45.05.609.152a.89.89 0 0 1 .354.454c.079.201.118.452.118.753a2.3 2.3 0 0 1-.068.592 1.14 1.14 0 0 1-.196.422.8.8 0 0 1-.334.252 1.298 1.298 0 0 1-.483.082h-.563v-2.707Zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638H7.896Z"/>
+                            <path
+                                d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5z" />
+                            <path
+                                d="M1.6 11.85H0v3.999h.791v-1.342h.803c.287 0 .531-.057.732-.173.203-.117.358-.275.463-.474a1.42 1.42 0 0 0 .161-.677c0-.25-.053-.476-.158-.677a1.176 1.176 0 0 0-.46-.477c-.2-.12-.443-.179-.732-.179Zm.545 1.333a.795.795 0 0 1-.085.38.574.574 0 0 1-.238.241.794.794 0 0 1-.375.082H.788V12.48h.66c.218 0 .389.06.512.181.123.122.185.296.185.522Zm1.217-1.333v3.999h1.46c.401 0 .734-.08.998-.237a1.45 1.45 0 0 0 .595-.689c.13-.3.196-.662.196-1.084 0-.42-.065-.778-.196-1.075a1.426 1.426 0 0 0-.589-.68c-.264-.156-.599-.234-1.005-.234H3.362Zm.791.645h.563c.248 0 .45.05.609.152a.89.89 0 0 1 .354.454c.079.201.118.452.118.753a2.3 2.3 0 0 1-.068.592 1.14 1.14 0 0 1-.196.422.8.8 0 0 1-.334.252 1.298 1.298 0 0 1-.483.082h-.563v-2.707Zm3.743 1.763v1.591h-.79V11.85h2.548v.653H7.896v1.117h1.606v.638H7.896Z" />
                         </svg>
                         <span class="export-text">Экспорт в PDF</span>
                     </button>
@@ -742,7 +744,7 @@
             <div id="licensesList">
                 <!-- Здесь будут карточки лицензий -->
             </div>
-            
+
             <!-- Пагинация -->
             <div class="pagination-container" id="paginationContainer" style="display: none;">
                 <div class="pagination-controls">
@@ -819,50 +821,50 @@
             .then(response => response.json())
             .then(data => {
                 console.log(`Загружено лицензий: ${data.results.length}`);
-                
+
                 // Сохраняем данные пагинации
                 paginationData = data.pagination;
-                
+
                 // Если это первая загрузка, загружаем все лицензии для статистики и фильтров
                 if (page === 1) {
                     loadAllLicensesForStats();
                 }
-                
+
                 // Отображаем лицензии текущей страницы
                 filteredLicenses = data.results;
                 displayLicenses();
                 displayLicensesOnMap();
-                
+
                 // Отображаем пагинацию
                 displayPagination();
-                
+
                 // Обновляем счетчик результатов
                 updateResultsCount();
             })
             .catch(error => console.error('Ошибка загрузки лицензий:', error));
     }
-    
+
     function loadAllLicensesForStats() {
         // Загружаем ВСЕ лицензии для статистики без пагинации
         fetch('/api/licenses/all/')
             .then(response => response.json())
             .then(data => {
                 allLicenses = data;
-                
+
                 try {
                     // Обновляем статистику
                     updateStatistics();
-                    
+
                     // Генерируем динамические элементы
                     generateLicenseTypeTabs();
                     generateMapLegend();
-                    
+
                     // Обновляем счетчики ПОСЛЕ создания кнопок
                     updateTabCounts();
 
                     // Заполняем фильтры уникальными значениями
                     populateFilters();
-                    
+
                     // Обновляем карту, если фильтры не применены
                     if (!currentFiltersActive) {
                         displayLicensesOnMap();
@@ -874,38 +876,38 @@
             })
             .catch(error => console.error('Ошибка загрузки статистики:', error));
     }
-    
+
     function displayPagination() {
         const container = document.getElementById('paginationContainer');
         const pageNumbersDiv = document.getElementById('pageNumbers');
         const paginationInfo = document.getElementById('paginationInfo');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        
+
         if (!paginationData || paginationData.total_pages <= 1) {
             container.style.display = 'none';
             return;
         }
-        
+
         container.style.display = 'flex';
-        
+
         // Обновляем кнопки Назад/Вперёд
         prevBtn.disabled = !paginationData.has_previous;
         nextBtn.disabled = !paginationData.has_next;
-        
+
         // Информация о странице
         const start = (paginationData.current_page - 1) * 12 + 1;
         const end = Math.min(paginationData.current_page * 12, paginationData.total_count);
         paginationInfo.innerHTML = `Показано ${start}–${end} из ${paginationData.total_count}`;
-        
+
         // Генерируем номера страниц
         pageNumbersDiv.innerHTML = '';
         const totalPages = paginationData.total_pages;
         const current = paginationData.current_page;
-        
+
         // Логика отображения страниц
         let pages = [];
-        
+
         if (totalPages <= 7) {
             // Показываем все страницы
             for (let i = 1; i <= totalPages; i++) {
@@ -914,22 +916,22 @@
         } else {
             // Показываем первую, последнюю и соседние
             pages.push(1);
-            
+
             if (current > 3) {
                 pages.push('...');
             }
-            
+
             for (let i = Math.max(2, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
                 pages.push(i);
             }
-            
+
             if (current < totalPages - 2) {
                 pages.push('...');
             }
-            
+
             pages.push(totalPages);
         }
-        
+
         // Создаём кнопки
         pages.forEach(page => {
             if (page === '...') {
@@ -946,14 +948,14 @@
             }
         });
     }
-    
+
     function changePage(direction) {
         if (currentFiltersActive) {
             // Клиентская пагинация (с фильтрами)
             let newPage;
-            
+
             const totalPages = Math.ceil(filteredLicenses.length / ITEMS_PER_PAGE);
-            
+
             if (direction === 'prev') {
                 newPage = Math.max(1, currentPage - 1);
             } else if (direction === 'next') {
@@ -961,12 +963,12 @@
             } else {
                 newPage = direction; // Номер страницы
             }
-            
+
             displayFilteredPage(newPage);
         } else {
             // Серверная пагинация (без фильтров)
             let newPage;
-            
+
             if (direction === 'prev') {
                 newPage = paginationData.previous_page;
             } else if (direction === 'next') {
@@ -974,14 +976,14 @@
             } else {
                 newPage = direction; // Номер страницы
             }
-            
+
             if (newPage) {
                 loadLicenses(newPage);
             }
         }
-        
+
         // Прокрутка наверх списка
-        document.getElementById('licensesList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('licensesList').scrollIntoView({behavior: 'smooth', block: 'start'});
     }
 
     function updatePagination(totalItems, currentPageNum, isFiltered) {
@@ -990,34 +992,34 @@
         const paginationInfo = document.getElementById('paginationInfo');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        
+
         const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-        
+
         // Скрываем пагинацию если результатов мало
         if (totalItems <= ITEMS_PER_PAGE) {
             container.style.display = 'none';
             return;
         }
-        
+
         container.style.display = 'flex';
-        
+
         // Обновляем кнопки Назад/Вперёд
         prevBtn.disabled = currentPageNum <= 1;
         nextBtn.disabled = currentPageNum >= totalPages;
-        
+
         // Информация о странице
         const start = (currentPageNum - 1) * ITEMS_PER_PAGE + 1;
         const end = Math.min(currentPageNum * ITEMS_PER_PAGE, totalItems);
         paginationInfo.innerHTML = `Показано ${start}–${end} из ${totalItems}`;
-        
+
         // Генерируем номера страниц
         pageNumbersDiv.innerHTML = '';
         const current = currentPageNum;
-        
+
         // Определяем диапазон страниц для отображения
         let startPage = Math.max(1, current - 2);
         let endPage = Math.min(totalPages, current + 2);
-        
+
         // Корректируем диапазон, если мы близко к началу или концу
         if (current <= 3) {
             endPage = Math.min(5, totalPages);
@@ -1025,7 +1027,7 @@
         if (current >= totalPages - 2) {
             startPage = Math.max(1, totalPages - 4);
         }
-        
+
         // Первая страница
         if (startPage > 1) {
             const btn = document.createElement('button');
@@ -1033,7 +1035,7 @@
             btn.textContent = '1';
             btn.onclick = () => changePage(1);
             pageNumbersDiv.appendChild(btn);
-            
+
             if (startPage > 2) {
                 const ellipsis = document.createElement('span');
                 ellipsis.className = 'pagination-ellipsis';
@@ -1041,7 +1043,7 @@
                 pageNumbersDiv.appendChild(ellipsis);
             }
         }
-        
+
         // Страницы в диапазоне
         for (let i = startPage; i <= endPage; i++) {
             const btn = document.createElement('button');
@@ -1050,7 +1052,7 @@
             btn.onclick = () => changePage(i);
             pageNumbersDiv.appendChild(btn);
         }
-        
+
         // Последняя страница
         if (endPage < totalPages) {
             if (endPage < totalPages - 1) {
@@ -1059,7 +1061,7 @@
                 ellipsis.textContent = '...';
                 pageNumbersDiv.appendChild(ellipsis);
             }
-            
+
             const btn = document.createElement('button');
             btn.className = 'pagination-btn';
             btn.textContent = totalPages;
@@ -1071,13 +1073,13 @@
     function updateStatistics() {
         const container = document.getElementById('statistics');
         if (!container) return;
-        
+
         // Получаем статистику
         const totalCount = allLicenses.length;
         const activeCount = allLicenses.filter(l => l.status === 'active').length;
         const uniqueRegions = [...new Set(allLicenses.map(l => l.region))];
         const uniqueTypes = [...new Set(allLicenses.map(l => l.license_type))];
-        
+
         // 4 фиксированные статистические карточки
         container.innerHTML = `
             <div class="stat-card">
@@ -1098,14 +1100,14 @@
             </div>
         `;
     }
-    
+
     function updateTabCounts() {
         // Обновляем счетчик "Все"
         const countAllElement = document.getElementById('countAll');
         if (countAllElement) {
             countAllElement.textContent = allLicenses.length;
         }
-        
+
         // Обновляем счетчики для каждого типа
         const uniqueTypes = [...new Set(allLicenses.map(l => l.license_type))].sort();
         uniqueTypes.forEach(type => {
@@ -1116,21 +1118,21 @@
             }
         });
     }
-    
+
     function generateLicenseTypeTabs() {
         const container = document.getElementById('licenseTypeTabs');
         if (!container) return;
-        
+
         // Получаем уникальные типы лицензий
         const uniqueTypes = [...new Set(allLicenses.map(l => l.license_type))].sort();
-        
+
         // Генерируем кнопки
         let html = `
             <button class="tab-button active" data-type="" onclick="filterByType('')">
                 Все <span class="tab-count" id="countAll">0</span>
             </button>
         `;
-        
+
         uniqueTypes.forEach(type => {
             html += `
             <button class="tab-button" data-type="${type}" onclick="filterByType('${type}')">
@@ -1138,17 +1140,17 @@
             </button>
             `;
         });
-        
+
         container.innerHTML = html;
     }
-    
+
     function generateMapLegend() {
         const container = document.getElementById('legendItems');
         if (!container) return;
-        
+
         // Получаем уникальные типы лицензий
         const uniqueTypes = [...new Set(allLicenses.map(l => l.license_type))].sort();
-        
+
         // Генерируем элементы легенды
         let html = '';
         uniqueTypes.forEach(type => {
@@ -1161,31 +1163,31 @@
                 </div>
             `;
         });
-        
+
         container.innerHTML = html;
     }
-    
+
     function getLicenseTypeDescription(type) {
         // Здесь можно добавить описания для известных типов
         const descriptions = {
-            'БЭ': 'Геологическое изучение с добычей',
-            'БП': 'Добыча полезных ископаемых',
-            'БР': 'Геологическое изучение',
-            'ТП': 'Разведка и добыча'
+            'БЭ': 'Благородные металлы, разведка и добыча',
+            'БП': 'Благородные металлы, геологическое изучение',
+            'БР': 'Благородные металлы, совмещенное пользование – для геологического изучения, разведки и добычи',
+            'ТП': 'Твердые полезные, геологическое изучение'
         };
         return descriptions[type] || 'Пользование недрами';
     }
-    
+
     function filterByType(type) {
         // Обновляем активный таб
         document.querySelectorAll('.tab-button').forEach(btn => {
             btn.classList.remove('active');
         });
         event.target.closest('.tab-button').classList.add('active');
-        
+
         // Устанавливаем фильтр по типу
         document.getElementById('filterType').value = type;
-        
+
         // Применяем фильтры
         applyFilters();
     }
@@ -1269,18 +1271,18 @@
         document.getElementById('filterType').value = '';
         document.getElementById('filterMineral').value = '';
         document.getElementById('searchText').value = '';
-        
+
         // Сбрасываем активный таб
         document.querySelectorAll('.tab-button').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector('.tab-button[data-type=""]').classList.add('active');
-        
+
         // Возвращаемся к серверной пагинации
         currentFiltersActive = false;
         loadLicenses(1);
     }
-    
+
     function showExportSpinner() {
         const spinner = document.querySelector('.export-spinner');
         if (spinner) {
@@ -1298,28 +1300,28 @@
     function exportToExcel() {
         // Показываем индикатор загрузки
         showExportSpinner();
-        
+
         // Собираем текущие параметры фильтров
         const params = new URLSearchParams();
-        
+
         const statusFilter = document.getElementById('filterStatus').value;
         const regionFilter = document.getElementById('filterRegion').value;
         const typeFilter = document.getElementById('filterType').value;
         const mineralFilter = document.getElementById('filterMineral').value;
         const searchText = document.getElementById('searchText').value;
-        
+
         if (statusFilter) params.append('status', statusFilter);
         if (regionFilter) params.append('region', regionFilter);
         if (typeFilter) params.append('type', typeFilter);
         if (mineralFilter) params.append('mineral', mineralFilter);
         if (searchText) params.append('search', searchText);
-        
+
         // Формируем URL для экспорта
         const exportUrl = `/api/licenses/export/excel/?${params.toString()}`;
-        
+
         // Открываем ссылку для скачивания
         window.location.href = exportUrl;
-        
+
         // Скрываем индикатор через 2 секунды
         setTimeout(hideExportSpinner, 2000);
     }
@@ -1327,28 +1329,28 @@
     function exportToPDF() {
         // Показываем индикатор загрузки
         showExportSpinner();
-        
+
         // Собираем текущие параметры фильтров
         const params = new URLSearchParams();
-        
+
         const statusFilter = document.getElementById('filterStatus').value;
         const regionFilter = document.getElementById('filterRegion').value;
         const typeFilter = document.getElementById('filterType').value;
         const mineralFilter = document.getElementById('filterMineral').value;
         const searchText = document.getElementById('searchText').value;
-        
+
         if (statusFilter) params.append('status', statusFilter);
         if (regionFilter) params.append('region', regionFilter);
         if (typeFilter) params.append('type', typeFilter);
         if (mineralFilter) params.append('mineral', mineralFilter);
         if (searchText) params.append('search', searchText);
-        
+
         // Формируем URL для экспорта
         const exportUrl = `/api/licenses/export/pdf/?${params.toString()}`;
-        
+
         // Открываем ссылку для скачивания
         window.location.href = exportUrl;
-        
+
         // Скрываем индикатор через 2 секунды
         setTimeout(hideExportSpinner, 2000);
     }
@@ -1415,19 +1417,19 @@
 
     function displayFilteredPage(pageNum) {
         currentPage = pageNum;
-        
+
         const start = (pageNum - 1) * ITEMS_PER_PAGE;
         const end = start + ITEMS_PER_PAGE;
         const pageData = filteredLicenses.slice(start, end);
-        
+
         const container = document.getElementById('licensesList');
-        
+
         if (filteredLicenses.length === 0) {
             container.innerHTML = '<p class="text-muted text-center py-5">Лицензии не найдены</p>';
             updatePagination(0, 1, true);
             return;
         }
-        
+
         container.innerHTML = pageData.map(license => `
         <div class="license-card" onclick="showLicenseDetails(${license.id})">
             <div class="d-flex justify-content-between align-items-start">
@@ -1470,7 +1472,7 @@
             </div>
         </div>
         `).join('');
-        
+
         updatePagination(filteredLicenses.length, pageNum, true);
         displayLicensesOnMap();
         updateResultsCount();
@@ -1846,7 +1848,7 @@
 
     // Back to top button functionality
     const backToTopButton = document.getElementById('backToTop');
-    
+
     window.addEventListener('scroll', () => {
         if (window.pageYOffset > 300) {
             backToTopButton.classList.add('show');
@@ -1863,7 +1865,7 @@
     });
 
     // Инициализация Bootstrap tooltips
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
