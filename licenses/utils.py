@@ -1,6 +1,6 @@
 import json
 import re
-from datetime import date
+from datetime import date, datetime
 from licenses.models import License
 
 
@@ -94,6 +94,24 @@ class GeoJSONImporter:
             license_obj.save()
             self.updated_count += 1
         except License.DoesNotExist:
+            # Парсим даты из строк в date объекты
+            issue_date_obj = date.today()  # По умолчанию - сегодня
+            if parsed['issue_date']:
+                try:
+                    issue_date_obj = datetime.strptime(parsed['issue_date'], '%d.%m.%Y').date()
+                except ValueError:
+                    pass  # Оставляем значение по умолчанию
+
+            expiry_date_obj = None
+            if parsed['expiry_date']:
+                try:
+                    expiry_date_obj = datetime.strptime(parsed['expiry_date'], '%d.%m.%Y').date()
+                except ValueError:
+                    pass
+
+            # Вид полезного ископаемого - используем из описания или значение по умолчанию
+            mineral_type_str = parsed['mineral_type'] if parsed['mineral_type'] else 'Не указано'
+
             # Создаём новую лицензию
             license_obj = License.objects.create(
                 license_number=parsed['license_number'],
@@ -104,8 +122,9 @@ class GeoJSONImporter:
                 polygon_data=geometry,
                 region=region,
                 area=parsed['area_name'],
-                issue_date=date.today(),
-                mineral_type='Золото',
+                issue_date=issue_date_obj,
+                expiry_date=expiry_date_obj,
+                mineral_type=mineral_type_str,
                 status=status,
                 description=description.replace('<br/>', '\n'),
             )
@@ -120,7 +139,10 @@ class GeoJSONImporter:
             'license_type': '',
             'area_name': '',
             'owner': '',
-            'area_size': ''
+            'area_size': '',
+            'issue_date': None,
+            'expiry_date': None,
+            'mineral_type': ''
         }
 
         parts = [p.strip() for p in text.split('|')]
@@ -217,6 +239,26 @@ class GeoJSONImporter:
                 result['owner'] = parts[1].strip()
             else:
                 result['owner'] = 'Не указан'
+
+        # Даты - ищем во всех частях описания
+        for part in parts:
+            # Дата выдачи (форматы: "Дата выдачи: 01.01.2020" или "Выдана: 01.01.2020")
+            if not result['issue_date']:
+                date_match = re.search(r'(?:Дата\s+выдачи|Выдана|Дата\s+оформления):\s*(\d{2}\.\d{2}\.\d{4})', part, re.IGNORECASE)
+                if date_match:
+                    result['issue_date'] = date_match.group(1)
+            
+            # Дата окончания (форматы: "Дата окончания: 01.01.2025" или "Действует до: 01.01.2025")
+            if not result['expiry_date']:
+                expiry_match = re.search(r'(?:Дата\s+окончания|Действует\s+до|До):\s*(\d{2}\.\d{2}\.\d{4})', part, re.IGNORECASE)
+                if expiry_match:
+                    result['expiry_date'] = expiry_match.group(1)
+            
+            # Вид полезного ископаемого (форматы: "Полезное ископаемое: Золото" или "Ископаемое: Золото")
+            if not result['mineral_type']:
+                mineral_match = re.search(r'(?:Полезное\s+ископаемое|Ископаемое|Вид\s+ископаемого):\s*([А-Яа-яёЁ\s\-]+?)(?:\||$)', part, re.IGNORECASE)
+                if mineral_match:
+                    result['mineral_type'] = mineral_match.group(1).strip()
 
         return result
 
