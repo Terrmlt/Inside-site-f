@@ -4,70 +4,305 @@
 
 {% block extra_css %}
 <style>
-    .upload-container {
-        max-width: 800px;
-        margin: 50px auto;
-        padding: 30px;
+    body {
+        overflow-y: auto;
+        background-color: var(--bg-light);
     }
-    .upload-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        padding: 40px;
+
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0;
     }
+
+    .hero-section {
+        background: linear-gradient(135deg, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 100%);
+        color: var(--text-dark);
+        padding: 3rem 2rem 2.5rem;
+        position: relative;
+        border-radius: 0 0 32px 32px;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: 1.15rem;
+        color: var(--text-muted);
+        margin-bottom: 0;
+        font-weight: 400;
+    }
+
+    .content-area {
+        padding: 3rem 2rem 5rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .upload-section {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s;
+    }
+
+    .upload-section:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
     .upload-zone {
-        border: 3px dashed #dee2e6;
-        border-radius: 8px;
-        padding: 40px;
+        border: 3px dashed var(--border-color);
+        border-radius: 12px;
+        padding: 3rem;
         text-align: center;
         transition: all 0.3s;
-        background-color: #f8f9fa;
+        background-color: #fafbfc;
     }
+
     .upload-zone:hover {
-        border-color: #0d6efd;
-        background-color: #e7f1ff;
+        border-color: var(--accent-color);
+        background-color: #f0f7ff;
     }
+
     .upload-icon {
-        font-size: 64px;
-        color: #6c757d;
-        margin-bottom: 20px;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: var(--accent-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
     }
-    .alert {
-        margin-top: 20px;
+
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
     }
+
+    .instruction-list {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .instruction-list li {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+        color: var(--text-dark);
+        margin-bottom: 0.75rem;
+        padding-left: 2rem;
+        position: relative;
+    }
+
+    .instruction-list li::before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--accent-color);
+        font-weight: 700;
+    }
+
+    .example-box {
+        background: #fafbfc;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .example-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .code-block {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1.25rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        color: var(--text-dark);
+        overflow-x: auto;
+    }
+
+    .field-table {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .field-table td {
+        padding: 0.5rem 0;
+        font-size: 0.9375rem;
+        line-height: 1.6;
+    }
+
+    .field-table td:first-child {
+        font-weight: 600;
+        color: var(--text-dark);
+        padding-right: 1rem;
+        white-space: nowrap;
+    }
+
+    .field-table td:last-child {
+        color: var(--text-muted);
+    }
+
+    .keyword-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .keyword-table th,
+    .keyword-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9375rem;
+    }
+
+    .keyword-table th {
+        font-weight: 600;
+        color: var(--text-dark);
+        background: #fafbfc;
+    }
+
+    .keyword-table code {
+        background: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        font-size: 0.875rem;
+    }
+
+    .alert-custom {
+        background: #f0f7ff;
+        border-left: 4px solid var(--accent-color);
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
     .result-details {
-        margin-top: 15px;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 6px;
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background-color: #fafbfc;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
     }
+
     .result-item {
         display: flex;
         justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #dee2e6;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
     }
+
     .result-item:last-child {
         border-bottom: none;
     }
-    .instruction-box {
-        background-color: #e7f3ff;
-        border-left: 4px solid #0d6efd;
-        padding: 20px;
-        margin-bottom: 30px;
-        border-radius: 4px;
+
+    .btn-primary {
+        background: var(--accent-color);
+        border-color: var(--accent-color);
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    }
+
+    .btn-success {
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        font-size: 1.125rem;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+    }
+
+    .accordion-button {
+        font-size: 1.125rem;
+        font-weight: 600;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #f0f7ff;
+        color: var(--accent-color);
+    }
+
+    .accordion-body {
+        padding: 2rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--accent-color);
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .back-link:hover {
+        background: var(--accent-hover);
+        color: white;
+        transform: translateX(-4px);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="upload-container">
-    <div class="upload-card">
-        <h2 class="mb-4">Загрузка карт (GeoJSON)</h2>
-        
-        <div class="instruction-box">
-            <h5>Инструкция:</h5>
-            <ul class="mb-0">
+<div class="main-container">
+    <div class="hero-section">
+        <h1 class="hero-title">Загрузка карт</h1>
+        <p class="hero-subtitle">Импорт данных о лицензиях из файлов GeoJSON</p>
+    </div>
+
+    <div class="content-area">
+        <a href="/" class="back-link mb-4">
+            <span>←</span>
+            <span>Вернуться к карте</span>
+        </a>
+
+        <div class="upload-section">
+            <h2 class="section-title">Инструкция по загрузке</h2>
+            <ul class="instruction-list">
                 <li>Выберите GeoJSON файл с картой лицензий</li>
                 <li>Файл должен содержать полигоны с информацией о лицензиях</li>
                 <li>Поддерживаются форматы: .geojson и .json</li>
@@ -80,112 +315,139 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample">
-                        <strong>📋 Как описать полигон в Конструкторе Яндекс.Карт</strong>
+                        Формат данных для Конструктора Яндекс.Карт
                     </button>
                 </h2>
                 <div id="collapseExample" class="accordion-collapse collapse" data-bs-parent="#formatExample">
                     <div class="accordion-body">
-                        <div class="alert alert-primary mb-3">
+                        <div class="alert-custom">
                             <strong>Для пользователей Конструктора Яндекс.Карт:</strong><br>
                             После создания полигона на карте, в поле "Описание" впишите данные о лицензии в указанном ниже формате. Каждую строку разделяйте нажатием Enter (в GeoJSON это будет &lt;br/&gt;).
                         </div>
                         
-                        <div class="border rounded p-3 mb-4" style="background-color: #fffbf0; border-color: #ffc107 !important; border-width: 2px !important;">
-                            <h6 class="text-warning mb-3">⭐ Образец для копирования в Конструкторе Яндекс.Карт</h6>
-                            <p class="mb-2"><strong>Скопируйте этот текст в поле "Описание" полигона:</strong></p>
-                            <pre class="bg-white p-3 rounded border" style="font-size: 14px;"><code>ХАБ 12345 НЭ Северный участок
+                        <div class="example-box">
+                            <h3 class="example-title">Полное описание лицензии</h3>
+                            <p class="mb-3">Образец текста для поля "Описание" полигона:</p>
+                            <div class="code-block">ХАБ 12345 НЭ Северный участок
 Площадь: 150.5 кв.км
 ООО Золотодобыча
 Дата выдачи: 15.03.2020
 Действует до: 31.12.2030
-Полезное ископаемое: Золото</code></pre>
+Полезное ископаемое: Золото</div>
                             
-                            <p class="mb-2 mt-3"><strong>⬇️ Система автоматически заполнит ВСЕ поля:</strong></p>
-                            <ul class="list-unstyled mb-0">
-                                <li>📄 <strong>Номер лицензии:</strong> ХАБ 12345 НЭ</li>
-                                <li>🏷️ <strong>Вид пользования:</strong> НЭ</li>
-                                <li>🌍 <strong>Регион:</strong> Хабаровский край <span class="text-muted small">(автоматически по "ХАБ")</span></li>
-                                <li>📍 <strong>Участок:</strong> Северный участок</li>
-                                <li>📐 <strong>Площадь:</strong> 150.5 кв.км</li>
-                                <li>🏢 <strong>Недропользователь:</strong> ООО Золотодобыча</li>
-                                <li>📅 <strong>Дата выдачи:</strong> 15.03.2020</li>
-                                <li>⏰ <strong>Дата окончания:</strong> 31.12.2030</li>
-                                <li>💎 <strong>Полезное ископаемое:</strong> Золото</li>
-                            </ul>
-                        </div>
-
-                        <div class="border rounded p-3 mb-4" style="background-color: #f8f9fa;">
-                            <h6 class="text-primary mb-3">📝 Пример 2: Минимальное описание</h6>
-                            <p class="mb-2 small text-muted">Если некоторых данных нет, просто пропустите эти строки:</p>
-                            <pre class="bg-white p-2 rounded border"><code>САХ 98765 БР
-ООО Сахалин-Ресурс</code></pre>
-                            
-                            <p class="mb-2 mt-3"><strong>⬇️ Заполнятся только указанные данные:</strong></p>
-                            <ul class="list-unstyled mb-0 small">
-                                <li>📄 <strong>Номер:</strong> САХ 98765 БР</li>
-                                <li>🌍 <strong>Регион:</strong> Сахалинская область</li>
-                                <li>🏢 <strong>Недропользователь:</strong> ООО Сахалин-Ресурс</li>
-                                <li>📅 <strong>Дата выдачи:</strong> сегодняшняя дата</li>
-                                <li>💎 <strong>Ископаемое:</strong> Не указано</li>
-                            </ul>
-                        </div>
-
-                        <div class="alert alert-info mb-3">
-                            <h6 class="mb-2">📝 Правила заполнения:</h6>
-                            <table class="table table-sm table-borderless mb-0 small">
+                            <p class="mt-3 mb-2"><strong>Система автоматически заполнит поля:</strong></p>
+                            <table class="field-table">
                                 <tr>
-                                    <td class="text-nowrap"><strong>Номер лицензии:</strong></td>
-                                    <td><code>ХАБ 12345 НЭ</code> (с пробелами между частями!)</td>
+                                    <td>Номер лицензии:</td>
+                                    <td>ХАБ 12345 НЭ</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-nowrap"><strong>Площадь:</strong></td>
-                                    <td><code>Площадь: 150.5 кв.км</code></td>
+                                    <td>Вид пользования:</td>
+                                    <td>НЭ</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-nowrap"><strong>Недропользователь:</strong></td>
-                                    <td><code>ООО Название</code> (укажите форму: ООО, АО, ПАО)</td>
+                                    <td>Регион:</td>
+                                    <td>Хабаровский край (автоматически по коду "ХАБ")</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-nowrap"><strong>Дата выдачи:</strong></td>
-                                    <td><code>Дата выдачи: 01.01.2020</code> или <code>Выдана: 01.01.2020</code></td>
+                                    <td>Участок:</td>
+                                    <td>Северный участок</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-nowrap"><strong>Дата окончания:</strong></td>
-                                    <td><code>Действует до: 31.12.2030</code> или <code>Дата окончания: 31.12.2030</code></td>
+                                    <td>Площадь:</td>
+                                    <td>150.5 кв.км</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-nowrap"><strong>Ископаемое:</strong></td>
-                                    <td><code>Полезное ископаемое: Золото</code> или <code>Ископаемое: Каменный уголь</code></td>
+                                    <td>Недропользователь:</td>
+                                    <td>ООО Золотодобыча</td>
+                                </tr>
+                                <tr>
+                                    <td>Дата выдачи:</td>
+                                    <td>15.03.2020</td>
+                                </tr>
+                                <tr>
+                                    <td>Дата окончания:</td>
+                                    <td>31.12.2030</td>
+                                </tr>
+                                <tr>
+                                    <td>Полезное ископаемое:</td>
+                                    <td>Золото</td>
                                 </tr>
                             </table>
                         </div>
 
-                        <h6 class="mb-2">🎨 Цвет полигона определяет статус лицензии:</h6>
-                        <div class="row g-2 mb-3">
-                            <div class="col-md-6">
-                                <div class="border rounded p-2 small">
-                                    <span class="badge" style="background-color: #ed4543;">▪</span> <code>#ed4543</code> → Действующая
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="border rounded p-2 small">
-                                    <span class="badge" style="background-color: #1bad03;">▪</span> <code>#1bad03</code> → Прекращена
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="border rounded p-2 small">
-                                    <span class="badge" style="background-color: #0e4779;">▪</span> <code>#0e4779</code> → Действующая
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="border rounded p-2 small">
-                                    <span class="badge" style="background-color: #9b30ff;">▪</span> <code>#9b30ff</code> → Приостановлена
-                                </div>
-                            </div>
+                        <div class="example-box">
+                            <h3 class="example-title">Минимальное описание</h3>
+                            <p class="mb-3">Если некоторых данных нет, просто пропустите эти строки:</p>
+                            <div class="code-block">САХ 98765 БР
+ООО Сахалин-Ресурс</div>
+                            
+                            <p class="mt-3 mb-2"><strong>Заполнятся только указанные данные:</strong></p>
+                            <table class="field-table">
+                                <tr>
+                                    <td>Номер:</td>
+                                    <td>САХ 98765 БР</td>
+                                </tr>
+                                <tr>
+                                    <td>Регион:</td>
+                                    <td>Сахалинская область</td>
+                                </tr>
+                                <tr>
+                                    <td>Недропользователь:</td>
+                                    <td>ООО Сахалин-Ресурс</td>
+                                </tr>
+                                <tr>
+                                    <td>Дата выдачи:</td>
+                                    <td>Сегодняшняя дата</td>
+                                </tr>
+                                <tr>
+                                    <td>Ископаемое:</td>
+                                    <td>Не указано</td>
+                                </tr>
+                            </table>
                         </div>
 
-                        <h6 class="mb-2">📦 Готовый пример GeoJSON файла с полными данными:</h6>
-                        <pre class="bg-light p-3 rounded small"><code>{
+                        <div class="example-box">
+                            <h3 class="example-title">Распознаваемые ключевые слова</h3>
+                            <table class="keyword-table">
+                                <thead>
+                                    <tr>
+                                        <th>Поле</th>
+                                        <th>Формат</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Номер лицензии</td>
+                                        <td><code>ХАБ 12345 НЭ</code> (с пробелами между частями)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Площадь</td>
+                                        <td><code>Площадь: 150.5 кв.км</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Недропользователь</td>
+                                        <td><code>ООО Название</code> (укажите форму: ООО, АО, ПАО)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Дата выдачи</td>
+                                        <td><code>Дата выдачи: 01.01.2020</code> или <code>Выдана: 01.01.2020</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Дата окончания</td>
+                                        <td><code>Действует до: 31.12.2030</code> или <code>Дата окончания: 31.12.2030</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ископаемое</td>
+                                        <td><code>Полезное ископаемое: Золото</code> или <code>Ископаемое: Каменный уголь</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="example-box">
+                            <h3 class="example-title">Пример GeoJSON файла</h3>
+                            <div class="code-block">{
   "type": "FeatureCollection",
   "features": [
     {
@@ -202,10 +464,10 @@
       }
     }
   ]
-}</code></pre>
-
-                        <div class="alert alert-success mt-3 mb-0">
-                            <small><strong>✅ Готово!</strong> Конструктор Яндекс.Карт автоматически создаст такой GeoJSON при экспорте. В поле "Описание" каждого полигона укажите данные построчно (Enter между строками), а цвет выберите из палитры.</small>
+}</div>
+                            <p class="mt-3 mb-0" style="color: var(--text-muted);">
+                                <strong>Примечание:</strong> Конструктор Яндекс.Карт автоматически создаст такой GeoJSON при экспорте. Цвет полигона (fill) можно выбрать любой из палитры Конструктора.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -262,37 +524,35 @@
         {% endif %}
 
         {% if not success %}
-        <form method="post" enctype="multipart/form-data" id="uploadForm">
-            {% csrf_token %}
-            
-            <div class="upload-zone" id="uploadZone">
-                <div class="upload-icon">📤</div>
-                <h5>Выберите GeoJSON файл</h5>
-                <p class="text-muted">или перетащите файл сюда</p>
-                <input type="file" name="geojson_file" id="geojsonFile" accept=".geojson,.json" class="d-none" required>
-                <button type="button" class="btn btn-primary mt-3" onclick="document.getElementById('geojsonFile').click()">
-                    Выбрать файл
-                </button>
-            </div>
-            
-            <div id="selectedFile" class="mt-3" style="display: none;">
-                <div class="alert alert-info">
-                    <strong>Выбран файл:</strong> <span id="fileName"></span>
-                    <button type="button" class="btn-close float-end" onclick="clearFile()"></button>
+        <div class="upload-section">
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+                
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">↑</div>
+                    <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">Выберите GeoJSON файл</h3>
+                    <p class="text-muted mb-3">или перетащите файл сюда</p>
+                    <input type="file" name="geojson_file" id="geojsonFile" accept=".geojson,.json" class="d-none" required>
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('geojsonFile').click()">
+                        Выбрать файл
+                    </button>
                 </div>
-            </div>
-            
-            <div class="mt-4 d-grid gap-2">
-                <button type="submit" class="btn btn-success btn-lg" id="submitBtn" disabled>
-                    Загрузить и импортировать
-                </button>
-            </div>
-        </form>
-        {% endif %}
-        
-        <div class="mt-4">
-            <a href="/" class="btn btn-outline-secondary">Вернуться к карте</a>
+                
+                <div id="selectedFile" class="mt-3" style="display: none;">
+                    <div class="alert alert-info">
+                        <strong>Выбран файл:</strong> <span id="fileName"></span>
+                        <button type="button" class="btn-close float-end" onclick="clearFile()"></button>
+                    </div>
+                </div>
+                
+                <div class="mt-4 d-grid gap-2">
+                    <button type="submit" class="btn btn-success btn-lg" id="submitBtn" disabled>
+                        Загрузить и импортировать
+                    </button>
+                </div>
+            </form>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -317,20 +577,20 @@ if (fileInput) {
 
     uploadZone.addEventListener('dragover', function(e) {
         e.preventDefault();
-        uploadZone.style.borderColor = '#0d6efd';
-        uploadZone.style.backgroundColor = '#e7f1ff';
+        uploadZone.style.borderColor = 'var(--accent-color)';
+        uploadZone.style.backgroundColor = '#f0f7ff';
     });
 
     uploadZone.addEventListener('dragleave', function(e) {
         e.preventDefault();
-        uploadZone.style.borderColor = '#dee2e6';
-        uploadZone.style.backgroundColor = '#f8f9fa';
+        uploadZone.style.borderColor = 'var(--border-color)';
+        uploadZone.style.backgroundColor = '#fafbfc';
     });
 
     uploadZone.addEventListener('drop', function(e) {
         e.preventDefault();
-        uploadZone.style.borderColor = '#dee2e6';
-        uploadZone.style.backgroundColor = '#f8f9fa';
+        uploadZone.style.borderColor = 'var(--border-color)';
+        uploadZone.style.backgroundColor = '#fafbfc';
         
         if (e.dataTransfer.files.length > 0) {
             fileInput.files = e.dataTransfer.files;
