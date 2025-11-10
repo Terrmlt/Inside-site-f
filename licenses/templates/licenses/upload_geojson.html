@@ -76,6 +76,86 @@
             </ul>
         </div>
 
+        <div class="accordion mb-4" id="formatExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample">
+                        <strong>📋 Пример структуры GeoJSON файла</strong>
+                    </button>
+                </h2>
+                <div id="collapseExample" class="accordion-collapse collapse" data-bs-parent="#formatExample">
+                    <div class="accordion-body">
+                        <p class="mb-3">Файл должен содержать стандартный GeoJSON формат с полями <code>features</code>, каждая feature должна иметь:</p>
+                        
+                        <h6 class="mt-3 mb-2">1️⃣ Geometry (координаты полигона)</h6>
+                        <p class="text-muted small mb-2">Тип: <code>Polygon</code> или <code>MultiPolygon</code></p>
+                        <pre class="bg-light p-3 rounded"><code>"geometry": {
+  "type": "Polygon",
+  "coordinates": [[[58.86, 101.22], [58.87, 101.25], ...]]
+}</code></pre>
+
+                        <h6 class="mt-3 mb-2">2️⃣ Properties с Description (основная информация)</h6>
+                        <p class="text-muted small mb-2">Описание должно содержать данные через разделитель <code>&lt;br/&gt;</code></p>
+                        <pre class="bg-light p-3 rounded"><code>"properties": {
+  "description": "ХАБ 12345 НЭ Северный&lt;br/&gt;Площадь: 150.5 кв.км&lt;br/&gt;ООО Золотодобыча",
+  "fill": "#ed4543"
+}</code></pre>
+
+                        <h6 class="mt-3 mb-2">📌 Формат описания (description):</h6>
+                        <ul class="small">
+                            <li><strong>Первая строка:</strong> Номер лицензии + Название участка
+                                <ul class="mt-1">
+                                    <li>Номер: <code>ХАБ 12345 НЭ</code> (3 буквы региона + пробел + 5-6 цифр + пробел + 2 буквы вида)</li>
+                                    <li>После номера: название участка (необязательно)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Вторая строка:</strong> Площадь: <code>150.5 кв.км</code> (необязательно)</li>
+                            <li><strong>Третья строка:</strong> Недропользователь: <code>ООО Название</code> или <code>АО Название</code></li>
+                        </ul>
+
+                        <h6 class="mt-3 mb-2">🎨 Цвет полигона (fill)</h6>
+                        <p class="text-muted small mb-2">Автоматически определяет статус лицензии:</p>
+                        <ul class="small mb-3">
+                            <li><code>#1bad03</code> → Прекращена</li>
+                            <li><code>#ed4543</code>, <code>#0e4779</code>, <code>#006edb</code> → Действующая</li>
+                            <li><code>#9b30ff</code> или purple/violet → Приостановлена</li>
+                            <li>Любые другие цвета → Действующая</li>
+                        </ul>
+
+                        <h6 class="mt-3 mb-2">📦 Полный пример GeoJSON файла:</h6>
+                        <pre class="bg-light p-3 rounded small"><code>{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [101.22, 58.86],
+            [101.25, 58.86],
+            [101.25, 58.88],
+            [101.22, 58.88],
+            [101.22, 58.86]
+          ]
+        ]
+      },
+      "properties": {
+        "description": "ХАБ 12345 НЭ Северный участок&lt;br/&gt;Площадь: 150.5 кв.км&lt;br/&gt;ООО Золотодобыча",
+        "fill": "#ed4543"
+      }
+    }
+  ]
+}</code></pre>
+
+                        <div class="alert alert-info mt-3 mb-0">
+                            <small><strong>💡 Совет:</strong> Регион определяется автоматически по первым 3 буквам номера лицензии (например, ХАБ → Хабаровский край, САХ → Сахалинская область)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% if error %}
         <div class="alert alert-danger" role="alert">
             <strong>Ошибка!</strong> {{ error }}
