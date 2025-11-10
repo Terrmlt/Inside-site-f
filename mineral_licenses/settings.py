@@ -172,36 +172,93 @@ CORS_ALLOW_CREDENTIALS = True
 YANDEX_MAPS_API_KEY = os.getenv('YANDEX_MAPS_API_KEY', '')
 
 # =============================================================================
-# LDAP AUTHENTICATION
+# LDAP AUTHENTICATION (Мультидоменная поддержка)
 # =============================================================================
 # LDAP аутентификация по умолчанию ВЫКЛЮЧЕНА
 # 
 # Для активации установите переменную окружения: USE_LDAP=true
 # 
-# Настройки LDAP находятся в файле mineral_licenses/settings_ldap.py
-# Там вы найдёте подробные комментарии и примеры для Active Directory и OpenLDAP
+# НОВАЯ ВОЗМОЖНОСТЬ: Поддержка нескольких доменов LDAP
+# Пользователь может выбрать домен при входе или система автоматически определит домен
 # 
-# Документация по подключению: см. LDAP_SETUP.md
+# Подробная документация по настройке: см. LDAP_SETUP.md
 # =============================================================================
 
 USE_LDAP = os.getenv('USE_LDAP', 'false').lower() in ('true', '1', 'yes')
 
 if USE_LDAP:
-    # Импортируем все настройки LDAP из settings_ldap.py
-    from mineral_licenses.settings_ldap import *
-    
-    # Настраиваем backend аутентификации
+    # Настраиваем кастомный мультидоменный backend аутентификации
     AUTHENTICATION_BACKENDS = [
-        'django_auth_ldap.backend.LDAPBackend',  # Сначала проверяем LDAP
-        'django.contrib.auth.backends.ModelBackend',  # Затем локальную БД Django
+        'licenses.auth_backends.MultiDomainLDAPBackend',  # Мультидоменный LDAP backend
+        'django.contrib.auth.backends.ModelBackend',  # Локальная БД Django (запасной вариант)
     ]
     
-    print("✓ LDAP authentication enabled")
+    # =============================================================================
+    # КОНФИГУРАЦИЯ МУЛЬТИДОМЕННОГО LDAP
+    # =============================================================================
+    # 
+    # Формат конфигурации:
+    # LDAP_DOMAINS = {
+    #     'domain_code': {  # Код домена (соответствует value в форме логина)
+    #         'SERVER_URI': 'ldap://адрес-сервера:порт',
+    #         'BIND_DN': 'CN=Служебная учетка,OU=...,DC=...',  # Опционально
+    #         'BIND_PASSWORD': 'пароль_служебной_учетки',      # Опционально
+    #         'USER_SEARCH_BASE': 'OU=Users,DC=domain,DC=local',
+    #         'USER_SEARCH_FILTER': '(sAMAccountName=%(user)s)',  # Для Active Directory
+    #     },
+    # }
+    # 
+    # Примеры:
+    # - Для Active Directory используйте: ldap://dc.domain.local:389 или ldaps://dc.domain.local:636 (SSL)
+    # - Для OpenLDAP используйте: ldap://ldap.domain.local:389
+    # 
+    # USER_SEARCH_FILTER:
+    # - Active Directory: (sAMAccountName=%(user)s)
+    # - OpenLDAP: (uid=%(user)s)
+    # 
+    # BIND_DN и BIND_PASSWORD опциональны, но рекомендуются для корректной работы поиска пользователей
+    # =============================================================================
+    
+    LDAP_DOMAINS = {
+        # Домен 1 - пример конфигурации для Active Directory
+        'domain1': {
+            'SERVER_URI': os.getenv('LDAP_DOMAIN1_SERVER_URI', 'ldap://dc1.example.local:389'),
+            'BIND_DN': os.getenv('LDAP_DOMAIN1_BIND_DN', ''),
+            'BIND_PASSWORD': os.getenv('LDAP_DOMAIN1_BIND_PASSWORD', ''),
+            'USER_SEARCH_BASE': os.getenv('LDAP_DOMAIN1_USER_SEARCH_BASE', 'OU=Users,DC=example,DC=local'),
+            'USER_SEARCH_FILTER': os.getenv('LDAP_DOMAIN1_USER_SEARCH_FILTER', '(sAMAccountName=%(user)s)'),
+        },
+        
+        # Домен 2 - добавьте свой второй домен
+        'domain2': {
+            'SERVER_URI': os.getenv('LDAP_DOMAIN2_SERVER_URI', 'ldap://dc2.company.local:389'),
+            'BIND_DN': os.getenv('LDAP_DOMAIN2_BIND_DN', ''),
+            'BIND_PASSWORD': os.getenv('LDAP_DOMAIN2_BIND_PASSWORD', ''),
+            'USER_SEARCH_BASE': os.getenv('LDAP_DOMAIN2_USER_SEARCH_BASE', 'OU=Users,DC=company,DC=local'),
+            'USER_SEARCH_FILTER': os.getenv('LDAP_DOMAIN2_USER_SEARCH_FILTER', '(sAMAccountName=%(user)s)'),
+        },
+        
+        # Домен 3 - добавьте свой третий домен
+        'domain3': {
+            'SERVER_URI': os.getenv('LDAP_DOMAIN3_SERVER_URI', 'ldap://dc3.corp.local:389'),
+            'BIND_DN': os.getenv('LDAP_DOMAIN3_BIND_DN', ''),
+            'BIND_PASSWORD': os.getenv('LDAP_DOMAIN3_BIND_PASSWORD', ''),
+            'USER_SEARCH_BASE': os.getenv('LDAP_DOMAIN3_USER_SEARCH_BASE', 'OU=Users,DC=corp,DC=local'),
+            'USER_SEARCH_FILTER': os.getenv('LDAP_DOMAIN3_USER_SEARCH_FILTER', '(sAMAccountName=%(user)s)'),
+        },
+    }
+    
+    # Удаляем домены с пустым SERVER_URI (не настроенные)
+    LDAP_DOMAINS = {k: v for k, v in LDAP_DOMAINS.items() if v.get('SERVER_URI')}
+    
+    print(f"✓ LDAP authentication enabled - {len(LDAP_DOMAINS)} domain(s) configured")
+    
 else:
     # LDAP выключен, используем только стандартную аутентификацию Django
     AUTHENTICATION_BACKENDS = [
         'django.contrib.auth.backends.ModelBackend',
     ]
+    LDAP_DOMAINS = {}
 
 # ЗАГЛУШКА: Внешняя база данных
 # Замените на свои настройки при подключении к продакшн БД

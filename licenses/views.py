@@ -232,20 +232,33 @@ def download_document(request, document_id):
 
 def login_view(request):
     """
-    ЗАГЛУШКА: Форма входа (для будущей LDAP интеграции)
+    Форма входа с поддержкой мультидоменной LDAP аутентификации.
+    
+    Пользователь может либо выбрать конкретный домен, либо оставить поле пустым
+    для автоматического определения домена.
     """
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        domain = request.POST.get('domain', '')
         
-        user = authenticate(request, username=username, password=password)
+        # Если домен пустой - передаем None для автоопределения
+        domain_param = domain if domain else None
+        
+        user = authenticate(request, username=username, password=password, domain=domain_param)
         
         if user is not None:
             login(request, user)
             return redirect('map')
         else:
+            error_message = 'Неверный логин или пароль'
+            if domain_param:
+                error_message += f' (домен: {domain_param})'
+            else:
+                error_message += ' (проверены все домены)'
+            
             return render(request, 'licenses/login.html', {
-                'error': 'Неверный логин или пароль'
+                'error': error_message
             })
     
     return render(request, 'licenses/login.html')

@@ -34,7 +34,7 @@ The application is a Django web application.
     - **Filtering & Search:** Filters by status, region, type, mineral; search by license number and user. Dynamic filter buttons and map legend based on license types.
     - **Document Management:** Upload/download functionality for license-linked documents.
     - **GeoJSON Integration:** Web and admin interfaces support drag-and-drop or traditional GeoJSON uploads, automatically updating license data, parsing info, determining regions, and calculating polygon centers.
-    - **Authentication:** Django's built-in authentication by default; LDAP authentication is configurable via `USE_LDAP=true` environment variable with provided templates and documentation.
+    - **Authentication:** Django's built-in authentication by default; **Multi-domain LDAP authentication** is configurable via `USE_LDAP=true` environment variable. Supports automatic domain detection or manual domain selection by users. Custom `MultiDomainLDAPBackend` handles authentication across multiple LDAP domains (Active Directory, OpenLDAP).
     - **Data Export:** Supports export to Excel (using `openpyxl`) and PDF (using `reportlab`) with filter integration and professional styling.
     - **Automatic Status Updates:** Expiration detection in API and management command for batch updates.
 
@@ -66,5 +66,7 @@ The application is a Django web application.
 ## Documentation
 - **DEPLOYMENT_LOCAL.md** - Полная методичка по развертыванию на локальном ПК с детальными инструкциями по PostgreSQL
 - **PostgreSQL_CHEATSHEET.md** - Шпаргалка по командам PostgreSQL для быстрой справки
+- **LDAP_MULTI_DOMAIN.md** - Инструкция по настройке мультидоменной LDAP аутентификации
+- **LDAP_SETUP.md** - Общая документация по LDAP аутентификации
 - **requirements.txt** - Список зависимостей Python для установки через pip
 - **/help/** - Встроенная справка пользователя в веб-интерфейсе

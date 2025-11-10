@@ -299,8 +299,23 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 # Без этого ключа карта будет показывать предупреждение, но сайт будет работать
 # YANDEX_MAPS_API_KEY=ваш-ключ-от-яндекс-карт
 
-# LDAP аутентификация (если не используете - не указывайте)
+# ========================================
+# LDAP АУТЕНТИФИКАЦИЯ (ОПЦИОНАЛЬНО)
+# ========================================
+# Система поддерживает мультидоменную LDAP аутентификацию
+# Пользователь может выбрать домен или система автоматически определит его
+#
+# Для активации: USE_LDAP=true
+# Подробная инструкция: см. LDAP_MULTI_DOMAIN.md
+#
 # USE_LDAP=false
+#
+# Пример настройки для одного домена:
+# LDAP_DOMAIN1_SERVER_URI=ldap://dc.company.local:389
+# LDAP_DOMAIN1_BIND_DN=CN=ldap-reader,OU=Service,DC=company,DC=local
+# LDAP_DOMAIN1_BIND_PASSWORD=SecurePassword123
+# LDAP_DOMAIN1_USER_SEARCH_BASE=OU=Users,DC=company,DC=local
+# LDAP_DOMAIN1_USER_SEARCH_FILTER=(sAMAccountName=%(user)s)
 ```
 
 **Генерация SECRET_KEY:**
