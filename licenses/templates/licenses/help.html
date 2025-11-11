@@ -265,7 +265,9 @@
                 <li><a href="#export">5. Экспорт данных</a></li>
                 <li><a href="#analytics">6. Аналитика</a></li>
                 <li><a href="#theme">7. Переключение темы</a></li>
+                {% if user.is_staff %}
                 <li><a href="#admin">8. Для администраторов</a></li>
+                {% endif %}
             </ul>
         </div>
 
@@ -519,6 +521,7 @@
         </div>
 
         <!-- Section 8: Admin -->
+        {% if user.is_staff %}
         <div class="help-section" id="admin">
             <h2>
                 <svg class="section-icon" viewBox="0 0 16 16">
@@ -536,8 +539,8 @@
             <ul>
                 <li>Перейдите в Django Admin по адресу <code>/admin/</code></li>
                 <li>Войдите с учетными данными администратора</li>
-                <li>Найдите раздел "Upload GeoJSON"</li>
-                <li>Используйте drag-and-drop для загрузки файла или нажмите "Browse" для выбора файла</li>
+                <li>Найдите раздел "Загрузка GeoJSON"</li>
+                <li>Используйте перетаскивание файла или нажмите "Обзор" для выбора файла</li>
             </ul>
 
             <h3>Формат GeoJSON:</h3>
@@ -570,6 +573,7 @@
                 </p>
             </div>
         </div>
+        {% endif %}
 
         <!-- Support Contact Section -->
         <div class="help-section" id="support" style="margin-top: 4rem;">
