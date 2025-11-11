@@ -248,6 +248,7 @@
     }
 
     .map-container {
+        position: relative;
         width: 100%;
         height: 600px;
         margin-bottom: 3rem;
@@ -259,6 +260,41 @@
     #map {
         width: 100%;
         height: 100%;
+    }
+
+    .map-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .map-overlay-message {
+        background: white;
+        padding: 1.5rem 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        pointer-events: none;
+    }
+
+    .map-overlay-icon {
+        width: 32px;
+        height: 32px;
+        color: var(--accent-color);
     }
 
     .filters-section {
@@ -644,6 +680,14 @@
 
         <div class="map-container">
             <div id="map"></div>
+            <div class="map-overlay" id="mapOverlay" role="button" tabindex="0" aria-label="Активировать карту">
+                <div class="map-overlay-message">
+                    <svg class="map-overlay-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                    </svg>
+                    Нажмите для активации карты
+                </div>
+            </div>
         </div>
 
         <!-- Legend (динамически генерируется) -->
@@ -805,6 +849,8 @@
 
     ymaps.ready(init);
 
+    let isMapActivated = false;
+
     function init() {
         myMap = new ymaps.Map("map", {
             center: [55.76, 37.64],
@@ -812,7 +858,41 @@
             controls: ['zoomControl', 'searchControl', 'typeSelector', 'fullscreenControl']
         });
 
+        // Отключаем скролл-зум по умолчанию
+        myMap.behaviors.disable('scrollZoom');
+
+        // Добавляем обработчик активации карты по клику на оверлей
+        const mapOverlay = document.getElementById('mapOverlay');
+        if (mapOverlay) {
+            mapOverlay.addEventListener('click', activateMap);
+            // Поддержка клавиатуры (Enter и Space)
+            mapOverlay.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    activateMap();
+                }
+            });
+        }
+
         loadLicenses();
+    }
+
+    function activateMap() {
+        if (isMapActivated) return;
+        
+        isMapActivated = true;
+        
+        // Включаем скролл-зум
+        myMap.behaviors.enable('scrollZoom');
+        
+        // Убираем оверлей с плавной анимацией
+        const mapOverlay = document.getElementById('mapOverlay');
+        if (mapOverlay) {
+            mapOverlay.style.opacity = '0';
+            setTimeout(() => {
+                mapOverlay.remove();
+            }, 300);
+        }
     }
 
     function loadLicenses(page = 1) {
