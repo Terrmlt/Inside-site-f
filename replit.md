@@ -27,7 +27,7 @@ The application is a Django web application.
   - Export buttons with Bootstrap tooltips and loading indicators for better UX.
 
 - **Technical Implementations:**
-    - **Interactive Map:** Displays licenses using Yandex.Maps JavaScript API 2.1, with markers and polygons colored by mineral usage type.
+    - **Interactive Map:** Displays licenses using Yandex.Maps JavaScript API 2.1, with markers and polygons colored by mineral usage type. **UX Enhancement:** Scroll zoom disabled by default to prevent accidental page hijacking; activates with click-to-activate overlay with full keyboard accessibility (Enter/Space support).
     - **Pagination:** Django Paginator with 12 items per page, smart controls.
     - **Analytics Dashboard:** Chart.js 4.4.0 for type distribution, regional analysis, and expiry forecast.
     - **Data Management:** CRUD operations for `License` and `Document` models via Django Admin and API.
@@ -37,6 +37,7 @@ The application is a Django web application.
     - **Authentication:** Django's built-in authentication by default; **Multi-domain LDAP authentication** is configurable via `USE_LDAP=true` environment variable. Supports automatic domain detection or manual domain selection by users. Custom `MultiDomainLDAPBackend` handles authentication across multiple LDAP domains (Active Directory, OpenLDAP).
     - **Data Export:** Supports export to Excel (using `openpyxl`) and PDF (using `reportlab`) with filter integration and professional styling. **Security:** Both export endpoints require user authentication.
     - **Automatic Status Updates:** Expiration detection in API and management command for batch updates.
+    - **Help Page:** Comprehensive user documentation with admin-only section (visible only to staff users via `user.is_staff` check). Fully localized in Russian with no English text visible to end users.
 
 - **Feature Specifications:**
     - **License Model:** Stores unique number, mineral usage type, user, coordinates, region, dates, mineral type, status, and description.
