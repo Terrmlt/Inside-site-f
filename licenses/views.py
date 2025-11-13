@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, FileResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.core.files.storage import FileSystemStorage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -242,6 +243,7 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         domain = request.POST.get('domain', '')
+        next_url = request.POST.get('next', '')
         
         # Если домен пустой - передаем None для автоопределения
         domain_param = domain if domain else None
@@ -250,6 +252,9 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
+            # Перенаправляем на запрошенную страницу или на главную
+            if next_url:
+                return redirect(next_url)
             return redirect('map')
         else:
             error_message = 'Неверный логин или пароль'
@@ -259,10 +264,21 @@ def login_view(request):
                 error_message += ' (проверены все домены)'
             
             return render(request, 'licenses/login.html', {
-                'error': error_message
+                'error': error_message,
+                'next': next_url
             })
     
-    return render(request, 'licenses/login.html')
+    # GET запрос - проверяем параметр next и добавляем сообщение если нужно
+    next_url = request.GET.get('next', '')
+    
+    # Проверяем, является ли запрошенный URL экспортом или скачиванием
+    if next_url:
+        if '/api/licenses/export/' in next_url or '/api/documents/' in next_url:
+            messages.info(request, 'Для выполнения этого действия необходимо авторизоваться')
+    
+    return render(request, 'licenses/login.html', {
+        'next': next_url
+    })
 
 
 def logout_view(request):
@@ -469,31 +485,70 @@ def export_licenses_pdf(request):
     from reportlab.pdfbase.ttfonts import TTFont
     
     # Регистрируем DejaVu Sans шрифт для поддержки кириллицы
-    # Этот шрифт обычно доступен в системе
-    try:
-        # Пробуем разные пути к DejaVu Sans
-        font_paths = [
+    # Пробуем разные пути к DejaVu Sans, включая Windows пути
+    import os
+    import platform
+    
+    # Пробуем найти шрифты с поддержкой кириллицы в порядке приоритета
+    font_candidates = [
+        # Arial - отличная поддержка кириллицы, обычно есть в Windows
+        ('Arial', [
+            'C:/Windows/Fonts/arial.ttf',
+            'C:/Windows/Fonts/Arial.ttf',
+            '/System/Library/Fonts/Supplemental/Arial.ttf',
+            '/Library/Fonts/Arial.ttf',
+            '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',  # Linux fallback
+        ]),
+        # Times New Roman - тоже хорошая поддержка кириллицы
+        ('TimesNewRoman', [
+            'C:/Windows/Fonts/times.ttf',
+            'C:/Windows/Fonts/Times.ttf',
+            'C:/Windows/Fonts/timesnr.ttf',
+            '/System/Library/Fonts/Supplemental/Times New Roman.ttf',
+            '/Library/Fonts/Times New Roman.ttf',
+        ]),
+        # DejaVu Sans - хороший fallback
+        ('DejaVuSans', [
             '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            '/usr/share/fonts/TTF/DejaVuSans.ttf',
             '/System/Library/Fonts/Supplemental/DejaVuSans.ttf',
-            'DejaVuSans.ttf',
-        ]
-        
-        font_registered = False
+            'C:/Windows/Fonts/DejaVuSans.ttf',
+        ]),
+        # Liberation Sans для Linux
+        ('LiberationSans', [
+            '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+            '/usr/share/fonts/TTF/LiberationSans-Regular.ttf',
+        ]),
+    ]
+    
+    # Добавляем пути из переменных окружения Windows
+    if platform.system() == 'Windows':
+        windir = os.environ.get('WINDIR', 'C:/Windows')
+        # Добавляем Windows пути в начало списков
+        for font_name, paths in font_candidates:
+            if font_name == 'Arial':
+                paths.insert(0, os.path.join(windir, 'Fonts', 'arial.ttf'))
+                paths.insert(1, os.path.join(windir, 'Fonts', 'Arial.ttf'))
+            elif font_name == 'TimesNewRoman':
+                paths.insert(0, os.path.join(windir, 'Fonts', 'times.ttf'))
+                paths.insert(1, os.path.join(windir, 'Fonts', 'timesnr.ttf'))
+    
+    font_registered = False
+    font_name = 'Helvetica'  # Fallback по умолчанию
+    
+    # Пробуем зарегистрировать шрифты в порядке приоритета
+    for font_display_name, font_paths in font_candidates:
         for font_path in font_paths:
             try:
-                pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
-                font_registered = True
-                break
-            except:
+                if os.path.exists(font_path):
+                    pdfmetrics.registerFont(TTFont(font_display_name, font_path))
+                    font_name = font_display_name
+                    font_registered = True
+                    break
+            except Exception:
                 continue
-        
-        if not font_registered:
-            # Используем базовые шрифты без кириллицы
-            use_unicode_font = False
-        else:
-            use_unicode_font = True
-    except:
-        use_unicode_font = False
+        if font_registered:
+            break
     
     # Получаем параметры фильтрации из GET параметров
     status_filter = request.GET.get('status', '')
@@ -528,21 +583,18 @@ def export_licenses_pdf(request):
     c = canvas.Canvas(output, pagesize=landscape(A4))
     width, height = landscape(A4)
     
-    # Устанавливаем шрифт
-    font_name = 'DejaVuSans' if use_unicode_font else 'Helvetica'
-    
-    # Заголовок
-    c.setFont(font_name, 18)
-    c.setFillColorRGB(59/255, 130/255, 246/255)  # Синий цвет #3B82F6
-    title = 'База лицензий на недропользование' if use_unicode_font else 'Database of Subsurface Use Licenses'
+    # Заголовок (всегда на русском) - увеличен размер для читаемости
+    c.setFont(font_name, 20)
+    c.setFillColorRGB(96/255, 165/255, 250/255)  # Синий цвет #60A5FA
+    title = 'База лицензий на недропользование'
     c.drawCentredString(width/2, height - 50, title)
     
-    # Подзаголовок с датой
-    c.setFont(font_name, 10)
+    # Подзаголовок с датой (всегда на русском) - увеличен размер
+    c.setFont(font_name, 12)
     c.setFillColorRGB(107/255, 114/255, 128/255)  # Серый #6B7280
     current_date = datetime.now().strftime('%d.%m.%Y %H:%M')
-    subtitle = f'Дата формирования: {current_date}' if use_unicode_font else f'Generated: {current_date}'
-    c.drawCentredString(width/2, height - 70, subtitle)
+    subtitle = f'Дата формирования: {current_date}'
+    c.drawCentredString(width/2, height - 75, subtitle)
     
     # Начальная позиция для таблицы
     x_start = 30
@@ -550,11 +602,9 @@ def export_licenses_pdf(request):
     # Ширины колонок (оптимизированы для альбомной A4)
     col_widths = [25, 80, 65, 150, 90, 65, 65, 100, 90]
     
-    # Заголовки таблицы
+    # Заголовки таблицы (всегда на русском)
     headers = ['№', 'Номер лицензии', 'Вид', 'Недропользователь', 'Регион', 
-               'Дата выдачи', 'Дата окончания', 'Полезное ископаемое', 'Статус'] if use_unicode_font else [
-               '№', 'License #', 'Type', 'User', 'Region', 
-               'Issue Date', 'Expiry Date', 'Mineral', 'Status']
+               'Дата выдачи', 'Дата окончания', 'Полезное ископаемое', 'Статус']
     
     # Функция для рисования заголовка таблицы
     def draw_table_header(canvas_obj, y_pos):
@@ -562,7 +612,7 @@ def export_licenses_pdf(request):
         canvas_obj.rect(x_start, y_pos - 5, sum(col_widths), 25, fill=1, stroke=0)
         
         canvas_obj.setFillColorRGB(1, 1, 1)  # Белый текст
-        canvas_obj.setFont(font_name, 8)
+        canvas_obj.setFont(font_name, 10)  # Увеличен размер для читаемости
         x = x_start + 3
         for i, header in enumerate(headers):
             canvas_obj.drawString(x, y_pos + 5, header)
@@ -573,25 +623,26 @@ def export_licenses_pdf(request):
     y_position = draw_table_header(c, height - 120)
     row_num = 0
     
-    # Данные - экспортируем ВСЕ лицензии
-    c.setFont(font_name, 7)
+    # Данные - экспортируем ВСЕ лицензии - увеличен размер для читаемости
+    c.setFont(font_name, 9)
     
     for idx, license in enumerate(licenses, 1):
         if y_position < 50:  # Новая страница если места мало
             c.showPage()
             # Рисуем заголовок на новой странице
             y_position = draw_table_header(c, height - 50)
-            c.setFont(font_name, 7)
+            c.setFont(font_name, 9)
             row_num = 0
         
         # Обновляем статус перед экспортом
         license.update_status_if_expired()
         
+        # Статусы (всегда на русском)
         status_text = {
-            'active': 'Действующая' if use_unicode_font else 'Active',
-            'expired': 'Истекла' if use_unicode_font else 'Expired',
-            'suspended': 'Приостановлена' if use_unicode_font else 'Suspended',
-            'terminated': 'Прекращена' if use_unicode_font else 'Terminated'
+            'active': 'Действующая',
+            'expired': 'Истекла',
+            'suspended': 'Приостановлена',
+            'terminated': 'Прекращена'
         }.get(license.status, license.status)
         
         # Чередующиеся цвета строк
@@ -626,10 +677,10 @@ def export_licenses_pdf(request):
         y_position -= 20
         row_num += 1
     
-    # Футер
-    c.setFont(font_name, 9)
+    # Футер (всегда на русском) - увеличен размер
+    c.setFont(font_name, 11)
     c.setFillColorRGB(107/255, 114/255, 128/255)
-    footer_text = f'Всего записей: {licenses.count()}' if use_unicode_font else f'Total records: {licenses.count()}'
+    footer_text = f'Всего записей: {licenses.count()}'
     c.drawString(x_start, y_position - 20, footer_text)
     
     # Сохраняем PDF

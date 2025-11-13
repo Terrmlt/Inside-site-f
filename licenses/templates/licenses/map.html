@@ -21,15 +21,16 @@
         top: 0;
         background: var(--bg-light);
         border-bottom: 1px solid var(--border-color);
-        z-index: 999;
+        z-index: 1100;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        padding: 0 2rem;
     }
 
     .quick-nav-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 0.75rem 2rem;
+        padding: 0.75rem 0;
         gap: 1rem;
         max-width: 1400px;
         margin: 0 auto;
@@ -95,24 +96,27 @@
     .hero-section {
         background: linear-gradient(135deg, var(--hero-gradient-start) 0%, var(--hero-gradient-end) 100%);
         color: var(--text-dark);
-        padding: 4rem 2rem 3rem;
+        padding: 2.5rem 2rem 2rem;
         position: relative;
         border-radius: 0 0 32px 32px;
+        text-align: center;
     }
 
     .hero-title {
-        font-size: 3.5rem;
+        font-size: 2.5rem;
         font-weight: 700;
         letter-spacing: -0.04em;
         margin-bottom: 1.5rem;
         line-height: 1.1;
+        text-align: center;
     }
 
     .hero-subtitle {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
         color: var(--text-muted);
-        margin-bottom: 3rem;
+        margin-bottom: 1.5rem;
         font-weight: 400;
+        text-align: center;
     }
 
     .stats-container {
@@ -183,11 +187,27 @@
         margin: 0 auto;
     }
 
+    .tabs-section {
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+
+    .tabs-section-title {
+        font-size: 0.9375rem;
+        font-weight: 400;
+        color: var(--text-muted);
+        opacity: 0.75;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
     .license-tabs {
         display: flex;
         gap: 1rem;
         justify-content: center;
-        margin-bottom: 2.5rem;
         flex-wrap: wrap;
     }
 
@@ -210,19 +230,40 @@
         border-color: var(--accent-color);
         background: var(--bg-section);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
     }
 
     .tab-button.active {
         background: var(--accent-color);
         border-color: var(--accent-color);
         color: white;
-        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 16px rgba(96, 165, 250, 0.3);
     }
 
     .tab-button.active:hover {
-        background: #2563EB;
+        background: #3B82F6;
         transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+    }
+
+    .tab-color-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-button:hover .tab-color-indicator {
+        transform: scale(1.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-button.active .tab-color-indicator {
+        background: white !important;
+        box-shadow: 0 2px 6px rgba(255, 255, 255, 0.3);
     }
 
     .tab-count {
@@ -278,7 +319,7 @@
     }
 
     .map-overlay-message {
-        background: white;
+        background: var(--bg-light);
         padding: 1.5rem 2.5rem;
         border-radius: 12px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -289,6 +330,11 @@
         font-weight: 600;
         color: var(--text-dark);
         pointer-events: none;
+        border: 1px solid var(--border-color);
+    }
+
+    [data-theme="dark"] .map-overlay-message {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     }
 
     .map-overlay-icon {
@@ -297,6 +343,81 @@
         color: var(--accent-color);
     }
 
+    /* Контейнер для фильтров и лицензий */
+    .filters-licenses-container {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        align-items: flex-start;
+    }
+
+    /* Боковая панель с фильтрами */
+    .filters-sidebar {
+        width: 350px;
+        min-width: 320px;
+        background: var(--bg-section);
+        padding: 1.5rem;
+        border-radius: 16px;
+        position: sticky;
+        top: 100px;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+    }
+
+    /* Кастомный скроллбар для боковой панели */
+    .filters-sidebar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .filters-sidebar::-webkit-scrollbar-track {
+        background: var(--bg-light);
+        border-radius: 4px;
+    }
+
+    .filters-sidebar::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+    }
+
+    .filters-sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--text-muted);
+    }
+
+    .filters-sidebar h5 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    /* Основная область с лицензиями */
+    .licenses-content {
+        flex: 1;
+        background: var(--bg-section);
+        padding: 2.5rem;
+        border-radius: 16px;
+        min-width: 0;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .licenses-content h5 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 2rem;
+        letter-spacing: -0.03em;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    /* Старые классы для обратной совместимости */
     .filters-section {
         background: var(--bg-section);
         padding: 2.5rem;
@@ -327,8 +448,45 @@
         letter-spacing: -0.03em;
     }
 
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 992px) {
+        .filters-licenses-container {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .filters-sidebar {
+            width: 100%;
+            min-width: unset;
+            position: static;
+            max-height: none;
+            top: auto;
+        }
+
+        .licenses-content {
+            width: 100%;
+        }
+    }
+
+    /* Дополнительная адаптивность для очень маленьких экранов */
+    @media (max-width: 576px) {
+        .filters-sidebar {
+            padding: 1rem;
+        }
+
+        .licenses-content {
+            padding: 1.5rem;
+        }
+
+        .filters-sidebar h5,
+        .licenses-content h5 {
+            font-size: 1.125rem;
+        }
+    }
+
     .pagination-container {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         gap: 1rem;
@@ -391,8 +549,8 @@
         background: var(--bg-light);
         border: 1px solid var(--border-color);
         border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -405,19 +563,19 @@
     }
 
     .license-card-title {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: 700;
         color: var(--text-dark);
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
         letter-spacing: -0.02em;
     }
 
     .license-meta {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
         border-top: 1px solid var(--border-color);
     }
 
@@ -466,23 +624,43 @@
     }
 
     .status-active {
-        background-color: #d1fae5;
+        background-color: #dcfce7;
         color: var(--success-color);
     }
 
     .status-expired {
-        background-color: #e5e5e5;
+        background-color: #d4d4d4;
         color: #666666;
     }
 
     .status-suspended {
-        background-color: #fef3c7;
+        background-color: #e8d9a8;
         color: var(--warning-color);
     }
 
     .status-terminated {
-        background-color: #fee2e2;
+        background-color: #e8d4d4;
         color: var(--danger-color);
+    }
+
+    [data-theme="dark"] .status-active {
+        background-color: #1e3a2e;
+        color: #34d399;
+    }
+
+    [data-theme="dark"] .status-expired {
+        background-color: #2d2d2d;
+        color: #94a3b8;
+    }
+
+    [data-theme="dark"] .status-suspended {
+        background-color: #3d3420;
+        color: #fbbf24;
+    }
+
+    [data-theme="dark"] .status-terminated {
+        background-color: #3d2a2a;
+        color: #f87171;
     }
 
     .filter-group {
@@ -506,6 +684,121 @@
         font-size: 1rem;
         background: var(--bg-light);
         color: var(--text-dark);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    .form-control::-webkit-input-placeholder {
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    .form-control::-moz-placeholder {
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    .form-control:-ms-input-placeholder {
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    [data-theme="dark"] .form-control::placeholder {
+        color: var(--text-muted);
+        opacity: 1;
+    }
+
+    [data-theme="dark"] .form-control::-webkit-input-placeholder {
+        color: var(--text-muted);
+        opacity: 1;
+    }
+
+    [data-theme="dark"] .form-control::-moz-placeholder {
+        color: var(--text-muted);
+        opacity: 1;
+    }
+
+    [data-theme="dark"] .form-control:-ms-input-placeholder {
+        color: var(--text-muted);
+        opacity: 1;
+    }
+
+    /* Стили для фильтров в боковой панели */
+    .filters-sidebar .filter-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .filters-sidebar .filter-group label {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .filters-sidebar .form-select,
+    .filters-sidebar .form-control {
+        font-size: 0.9375rem;
+        padding: 0.625rem 0.875rem;
+    }
+
+    .filters-sidebar .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .filters-sidebar .col-md-6,
+    .filters-sidebar .col-12 {
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
+    }
+
+    /* Кнопки в боковой панели */
+    .filters-sidebar .btn {
+        font-size: 0.875rem;
+        padding: 0.625rem 1rem;
+    }
+
+    .filters-sidebar .btn-sm {
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.875rem;
+    }
+
+    /* Экспорт кнопки в боковой панели */
+    .filters-sidebar .export-btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .filters-sidebar .export-text {
+        font-size: 0.875rem;
+    }
+
+    .filters-sidebar .export-btn svg {
+        flex-shrink: 0;
+    }
+
+    /* Результаты в боковой панели */
+    .filters-sidebar .results-count {
+        font-size: 0.875rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: block;
+    }
+
+    .filters-sidebar .d-flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .filters-sidebar .gap-2 {
+        gap: 0.5rem !important;
     }
 
     .form-select:focus,
@@ -541,7 +834,7 @@
     }
 
     .btn-info:hover {
-        background-color: #2563eb;
+        background-color: #60A5FA;
         transform: translateY(-2px);
     }
 
@@ -557,19 +850,74 @@
 
     .legend {
         background: var(--bg-light);
-        padding: 1.5rem 2rem;
+        padding: 0;
         border-radius: 12px;
         box-shadow: var(--shadow-sm);
         font-size: 0.9375rem;
         margin-bottom: 3rem;
         border: 1px solid var(--border-color);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .legend-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 2rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s;
+        position: relative;
+    }
+
+    .legend-header:hover {
+        background: var(--bg-section);
+    }
+
+    .legend-header:focus {
+        outline: 2px solid var(--accent-color);
+        outline-offset: -2px;
+        border-radius: 12px;
     }
 
     .legend-title {
         font-weight: 700;
-        margin-bottom: 1.25rem;
+        margin: 0;
         font-size: 1.125rem;
         color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .legend-toggle-icon {
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .legend.collapsed .legend-toggle-icon {
+        transform: rotate(-90deg);
+    }
+
+    .legend:not(.collapsed) .legend-toggle-icon {
+        transform: rotate(0deg);
+    }
+
+    .legend-content {
+        padding: 0 2rem 1.5rem 2rem;
+        max-height: 500px;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        opacity: 1;
+    }
+
+    .legend.collapsed .legend-content {
+        max-height: 0;
+        padding: 0 2rem;
+        opacity: 0;
     }
 
     .legend-item {
@@ -595,6 +943,14 @@
         font-size: 1rem;
     }
 
+    .modal {
+        z-index: 1200;
+    }
+
+    .modal-backdrop {
+        z-index: 1199;
+    }
+
     .modal-content {
         border-radius: 16px;
         border: none;
@@ -608,6 +964,11 @@
         border-radius: 16px 16px 0 0;
         border-bottom: none;
         padding: 2rem;
+    }
+
+    [data-theme="dark"] .modal-header {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        color: white;
     }
 
     .modal-title {
@@ -670,15 +1031,23 @@
     <!-- Content Area -->
     <div class="content-area">
         <!-- Map Section -->
-        <div class="section-header" style="margin-top: 4rem;" id="map-section">
+        <!-- <div class="section-header" style="margin-top: 4rem;" id="map-section">
             <h2 class="section-title">Интерактивная карта</h2>
             <p class="section-subtitle">Визуализация месторасположения лицензионных участков на интерактивной карте</p>
-        </div>
+        </div> -->
 
         <!-- License Type Tabs (динамически генерируются) -->
-        <div class="license-tabs" id="licenseTypeTabs"></div>
+        <div class="tabs-section">
+            <h3 class="tabs-section-title">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem; vertical-align: middle;">
+                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
+                </svg>
+                Быстрый фильтр по типу недропользования:
+            </h3>
+            <div class="license-tabs" id="licenseTypeTabs"></div>
+        </div>
 
-        <div class="map-container">
+        <div class="map-container" id="map-section">
             <div id="map"></div>
             <div class="map-overlay" id="mapOverlay" role="button" tabindex="0" aria-label="Активировать карту">
                 <div class="map-overlay-message">
@@ -691,69 +1060,60 @@
         </div>
 
         <!-- Legend (динамически генерируется) -->
-        <div class="legend" id="mapLegend">
-            <div class="legend-title">Цвета полигонов по виду пользования недрами</div>
-            <div class="d-flex flex-wrap" id="legendItems"></div>
+        <div class="legend collapsed" id="mapLegend">
+            <div class="legend-header" onclick="toggleLegend()" role="button" tabindex="0" aria-expanded="false" aria-controls="legendContent" title="Нажмите, чтобы развернуть легенду">
+                <div class="legend-title">
+                    <svg class="legend-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <span>Цвета полигонов по виду пользования недрами</span>
+                </div>
+            </div>
+            <div class="legend-content" id="legendContent">
+                <div class="d-flex flex-wrap" id="legendItems"></div>
+            </div>
         </div>
 
-        <!-- Filters -->
-        <div class="filters-section">
-            <h5>Фильтры и поиск</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="filter-group">
-                        <label for="filterStatus">Статус:</label>
-                        <select id="filterStatus" class="form-select" onchange="applyFilters()">
-                            <option value="">Все статусы</option>
-                            <option value="active">Действующая</option>
-                            <option value="expired">Истекла</option>
-                            <option value="suspended">Приостановлена</option>
-                            <option value="terminated">Прекращена</option>
-                        </select>
-                    </div>
+        <!-- Контейнер для фильтров и лицензий -->
+        <div class="filters-licenses-container" id="licenses">
+            <!-- Боковая панель с фильтрами -->
+            <div class="filters-sidebar">
+                <h5>Фильтры и поиск</h5>
+                <div class="filter-group">
+                    <label for="filterStatus">Статус:</label>
+                    <select id="filterStatus" class="form-select" onchange="applyFilters()">
+                        <option value="">Все статусы</option>
+                        <option value="active">Действующая</option>
+                        <option value="expired">Истекла</option>
+                        <option value="suspended">Приостановлена</option>
+                        <option value="terminated">Прекращена</option>
+                    </select>
                 </div>
-                <div class="col-md-6">
-                    <div class="filter-group">
-                        <label for="filterRegion">Регион:</label>
-                        <select id="filterRegion" class="form-select" onchange="applyFilters()">
-                            <option value="">Все регионы</option>
-                        </select>
-                    </div>
+                <div class="filter-group">
+                    <label for="filterRegion">Регион:</label>
+                    <select id="filterRegion" class="form-select" onchange="applyFilters()">
+                        <option value="">Все регионы</option>
+                    </select>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="filter-group">
-                        <label for="filterType">Вид пользования:</label>
-                        <select id="filterType" class="form-select" onchange="applyFilters()">
-                            <option value="">Все виды</option>
-                        </select>
-                    </div>
+                <div class="filter-group">
+                    <label for="filterType">Вид пользования:</label>
+                    <select id="filterType" class="form-select" onchange="applyFilters()">
+                        <option value="">Все виды</option>
+                    </select>
                 </div>
-                <div class="col-md-6">
-                    <div class="filter-group">
-                        <label for="filterMineral">Полезное ископаемое:</label>
-                        <select id="filterMineral" class="form-select" onchange="applyFilters()">
-                            <option value="">Все виды</option>
-                        </select>
-                    </div>
+                <div class="filter-group">
+                    <label for="filterMineral">Полезное ископаемое:</label>
+                    <select id="filterMineral" class="form-select" onchange="applyFilters()">
+                        <option value="">Все виды</option>
+                    </select>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="filter-group">
-                        <label for="searchText">Поиск:</label>
-                        <input type="text" id="searchText" class="form-control"
-                            placeholder="Номер лицензии или недропользователь..." onkeyup="applyFilters()">
-                    </div>
+                <div class="filter-group">
+                    <label for="searchText">Поиск:</label>
+                    <input type="text" id="searchText" class="form-control"
+                        placeholder="Номер лицензии или недропользователь..." onkeyup="applyFilters()">
                 </div>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>
+                <div class="d-flex flex-column gap-2">
                     <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Сбросить фильтры</button>
-                    <span class="ms-3 results-count" id="resultsCount"></span>
-                </div>
-                <div class="d-flex gap-2 align-items-center">
                     <button class="btn btn-primary export-btn" onclick="exportToExcel()" data-bs-toggle="tooltip"
                         data-bs-placement="top" title="Экспортировать данные в формат Excel для анализа и обработки">
                         <svg width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16">
@@ -778,32 +1138,33 @@
                     <div class="spinner-border text-primary export-spinner" role="status" style="display: none;">
                         <span class="visually-hidden">Загрузка...</span>
                     </div>
+                    <span class="results-count" id="resultsCount"></span>
                 </div>
             </div>
-        </div>
 
-        <!-- Список лицензий -->
-        <div class="licenses-list" id="licenses">
-            <h5 class="mb-3">Список лицензий</h5>
-            <div id="licensesList">
-                <!-- Здесь будут карточки лицензий -->
-            </div>
+            <!-- Основная область со списком лицензий -->
+            <div class="licenses-content">
+                <h5 class="mb-3" id="licensesListHeader">Список лицензий</h5>
+                <div id="licensesList">
+                    <!-- Здесь будут карточки лицензий -->
+                </div>
 
-            <!-- Пагинация -->
-            <div class="pagination-container" id="paginationContainer" style="display: none;">
-                <div class="pagination-controls">
-                    <button class="pagination-btn" id="prevBtn" onclick="changePage('prev')">
-                        ← Назад
-                    </button>
-                    <div id="pageNumbers" class="pagination-controls">
-                        <!-- Номера страниц будут добавлены динамически -->
+                <!-- Пагинация -->
+                <div class="pagination-container" id="paginationContainer" style="display: none;">
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" id="prevBtn" onclick="changePage('prev')">
+                            ← Назад
+                        </button>
+                        <div id="pageNumbers" class="pagination-controls">
+                            <!-- Номера страниц будут добавлены динамически -->
+                        </div>
+                        <button class="pagination-btn" id="nextBtn" onclick="changePage('next')">
+                            Вперёд →
+                        </button>
                     </div>
-                    <button class="pagination-btn" id="nextBtn" onclick="changePage('next')">
-                        Вперёд →
-                    </button>
-                </div>
-                <div class="pagination-info" id="paginationInfo">
-                    <!-- Информация о странице -->
+                    <div class="pagination-info" id="paginationInfo">
+                        <!-- Информация о странице -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1062,8 +1423,19 @@
             }
         }
 
-        // Прокрутка наверх списка
-        document.getElementById('licensesList').scrollIntoView({behavior: 'smooth', block: 'start'});
+        // Прокрутка к заголовку списка лицензий с задержкой для обновления контента
+        setTimeout(() => {
+            const header = document.getElementById('licensesListHeader');
+            if (header) {
+                header.scrollIntoView({behavior: 'smooth', block: 'start'});
+            } else {
+                // Fallback на контейнер, если заголовок не найден
+                const container = document.querySelector('.licenses-content');
+                if (container) {
+                    container.scrollIntoView({behavior: 'smooth', block: 'start'});
+                }
+            }
+        }, 100);
     }
 
     function updatePagination(totalItems, currentPageNum, isFiltered) {
@@ -1208,14 +1580,21 @@
 
         // Генерируем кнопки
         let html = `
-            <button class="tab-button active" data-type="" onclick="filterByType('')">
+            <button class="tab-button active" data-type="" onclick="filterByType('')" 
+                    title="Показать все лицензии" aria-label="Показать все лицензии">
+                <span class="tab-color-indicator" style="background-color: var(--accent-color);"></span>
                 Все <span class="tab-count" id="countAll">0</span>
             </button>
         `;
 
         uniqueTypes.forEach(type => {
+            const description = getLicenseTypeDescription(type);
+            const color = getColorByUsageType(type);
             html += `
-            <button class="tab-button" data-type="${type}" onclick="filterByType('${type}')">
+            <button class="tab-button" data-type="${type}" onclick="filterByType('${type}')"
+                    title="${description}" aria-label="Фильтр: ${type} - ${description}"
+                    style="--type-color: ${color};">
+                <span class="tab-color-indicator" style="background-color: ${color};"></span>
                 ${type} <span class="tab-count" id="count-${type}">0</span>
             </button>
             `;
@@ -1558,13 +1937,60 @@
         updateResultsCount();
     }
 
+    // Функция для вычисления примерной площади полигона (формула Shoelace)
+    function calculatePolygonArea(license) {
+        if (!license.polygon_data || !license.polygon_data.coordinates) {
+            // Если нет полигона, возвращаем 0 (для точек используем минимальное значение)
+            return license.latitude && license.longitude ? 0.0001 : 0;
+        }
+
+        const geomType = license.polygon_data.type;
+        let totalArea = 0;
+
+        if (geomType === 'Polygon') {
+            // Для простого полигона берем первый ring (внешний контур)
+            const ring = license.polygon_data.coordinates[0];
+            if (ring && ring.length > 2) {
+                let area = 0;
+                for (let i = 0; i < ring.length - 1; i++) {
+                    area += ring[i][0] * ring[i + 1][1];
+                    area -= ring[i + 1][0] * ring[i][1];
+                }
+                totalArea = Math.abs(area) / 2;
+            }
+        } else if (geomType === 'MultiPolygon') {
+            // Для MultiPolygon суммируем площади всех полигонов
+            license.polygon_data.coordinates.forEach(polygonCoords => {
+                const ring = polygonCoords[0]; // Внешний контур каждого полигона
+                if (ring && ring.length > 2) {
+                    let area = 0;
+                    for (let i = 0; i < ring.length - 1; i++) {
+                        area += ring[i][0] * ring[i + 1][1];
+                        area -= ring[i + 1][0] * ring[i][1];
+                    }
+                    totalArea += Math.abs(area) / 2;
+                }
+            });
+        }
+
+        return totalArea;
+    }
+
     function displayLicensesOnMap() {
         // Удаляем старые метки
         myMap.geoObjects.removeAll();
         placemarks = [];
 
         // Используем все лицензии если фильтры не применены, иначе только отфильтрованные
-        const licensesToDisplay = currentFiltersActive ? filteredLicenses : allLicenses;
+        let licensesToDisplay = currentFiltersActive ? filteredLicenses : allLicenses;
+        
+        // Сортируем лицензии по площади полигона (большие первыми, маленькие последними)
+        // Это обеспечит, что маленькие полигоны будут отрисовываться поверх больших
+        licensesToDisplay = [...licensesToDisplay].sort((a, b) => {
+            const areaA = calculatePolygonArea(a);
+            const areaB = calculatePolygonArea(b);
+            return areaB - areaA; // Сортировка по убыванию (большие первыми)
+        });
 
         licensesToDisplay.forEach(license => {
             let geoObject;
@@ -1598,12 +2024,13 @@
                         },
                         {
                             fillColor: getColorByUsageType(license.license_type),
-                            fillOpacity: 0.3,
+                            fillOpacity: 0.2,
                             strokeColor: getColorByUsageType(license.license_type),
-                            strokeWidth: 2,
-                            strokeOpacity: 0.8
+                            strokeWidth: 3,
+                            strokeOpacity: 1.0
                         }
                     );
+                    geoObject.properties.set('licenseId', license.id);
                 } else if (geomType === 'MultiPolygon') {
                     // MultiPolygon - создаем коллекцию полигонов
                     const collection = new ymaps.GeoObjectCollection();
@@ -1630,15 +2057,16 @@
                             },
                             {
                                 fillColor: getColorByUsageType(license.license_type),
-                                fillOpacity: 0.3,
+                                fillOpacity: 0.2,
                                 strokeColor: getColorByUsageType(license.license_type),
-                                strokeWidth: 2,
-                                strokeOpacity: 0.8
+                                strokeWidth: 3,
+                                strokeOpacity: 1.0
                             }
                         );
                         collection.add(polygon);
                     });
                     geoObject = collection;
+                    geoObject.properties.set('licenseId', license.id);
                 }
             } else if (license.latitude && license.longitude) {
                 // Создаём точку (для обратной совместимости)
@@ -1663,6 +2091,7 @@
                         preset: getPresetByUsageType(license.license_type)
                     }
                 );
+                geoObject.properties.set('licenseId', license.id);
             }
 
             if (geoObject) {
@@ -1693,7 +2122,7 @@
 
     function getColorByUsageType(usageType) {
         const colors = {
-            'БЭ': '#3498db',
+            'БЭ': '#60A5FA',
             'БП': '#27ae60',
             'БР': '#e67e22',
             'ТП': '#1abc9c',
@@ -1714,7 +2143,7 @@
             'suspended': '#ffc107',
             'terminated': '#dc3545'
         };
-        return colors[status] || '#007bff';
+        return colors[status] || '#60A5FA';
     }
 
     function getStatusText(status) {
@@ -1888,10 +2317,14 @@
 
             // Находим соответствующий маркер по ID лицензии и открываем его балун
             setTimeout(() => {
-                const placemarkIndex = filteredLicenses.findIndex(license => license.id === currentLicense.id);
+                // Ищем placemark по ID лицензии из properties
+                const targetPlacemark = placemarks.find(placemark => {
+                    const licenseId = placemark.properties.get('licenseId');
+                    return licenseId === currentLicense.id;
+                });
 
-                if (placemarkIndex !== -1 && placemarks[placemarkIndex]) {
-                    placemarks[placemarkIndex].balloon.open();
+                if (targetPlacemark) {
+                    targetPlacemark.balloon.open();
                 }
             }, 600);
         }, 300);
@@ -1942,6 +2375,41 @@
             top: 0,
             behavior: 'smooth'
         });
+    });
+
+    // Функция для сворачивания/разворачивания легенды
+    function toggleLegend() {
+        const legend = document.getElementById('mapLegend');
+        const header = legend?.querySelector('.legend-header');
+        if (legend && header) {
+            const isCollapsed = legend.classList.toggle('collapsed');
+            header.setAttribute('aria-expanded', !isCollapsed);
+            // Обновляем подсказку
+            header.setAttribute('title', isCollapsed ? 'Нажмите, чтобы развернуть легенду' : 'Нажмите, чтобы свернуть легенду');
+        }
+    }
+
+    // Инициализация подсказки при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const legendHeader = document.querySelector('.legend-header');
+        if (legendHeader) {
+            const legend = document.getElementById('mapLegend');
+            const isCollapsed = legend?.classList.contains('collapsed');
+            legendHeader.setAttribute('title', isCollapsed ? 'Нажмите, чтобы развернуть легенду' : 'Нажмите, чтобы свернуть легенду');
+        }
+    });
+
+    // Поддержка клавиатуры для легенды
+    document.addEventListener('DOMContentLoaded', function() {
+        const legendHeader = document.querySelector('.legend-header');
+        if (legendHeader) {
+            legendHeader.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleLegend();
+                }
+            });
+        }
     });
 
     // Инициализация Bootstrap tooltips

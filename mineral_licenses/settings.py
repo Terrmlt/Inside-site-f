@@ -46,10 +46,10 @@ else:
     ALLOWED_HOSTS = ['*']
 
 # CSRF settings for Replit
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.replit.dev',
-    'https://*.repl.co',
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://*.replit.dev',
+#     'https://*.repl.co',
+# ]
 
 
 # Application definition
@@ -147,6 +147,9 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Authentication settings
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

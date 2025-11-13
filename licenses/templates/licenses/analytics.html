@@ -21,6 +21,7 @@
         padding: 4rem 2rem 3rem;
         position: relative;
         border-radius: 0 0 32px 32px;
+        text-align: center;
     }
 
     .hero-title {
@@ -29,6 +30,7 @@
         letter-spacing: -0.04em;
         margin-bottom: 1.5rem;
         line-height: 1.1;
+        text-align: center;
     }
 
     .hero-subtitle {
@@ -36,6 +38,7 @@
         color: var(--text-muted);
         margin-bottom: 3rem;
         font-weight: 400;
+        text-align: center;
     }
 
     .content-area {
@@ -247,11 +250,11 @@
                 datasets: [{
                     data: Object.values(typeCount),
                     backgroundColor: [
-                        '#3B82F6',
-                        '#60A5FA',
                         '#93C5FD',
                         '#BFDBFE',
-                        '#DBEAFE'
+                        '#DBEAFE',
+                        '#EFF6FF',
+                        '#F0F9FF'
                     ],
                     borderWidth: 2,
                     borderColor: colors.border
@@ -315,7 +318,7 @@
                 datasets: [{
                     label: 'Количество лицензий',
                     data: sorted.map(item => item[1]),
-                    backgroundColor: '#3B82F6',
+                    backgroundColor: '#93C5FD',
                     borderRadius: 8,
                     borderWidth: 0
                 }]
@@ -406,12 +409,12 @@
                 datasets: [{
                     label: 'Истекающие лицензии',
                     data: monthsData,
-                    borderColor: '#3B82F6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: '#93C5FD',
+                    backgroundColor: 'rgba(147, 197, 253, 0.1)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#3B82F6',
+                    pointBackgroundColor: '#93C5FD',
                     pointBorderColor: colors.border,
                     pointBorderWidth: 2,
                     pointRadius: 5,
