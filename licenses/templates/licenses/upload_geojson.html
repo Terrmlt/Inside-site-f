@@ -67,12 +67,21 @@
         padding: 3rem;
         text-align: center;
         transition: all 0.3s;
-        background-color: #fafbfc;
+        background-color: var(--bg-section);
+        color: var(--text-dark);
+    }
+    
+    .upload-zone h3 {
+        color: var(--text-dark);
+    }
+    
+    .upload-zone p {
+        color: var(--text-muted);
     }
 
     .upload-zone:hover {
         border-color: var(--accent-color);
-        background-color: #f0f7ff;
+        background-color: var(--bg-section);
     }
 
     .upload-icon {
@@ -120,11 +129,16 @@
     }
 
     .example-box {
-        background: #fafbfc;
+        background: var(--bg-section);
         border: 1px solid var(--border-color);
         border-radius: 12px;
         padding: 1.75rem;
         margin-bottom: 1.5rem;
+        color: var(--text-dark);
+    }
+    
+    .example-box p {
+        color: var(--text-dark);
     }
 
     .example-title {
@@ -135,7 +149,7 @@
     }
 
     .code-block {
-        background: white;
+        background: var(--bg-light);
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 1.25rem;
@@ -180,38 +194,54 @@
         text-align: left;
         border-bottom: 1px solid var(--border-color);
         font-size: 0.9375rem;
+        color: var(--text-dark);
     }
 
     .keyword-table th {
         font-weight: 600;
         color: var(--text-dark);
-        background: #fafbfc;
+        background: var(--bg-section);
     }
 
     .keyword-table code {
-        background: white;
+        background: var(--bg-light);
         padding: 0.25rem 0.5rem;
         border-radius: 4px;
         border: 1px solid var(--border-color);
         font-size: 0.875rem;
+        color: var(--text-dark);
     }
 
     .alert-custom {
-        background: #f0f7ff;
+        background: var(--bg-section);
         border-left: 4px solid var(--accent-color);
         padding: 1.25rem;
         margin-bottom: 1.5rem;
         border-radius: 8px;
         font-size: 1rem;
         line-height: 1.6;
+        color: var(--text-dark);
     }
 
     .result-details {
         margin-top: 1.5rem;
         padding: 1.5rem;
-        background-color: #fafbfc;
+        background-color: var(--bg-section);
         border-radius: 12px;
         border: 1px solid var(--border-color);
+        color: var(--text-dark);
+    }
+    
+    .result-details strong {
+        color: var(--text-dark);
+    }
+    
+    .result-details ul {
+        color: var(--text-dark);
+    }
+    
+    .result-details li {
+        color: var(--text-muted);
     }
 
     .result-item {
@@ -219,6 +249,7 @@
         justify-content: space-between;
         padding: 0.75rem 0;
         border-bottom: 1px solid var(--border-color);
+        color: var(--text-dark);
     }
 
     .result-item:last-child {
@@ -261,12 +292,13 @@
     }
 
     .accordion-button:not(.collapsed) {
-        background-color: #f0f7ff;
+        background-color: var(--bg-section);
         color: var(--accent-color);
     }
 
     .accordion-body {
         padding: 2rem;
+        color: var(--text-dark);
     }
 
     .back-link {
@@ -286,6 +318,20 @@
         background: var(--accent-hover);
         color: white;
         transform: translateX(-4px);
+    }
+
+    /* Стили для темной темы */
+    [data-theme="dark"] .upload-zone:hover {
+        background-color: rgba(147, 197, 253, 0.1);
+    }
+
+    [data-theme="dark"] .alert-custom {
+        background-color: rgba(147, 197, 253, 0.1);
+        color: #000000;
+    }
+
+    [data-theme="dark"] .accordion-button:not(.collapsed) {
+        background-color: rgba(147, 197, 253, 0.1);
     }
 </style>
 {% endblock %}
@@ -592,20 +638,30 @@
 
         uploadZone.addEventListener('dragover', function (e) {
             e.preventDefault();
-            uploadZone.style.borderColor = 'var(--accent-color)';
-            uploadZone.style.backgroundColor = '#f0f7ff';
+            const root = document.documentElement;
+            const computedStyle = getComputedStyle(root);
+            uploadZone.style.borderColor = computedStyle.getPropertyValue('--accent-color').trim();
+            // Используем полупрозрачный акцентный цвет для hover в темной теме
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            uploadZone.style.backgroundColor = isDark 
+                ? 'rgba(147, 197, 253, 0.1)' 
+                : computedStyle.getPropertyValue('--bg-section').trim();
         });
 
         uploadZone.addEventListener('dragleave', function (e) {
             e.preventDefault();
-            uploadZone.style.borderColor = 'var(--border-color)';
-            uploadZone.style.backgroundColor = '#fafbfc';
+            const root = document.documentElement;
+            const computedStyle = getComputedStyle(root);
+            uploadZone.style.borderColor = computedStyle.getPropertyValue('--border-color').trim();
+            uploadZone.style.backgroundColor = computedStyle.getPropertyValue('--bg-section').trim();
         });
 
         uploadZone.addEventListener('drop', function (e) {
             e.preventDefault();
-            uploadZone.style.borderColor = 'var(--border-color)';
-            uploadZone.style.backgroundColor = '#fafbfc';
+            const root = document.documentElement;
+            const computedStyle = getComputedStyle(root);
+            uploadZone.style.borderColor = computedStyle.getPropertyValue('--border-color').trim();
+            uploadZone.style.backgroundColor = computedStyle.getPropertyValue('--bg-section').trim();
 
             if (e.dataTransfer.files.length > 0) {
                 fileInput.files = e.dataTransfer.files;

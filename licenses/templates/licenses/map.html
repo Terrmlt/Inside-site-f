@@ -549,8 +549,8 @@
         background: var(--bg-light);
         border: 1px solid var(--border-color);
         border-radius: 12px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
+        padding: 0.875rem;
+        margin-bottom: 0.75rem;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -563,7 +563,7 @@
     }
 
     .license-card-title {
-        font-size: 1.25rem;
+        font-size: 1rem;
         font-weight: 700;
         color: var(--text-dark);
         margin-bottom: 0.75rem;
@@ -573,7 +573,7 @@
     .license-meta {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
+        gap: 0.75rem;
         margin-top: 1rem;
         padding-top: 1rem;
         border-top: 1px solid var(--border-color);
@@ -586,9 +586,9 @@
     }
 
     .meta-icon {
-        width: 32px;
-        height: 32px;
-        padding: 6px;
+        width: 24px;
+        height: 24px;
+        padding: 4px;
         background: var(--bg-section);
         border-radius: 8px;
         flex-shrink: 0;
@@ -608,7 +608,7 @@
     }
 
     .meta-value {
-        font-size: 1rem;
+        font-size: 0.875rem;
         color: var(--text-dark);
         font-weight: 600;
     }
@@ -625,42 +625,42 @@
 
     .status-active {
         background-color: #dcfce7;
-        color: var(--success-color);
+        color: #000000;
     }
 
     .status-expired {
         background-color: #d4d4d4;
-        color: #666666;
+        color: #000000;
     }
 
     .status-suspended {
         background-color: #e8d9a8;
-        color: var(--warning-color);
+        color: #000000;
     }
 
     .status-terminated {
         background-color: #e8d4d4;
-        color: var(--danger-color);
+        color: #000000;
     }
 
     [data-theme="dark"] .status-active {
         background-color: #1e3a2e;
-        color: #34d399;
+        color: #000000;
     }
 
     [data-theme="dark"] .status-expired {
         background-color: #2d2d2d;
-        color: #94a3b8;
+        color: #000000;
     }
 
     [data-theme="dark"] .status-suspended {
         background-color: #3d3420;
-        color: #fbbf24;
+        color: #000000;
     }
 
     [data-theme="dark"] .status-terminated {
         background-color: #3d2a2a;
-        color: #f87171;
+        color: #000000;
     }
 
     .filter-group {
@@ -993,6 +993,101 @@
     .btn-close {
         filter: brightness(0) invert(1);
     }
+
+    /* Подвал сайта */
+    .site-footer {
+        background: var(--bg-section);
+        border-top: 1px solid var(--border-color);
+        padding: 2.5rem 2rem;
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .footer-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .footer-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+
+    .footer-text {
+        font-size: 0.9375rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .footer-contact {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .footer-contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.9375rem;
+        color: var(--text-dark);
+    }
+
+    .footer-contact-item svg {
+        flex-shrink: 0;
+        color: var(--accent-color);
+    }
+
+    .footer-contact-item a {
+        color: var(--accent-color);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .footer-contact-item a:hover {
+        color: var(--accent-hover);
+        text-decoration: underline;
+    }
+
+    .footer-link {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: color 0.2s;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+
+    .footer-link:hover {
+        color: var(--accent-hover);
+        text-decoration: underline;
+    }
+
+    /* Адаптивность подвала */
+    @media (max-width: 768px) {
+        .site-footer {
+            padding: 2rem 1.5rem;
+        }
+
+        .footer-content {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -1019,7 +1114,6 @@
     <!-- Hero Section -->
     <div class="hero-section" id="hero">
         <div class="container">
-            <h1 class="hero-title">База лицензий на недропользование</h1>
             <p class="hero-subtitle">Интерактивная система управления и визуализации лицензий на право пользования
                 недрами</p>
 
@@ -1035,44 +1129,6 @@
             <h2 class="section-title">Интерактивная карта</h2>
             <p class="section-subtitle">Визуализация месторасположения лицензионных участков на интерактивной карте</p>
         </div> -->
-
-        <!-- License Type Tabs (динамически генерируются) -->
-        <div class="tabs-section">
-            <h3 class="tabs-section-title">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem; vertical-align: middle;">
-                    <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
-                </svg>
-                Быстрый фильтр по типу недропользования:
-            </h3>
-            <div class="license-tabs" id="licenseTypeTabs"></div>
-        </div>
-
-        <div class="map-container" id="map-section">
-            <div id="map"></div>
-            <div class="map-overlay" id="mapOverlay" role="button" tabindex="0" aria-label="Активировать карту">
-                <div class="map-overlay-message">
-                    <svg class="map-overlay-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
-                    </svg>
-                    Нажмите для активации карты
-                </div>
-            </div>
-        </div>
-
-        <!-- Legend (динамически генерируется) -->
-        <div class="legend collapsed" id="mapLegend">
-            <div class="legend-header" onclick="toggleLegend()" role="button" tabindex="0" aria-expanded="false" aria-controls="legendContent" title="Нажмите, чтобы развернуть легенду">
-                <div class="legend-title">
-                    <svg class="legend-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                    <span>Цвета полигонов по виду пользования недрами</span>
-                </div>
-            </div>
-            <div class="legend-content" id="legendContent">
-                <div class="d-flex flex-wrap" id="legendItems"></div>
-            </div>
-        </div>
 
         <!-- Контейнер для фильтров и лицензий -->
         <div class="filters-licenses-container" id="licenses">
@@ -1168,7 +1224,64 @@
                 </div>
             </div>
         </div>
+
+        <div class="map-container" id="map-section">
+            <div id="map"></div>
+            <div class="map-overlay" id="mapOverlay" role="button" tabindex="0" aria-label="Активировать карту">
+                <div class="map-overlay-message">
+                    <svg class="map-overlay-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                    </svg>
+                    Нажмите для активации карты
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend (динамически генерируется) -->
+        <div class="legend collapsed" id="mapLegend">
+            <div class="legend-header" onclick="toggleLegend()" role="button" tabindex="0" aria-expanded="false" aria-controls="legendContent" title="Нажмите, чтобы развернуть легенду">
+                <div class="legend-title">
+                    <svg class="legend-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <span>Цвета полигонов по виду пользования недрами</span>
+                </div>
+            </div>
+            <div class="legend-content" id="legendContent">
+                <div class="d-flex flex-wrap" id="legendItems"></div>
+            </div>
+        </div>
     </div>
+
+    <!-- Подвал сайта -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h6 class="footer-title">Нужна поддержка?</h6>
+                <p class="footer-text">Обратитесь к специалисту технической поддержки</p>
+            </div>
+            <div class="footer-section">
+                <div class="footer-contact">
+                    <div class="footer-contact-item">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                        </svg>
+                        <span>Внутренний номер: <strong>5123</strong></span>
+                    </div>
+                    <div class="footer-contact-item">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                        </svg>
+                        <a href="mailto:5123@goldintercom.ru">5123@goldintercom.ru</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-section">
+                <p class="footer-text">Режим работы: с 3:00 до 12:00 по мск</p>
+                <a href="/help/" class="footer-link">Страница помощи</a>
+            </div>
+        </div>
+    </footer>
 </div>
 
 <!-- Модальное окно для детальной информации о лицензии -->
@@ -1207,6 +1320,8 @@
     let paginationData = null;
     let currentFiltersActive = false;
     const ITEMS_PER_PAGE = 12;
+    let geoObjectsIndex = {}; // Индекс geoObjects по licenseId для быстрого поиска
+    let selectedGeoObject = null; // Текущий выбранный объект на карте
 
     ymaps.ready(init);
 
@@ -1297,11 +1412,11 @@
                     updateStatistics();
 
                     // Генерируем динамические элементы
-                    generateLicenseTypeTabs();
+                    // generateLicenseTypeTabs(); // Закомментировано - быстрые фильтры удалены
                     generateMapLegend();
 
                     // Обновляем счетчики ПОСЛЕ создания кнопок
-                    updateTabCounts();
+                    // updateTabCounts(); // Закомментировано - быстрые фильтры удалены
 
                     // Заполняем фильтры уникальными значениями
                     populateFilters();
@@ -1980,6 +2095,8 @@
         // Удаляем старые метки
         myMap.geoObjects.removeAll();
         placemarks = [];
+        geoObjectsIndex = {}; // Очищаем индекс
+        selectedGeoObject = null; // Сбрасываем выбранный объект
 
         // Используем все лицензии если фильтры не применены, иначе только отфильтрованные
         let licensesToDisplay = currentFiltersActive ? filteredLicenses : allLicenses;
@@ -2097,6 +2214,8 @@
             if (geoObject) {
                 myMap.geoObjects.add(geoObject);
                 placemarks.push(geoObject);
+                // Сохраняем geoObject в индексе по licenseId для быстрого поиска
+                geoObjectsIndex[license.id] = geoObject;
             }
         });
 
@@ -2118,6 +2237,84 @@
         } else {
             console.warn('Нет объектов для отображения на карте');
         }
+    }
+
+    function highlightPolygon(licenseId) {
+        // Убираем подсветку с предыдущего выбранного объекта
+        if (selectedGeoObject) {
+            if (selectedGeoObject instanceof ymaps.GeoObjectCollection) {
+                // Для MultiPolygon - убираем подсветку со всех полигонов в коллекции
+                selectedGeoObject.each(function(polygon) {
+                    const originalColor = polygon.properties.get('originalStrokeColor');
+                    const originalWidth = polygon.properties.get('originalStrokeWidth') || 3;
+                    if (originalColor && originalWidth) {
+                        polygon.options.set({
+                            strokeColor: originalColor,
+                            strokeWidth: originalWidth
+                        });
+                    }
+                });
+            } else {
+                // Для обычного полигона или точки
+                const originalColor = selectedGeoObject.properties.get('originalStrokeColor');
+                const originalWidth = selectedGeoObject.properties.get('originalStrokeWidth') || 3;
+                if (originalColor && originalWidth) {
+                    selectedGeoObject.options.set({
+                        strokeColor: originalColor,
+                        strokeWidth: originalWidth
+                    });
+                }
+            }
+            selectedGeoObject = null;
+        }
+
+        // Находим объект по licenseId
+        const geoObject = geoObjectsIndex[licenseId];
+        if (!geoObject) {
+            console.warn(`GeoObject не найден для licenseId: ${licenseId}`);
+            return;
+        }
+
+        // Сохраняем оригинальные стили и применяем подсветку
+        if (geoObject instanceof ymaps.GeoObjectCollection) {
+            // Для MultiPolygon - подсвечиваем все полигоны в коллекции
+            geoObject.each(function(polygon) {
+                const currentOptions = polygon.options.getAll();
+                const currentStrokeColor = currentOptions.strokeColor || getColorByUsageType(
+                    allLicenses.find(l => l.id === licenseId)?.license_type || ''
+                );
+                const currentStrokeWidth = currentOptions.strokeWidth || 3;
+                
+                // Сохраняем оригинальные стили
+                polygon.properties.set('originalStrokeColor', currentStrokeColor);
+                polygon.properties.set('originalStrokeWidth', currentStrokeWidth);
+                
+                // Применяем подсветку
+                polygon.options.set({
+                    strokeColor: '#FFD700', // Яркий золотой цвет для выделения
+                    strokeWidth: 6
+                });
+            });
+        } else {
+            // Для обычного полигона или точки
+            const currentOptions = geoObject.options.getAll();
+            const currentStrokeColor = currentOptions.strokeColor || getColorByUsageType(
+                allLicenses.find(l => l.id === licenseId)?.license_type || ''
+            );
+            const currentStrokeWidth = currentOptions.strokeWidth || 3;
+            
+            // Сохраняем оригинальные стили
+            geoObject.properties.set('originalStrokeColor', currentStrokeColor);
+            geoObject.properties.set('originalStrokeWidth', currentStrokeWidth);
+            
+            // Применяем подсветку
+            geoObject.options.set({
+                strokeColor: '#FFD700', // Яркий золотой цвет для выделения
+                strokeWidth: 6
+            });
+        }
+
+        selectedGeoObject = geoObject;
     }
 
     function getColorByUsageType(usageType) {
@@ -2238,6 +2435,9 @@
 
                 const modal = new bootstrap.Modal(document.getElementById('licenseModal'));
                 modal.show();
+                
+                // Подсвечиваем полигон на карте
+                highlightPolygon(license.id);
             })
             .catch(error => console.error('Ошибка загрузки деталей лицензии:', error));
     }
@@ -2308,23 +2508,64 @@
             block: 'center'
         });
 
-        // Центрируем карту на точном местоположении лицензии с увеличенным зумом
+        // Находим соответствующий объект на карте
+        const targetGeoObject = geoObjectsIndex[currentLicense.id];
+        
         setTimeout(() => {
-            myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 15, {
-                checkZoomRange: true,
-                duration: 500
-            });
-
-            // Находим соответствующий маркер по ID лицензии и открываем его балун
-            setTimeout(() => {
-                // Ищем placemark по ID лицензии из properties
-                const targetPlacemark = placemarks.find(placemark => {
-                    const licenseId = placemark.properties.get('licenseId');
-                    return licenseId === currentLicense.id;
+            // Проверяем, есть ли полигон
+            if (currentLicense.polygon_data && currentLicense.polygon_data.coordinates && targetGeoObject) {
+                // Если есть полигон, показываем его целиком через setBounds
+                try {
+                    let bounds;
+                    if (targetGeoObject instanceof ymaps.GeoObjectCollection) {
+                        // Для MultiPolygon получаем границы всей коллекции
+                        bounds = targetGeoObject.getBounds();
+                    } else {
+                        // Для обычного полигона
+                        bounds = targetGeoObject.geometry.getBounds();
+                    }
+                    
+                    if (bounds) {
+                        myMap.setBounds(bounds, {
+                            checkZoomRange: true,
+                            zoomMargin: 50,
+                            duration: 500
+                        });
+                    }
+                } catch (e) {
+                    console.error('Ошибка установки границ полигона:', e);
+                    // Fallback: используем центр с меньшим зумом
+                    if (currentLicense.latitude && currentLicense.longitude) {
+                        myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 12, {
+                            checkZoomRange: true,
+                            duration: 500
+                        });
+                    }
+                }
+            } else if (currentLicense.latitude && currentLicense.longitude) {
+                // Если полигона нет, используем точку с меньшим зумом
+                myMap.setCenter([currentLicense.latitude, currentLicense.longitude], 12, {
+                    checkZoomRange: true,
+                    duration: 500
                 });
+            }
 
-                if (targetPlacemark) {
-                    targetPlacemark.balloon.open();
+            // Открываем балун объекта
+            setTimeout(() => {
+                if (targetGeoObject) {
+                    if (targetGeoObject.balloon) {
+                        targetGeoObject.balloon.open();
+                    }
+                } else {
+                    // Fallback: ищем в placemarks для обратной совместимости
+                    const targetPlacemark = placemarks.find(placemark => {
+                        const licenseId = placemark.properties.get('licenseId');
+                        return licenseId === currentLicense.id;
+                    });
+
+                    if (targetPlacemark && targetPlacemark.balloon) {
+                        targetPlacemark.balloon.open();
+                    }
                 }
             }, 600);
         }, 300);
